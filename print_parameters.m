@@ -1,0 +1,16 @@
+tension_force_constant
+perimeter_force_constant
+area_force_constant
+elongation_force_constant
+deformation_force_constant
+target_area
+boundary_deformation_force_constant
+boundary_edge_force_constant
+viscosity
+delta_t
+diffusion_speed
+source_width
+source_magnitude
+degradation_constant
+length(cells)
+

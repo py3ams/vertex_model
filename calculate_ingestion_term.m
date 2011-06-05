@@ -1,0 +1,76 @@
+function ingestion_term = calculate_ingestion_term(cells,current_chemical,...
+	FEM_elements,FEM_nodes,FEM_nodes_index_in_real_nodes,no_real_nodes)
+
+ingestion_term = zeros(no_real_nodes,1);
+no_cells = length(cells.vertices);
+
+% check comment about this line in calculate_ingested_amount before
+% changing anything.
+cells_ingesting_logical = cells.state~=4&cells.state~=3;
+
+for current_cell = 1:no_cells
+	
+	if cells_ingesting_logical(current_cell)
+		
+		current_cell_ingestion_rate = cells.ingestion_rate(current_cell,current_chemical);
+		cell_FEM_elements = cells.FEM_elements{current_cell};
+		
+		for current_cell_element_local = 1:length(cell_FEM_elements)
+			
+			current_cell_element_global = cell_FEM_elements(current_cell_element_local);
+			
+			% three nodes make up the current element. the entry in ingestion_term for
+			% the corresponding three basis functions will therefore be edited for the
+			% current element. these are the three basis functions that are non-zero in
+			% the current element.
+			current_cell_element_nodes =...
+				FEM_elements.nodes(current_cell_element_global,:);
+			
+			concentration_current_cell_element_nodes =...
+				FEM_nodes.concentration(current_cell_element_nodes,1);
+			
+			current_cell_element_nodes_in_real_nodes =...
+				FEM_nodes_index_in_real_nodes(current_cell_element_nodes);
+			
+			node_positions_current_element =...
+				FEM_nodes.previous_position(current_cell_element_nodes,:);
+			
+			jac = [node_positions_current_element(3,1)-node_positions_current_element(1,1), ...
+				node_positions_current_element(2,1)-node_positions_current_element(1,1); ...
+				node_positions_current_element(3,2)-node_positions_current_element(1,2), ...
+				node_positions_current_element(2,2)-node_positions_current_element(1,2)];
+			
+			det_jac = abs(det(jac));
+			
+			% for each basis non-zero basis function in the current element we multiply
+			% by c and integrate. c is decomposed into a sum over all basis functions,
+			% and only three are non-zero in this element. a basis function multiplied by
+			% itself and integrated over the canonical triangle gives 1/12, where we get
+			% 1/24 when multiplying with the other two functions of the triangle.
+			ingestion_term(current_cell_element_nodes_in_real_nodes(1)) =...
+				ingestion_term(current_cell_element_nodes_in_real_nodes(1))+...
+				det_jac*current_cell_ingestion_rate*(...
+				1/12*concentration_current_cell_element_nodes(1)+...
+				1/24*concentration_current_cell_element_nodes(2)+...
+				1/24*concentration_current_cell_element_nodes(3));
+			
+			ingestion_term(current_cell_element_nodes_in_real_nodes(2)) =...
+				ingestion_term(current_cell_element_nodes_in_real_nodes(2))+...
+				det_jac*current_cell_ingestion_rate*(...
+				1/24*concentration_current_cell_element_nodes(1)+...
+				1/12*concentration_current_cell_element_nodes(2)+...
+				1/24*concentration_current_cell_element_nodes(3));
+			
+			ingestion_term(current_cell_element_nodes_in_real_nodes(3)) =...
+				ingestion_term(current_cell_element_nodes_in_real_nodes(3))+...
+				det_jac*current_cell_ingestion_rate*(...
+				1/24*concentration_current_cell_element_nodes(1)+...
+				1/24*concentration_current_cell_element_nodes(2)+...
+				1/12*concentration_current_cell_element_nodes(3));
+			
+		end
+	end
+end
+
+
+
