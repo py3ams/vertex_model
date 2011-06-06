@@ -15,9 +15,9 @@ viscosity = 0.0007;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Initial configuration parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-anneal_initial_configuration_logical = true;
+anneal_initial_configuration_logical = false;
 
-compile_mex_functions_logical = false;
+compile_mex_functions_logical = true;
 configuration_noise = 0.5;
 
 load_from_file_logical = false;
@@ -75,7 +75,7 @@ tension_anisotropy_factor = 0.0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex rearrangement parameters %%%%%%%%%%%%%%%%%%%%%%%%%
 
-T1_swaps_logical = true;
+T1_swaps_logical = false;
 T1_swaps_start = 0;
 T1_probability = 1.0;
 
@@ -89,7 +89,7 @@ protection_time = 0;
 cell_growth_logical = true;
 cell_growth_start = 0;
 cell_growth_concentration_dependent = false;
-mitosis_logical = true;
+mitosis_logical = false;
 
 % growth speeds of medial (1) and lateral cells (2)
 average_cell_growth_speed(1) = 0.5;
@@ -138,7 +138,7 @@ target_volume_factor = 1.1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cell death parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cell_death_logical = true;
+cell_death_logical = false;
 cell_death_start = 0;
 
 % sets the area threshold below which cells can die, as a fraction of the mean area.
@@ -186,7 +186,7 @@ maximum_source_to_release(1) = 100;
 % set up at the moment requires concentration values to be of the order 1
 % for them to have a suitable effect on growth. the trade-offs between
 % source magnitude and degradation etc are therefore important.
-source_magnitude = [0.01 0.002];
+source_magnitude = [0.001 0.002];
 source_magnitude(1) = 0;
 source_width = [0.15 0.1];
 
