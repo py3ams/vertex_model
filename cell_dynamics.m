@@ -519,13 +519,13 @@ while true
 	% this seems to be the most logical place for this to go
 	if FEM_solve_logical
 		
-		[cells,FEM_elements,FEM_nodes,refined_edge_matrix] = remove_FEM_nodes_from_short_edges(cells,...
-			FEM_elements,FEM_nodes,vertices,mesh_refinement_threshold,refined_edge_matrix);
+% 		[cells,FEM_elements,FEM_nodes,refined_edge_matrix] = remove_FEM_nodes_from_short_edges(cells,...
+% 			FEM_elements,FEM_nodes,vertices,mesh_refinement_threshold,refined_edge_matrix);
 		
 		% 		test_refined_edge_matrix
 		
-		[cells,FEM_elements,FEM_nodes,refined_edge_matrix] = add_FEM_nodes_to_long_edges(...
-			cells,FEM_elements,FEM_nodes,long_edges,refined_edge_matrix,vertices);
+% 		[cells,FEM_elements,FEM_nodes,refined_edge_matrix] = add_FEM_nodes_to_long_edges(...
+% 			cells,FEM_elements,FEM_nodes,long_edges,refined_edge_matrix,vertices);
 		
 	end
 	

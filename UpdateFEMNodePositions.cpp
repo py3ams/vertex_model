@@ -32,29 +32,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     
     unsigned FEM_index_zero_cell = no_FEM_nodes-no_cells;
     
-    // for the edge nodes we must first check if the node actually exists, then work out its position
-    // as the mid-point of the edge it is on.
-    for(unsigned current_FEM_node_local=no_vertices;current_FEM_node_local<FEM_index_zero_cell;current_FEM_node_local++){
-        
-        unsigned edge_vertex_1_mi = (unsigned)edges[current_FEM_node_local];
-        unsigned edge_vertex_2_mi = (unsigned)edges[current_FEM_node_local+no_FEM_nodes];
-        
-        if(edge_vertex_1_mi>0){
-            
-            unsigned edge_vertex_1_ci = edge_vertex_1_mi-1;
-            unsigned edge_vertex_2_ci = edge_vertex_2_mi-1;
-            
-            FEM_node_positions[current_FEM_node_local] =
-                    0.5*(node_positions[edge_vertex_1_ci]+
-                    node_positions[edge_vertex_2_ci]);
-            
-            FEM_node_positions[current_FEM_node_local+no_FEM_nodes] =
-                    0.5*(node_positions[edge_vertex_1_ci+no_vertices]+
-                    node_positions[edge_vertex_2_ci+no_vertices]);
-            
-        }
-    }
-    
     // for the centroid nodes we work out the centroid of their cell. it is important not 
     // to attempt this if the cell does not exist, as it may create NaN's rather than 0's 
     // in the position.
@@ -95,4 +72,29 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             
         }
     }
+	
+	// for the edge nodes we must first check if the node actually exists, then work out its position
+    // as the mid-point of the edge it is on. we do this after cell centres have been moved in case 
+	// the edge node is on an edge with a cell centre.
+    for(unsigned current_FEM_node_local=no_vertices;current_FEM_node_local<FEM_index_zero_cell;current_FEM_node_local++){
+        
+        unsigned edge_node_1_mi = (unsigned)edges[current_FEM_node_local];
+        unsigned edge_node_2_mi = (unsigned)edges[current_FEM_node_local+no_FEM_nodes];
+        
+        if(edge_node_1_mi>0){
+            
+            unsigned edge_node_1_ci = edge_node_1_mi-1;
+            unsigned edge_node_2_ci = edge_node_2_mi-1;
+            
+            FEM_node_positions[current_FEM_node_local] =
+                    0.5*(FEM_node_positions[edge_node_1_ci]+
+                    FEM_node_positions[edge_node_2_ci]);
+            
+            FEM_node_positions[current_FEM_node_local+no_FEM_nodes] =
+                    0.5*(FEM_node_positions[edge_node_1_ci+no_FEM_nodes]+
+                    FEM_node_positions[edge_node_2_ci+no_FEM_nodes]);
+            
+        }
+    }
+	
 }

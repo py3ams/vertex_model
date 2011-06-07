@@ -52,7 +52,7 @@ if ~iteration
 			axis off
 		
 			set_figure_text(cells,iteration,view_iteration_number,view_number_cells);
-			
+
 			left_axes = axes('position',[0 0 1 0.9]);
 			
         else
