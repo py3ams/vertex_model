@@ -2,7 +2,7 @@ disp('busy');tic;close all;clear all;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 10;
+total_time = 1;
 
 max_iterations = 1000;
 simulation_name = '';
@@ -159,7 +159,7 @@ apoptosis_no_baseline_put_pc = 0.1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FEM parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FEM_solve_logical = false;
+FEM_solve_logical = true;
 mesh_refinement_threshold_factor = 1.2;
 % mesh_refinement_threshold_factor = 10;
 no_chemicals = 1;
@@ -192,24 +192,28 @@ source_width = [0.15 0.1];
 
 movie_logical = 1;
 
-axis_values = 0.5*[-1.5 1.5 -1 1];
+axis_values = 0.5*[-1.5 1.5 -1.5 1.5];
 % axis_values = [-1 2 -1.5 1.5];
 % axis_values = 'equal';
 % axis_values_FEM = [-1 1 -1 1 -0.5 1.5];
 axis_values_FEM = [axis_values -0.2 0.4];
 % axis_values_FEM = 'equal';
+chemical_to_view = 1;
 extra_pause = 0.0;
 % extra_pause = 0.1;
+linewidth_cells = 3;
+linewidth_elements = 1;
 movie_name = simulation_name;
-movie_period = 5;
+movie_period = 20;
 movie_start = 0;
 no_frames_for_statistical_plots = 100;
-update_period_1 = movie_period;
-update_period_2 = 1e9;
+update_period = movie_period;
+% update_period_2 = 1e9;
 view_FEM_concentration = 1;
 view_FEM_mesh = 1;
 view_iteration_number = 1;
-visualise_initial_configuration = 0;
+view_initial_config = 1;
+view_number_cells = 1;
 
 if ~FEM_solve_logical
 	view_FEM_mesh = 0;
@@ -275,9 +279,9 @@ iteration = 0;
 % 	min(node_positions(:,2))-0.5 max(node_positions(:,2))+0.5];
 
 visualiser(cells,vertices,FEM_elements,FEM_nodes,axis_values,...
-	axis_values_FEM,figure_position,false,iteration,...
-	movie_logical,update_period_1,update_period_2,view_FEM_concentration,...
-	view_FEM_mesh,view_iteration_number,visualise_initial_configuration)
+	axis_values_FEM,chemical_to_view,0,iteration,...
+	linewidth_cells,linewidth_elements,movie_logical,update_period,view_FEM_concentration,...
+	view_FEM_mesh,view_initial_config,view_iteration_number,view_number_cells)
 
 if movie_logical == 2 && iteration > movie_start && ~rem(iteration,movie_period)
 	
@@ -572,11 +576,11 @@ while true
 	
 	% 	axis_values = [min(node_positions(:,1))-0.5 max(node_positions(:,1))+0.5 ...
 	% 		min(node_positions(:,2))-0.5 max(node_positions(:,2))+0.5];
-	
+		
 	visualiser(cells,vertices,FEM_elements,FEM_nodes,axis_values,...
-		axis_values_FEM,figure_position,false,iteration,...
-		movie_logical,update_period_1,update_period_2,view_FEM_concentration,...
-		view_FEM_mesh,view_iteration_number,visualise_initial_configuration);
+		axis_values_FEM,chemical_to_view,false,iteration,...
+		linewidth_cells,linewidth_elements,movie_logical,update_period,view_FEM_concentration,...
+		view_FEM_mesh,view_initial_config,view_iteration_number,view_number_cells);
 	
 	if movie_logical == 2 && iteration > movie_start && ~rem(iteration,movie_period)
 		
@@ -636,10 +640,10 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Final plots %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-visualiser(cells,vertices,FEM_elements,FEM_nodes,axis_values,...
-    axis_values_FEM,figure_position,true,iteration,movie_logical,update_period_1,...
-    update_period_2,view_FEM_concentration,view_FEM_mesh,view_iteration_number,...
-    visualise_initial_configuration);
+% visualiser(cells,vertices,FEM_elements,FEM_nodes,axis_values,...
+%     axis_values_FEM,figure_position,true,iteration,movie_logical,update_period_1,...
+%     update_period_2,view_FEM_concentration,view_FEM_mesh,view_iteration_number,...
+%     view_initial_config);
 
 if movie_logical == 2
 	M(frame_counter) = getframe(gcf);
@@ -648,11 +652,14 @@ if movie_logical == 2
 		'update.mpg > ',movie_location,'temp.mpg']);
 	system(['mv ',movie_location,'temp.mpg ',movie_location,...
 		movie_name,'.mpg']);
-end
 
-statistical_plots(delta_t,fig_saves_location,fig_saves_logical,figure_position,...
-	movie_location,movie_logical,movie_name,no_frames_for_statistical_plots,...
-	stats.counter,stats,time);
+else
+
+	statistical_plots(delta_t,fig_saves_location,fig_saves_logical,figure_position,...
+		movie_location,movie_logical,movie_name,no_frames_for_statistical_plots,...
+		stats.counter,stats,time);
+	
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Display simulation info %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
