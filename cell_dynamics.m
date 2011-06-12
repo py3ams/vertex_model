@@ -2,9 +2,9 @@ disp('busy');tic;close all;clear all;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 1;
+total_time = 0.01;
 
-max_iterations = 1000;
+max_iterations = 10;
 simulation_name = '';
 
 grid_size = [10,10];
@@ -17,7 +17,7 @@ viscosity = 0.0007;
 
 anneal_initial_configuration_logical = false;
 
-compile_mex_functions_logical = true;
+compile_mex_functions_logical = false;
 configuration_noise = 0.5;
 
 load_from_file_logical = false;
@@ -194,7 +194,7 @@ source_width = [0.15 0.1];
 
 movie_logical = 1;
 
-axis_values = 1.2*[-1 1 -1 1];
+axis_values = 1*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
 % axis_values = 'equal';
 % axis_values_FEM = [-1 1 -1 1 -0.5 1.5];

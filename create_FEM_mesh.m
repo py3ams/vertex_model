@@ -1,23 +1,34 @@
 function [FEM_elements,FEM_nodes,cell_elements] =...
 	create_FEM_mesh(cells,vertex_positions)
 
-refinement_logical = true;
+% refinement_logical = true;
+
+no_refinements = 3;
+
+% size of the vectors to set aside to store node positions of the nodes
+% associated with different levels of refinement. the first refinement, for
+% example, will be given refinement_level_size(1)*length(vertex_positions)
+refinement_level_sizes = [3 6 9 12];
 
 no_cells = length(cells);
 cell_elements = cell(no_cells,1);
 
 cell_areas = CalculateCellAreas(cells,vertex_positions);
 
-FEM_elements.nodes = zeros(sum(cellfun('length',cells)),3);
+FEM_elements.nodes = zeros(sum(cellfun('length',cells))*4^no_refinements,3);
+
+total_refinement_size = sum(refinement_level_sizes(1:no_refinements))*length(vertex_positions);
 
 FEM_nodes.position = ...
-	[vertex_positions; zeros(3*length(vertex_positions),2); zeros(no_cells,2)];
+	[vertex_positions; zeros(total_refinement_size,2); zeros(no_cells,2)];
 
-FEM_nodes.edge = zeros(4*length(vertex_positions)+no_cells,2);
+FEM_nodes.edge = zeros(size(FEM_nodes.position,1),2);
 
 no_elements = 0;
-cell_centre_node_index = 4*length(vertex_positions);
-edge_node_counter = length(vertex_positions);
+cell_centre_node_index = size(FEM_nodes.position,1)-no_cells;
+
+% there is an edge_node_counter for each level of refinement
+edge_node_counters = length(vertex_positions)*refinement_level_sizes;
 
 for current_cell = 1:no_cells
 	
@@ -31,80 +42,105 @@ for current_cell = 1:no_cells
 	
 	FEM_nodes.position(cell_centre_node_index,:) = cell_centre_position;
 	
-	cell_elements{current_cell} = no_elements+1:no_elements+4*no_cell_vertices;
+	% it works out easier to do this here rather than after no_elements has
+	% changed at the end
+	cell_elements{current_cell} = no_elements+1:no_elements+4^no_refinements*no_cell_vertices;
 	
 	for current_vertex_local = 1:length(cell_vertices)
 		
 		current_vertex_global = cell_vertices(current_vertex_local);
 		clockwise_vertex_global = cell_vertices(mod(current_vertex_local,no_cell_vertices)+1);
 		
-		if refinement_logical
+		triangle_refinements = cell(no_refinements,1);
+		triangle_refinements{1} = [current_vertex_global clockwise_vertex_global cell_centre_node_index];
+		
+		% 		if refinement_logical
+		for refinement_level = 1:no_refinements
 			
-			edge_node_1_index =...
-				find((FEM_nodes.edge(:,1)==current_vertex_global&FEM_nodes.edge(:,2)==clockwise_vertex_global)|...
-				(FEM_nodes.edge(:,1)==clockwise_vertex_global&FEM_nodes.edge(:,2)==current_vertex_global),1);
+			no_triangles_at_current_level = 0;
 			
-			if isempty(edge_node_1_index)
+			for current_outer_triangle_index = 1:size(triangle_refinements{refinement_level},1)
 				
-				edge_node_counter = edge_node_counter+1;
-				edge_node_1_index = edge_node_counter;
+				current_triangle_nodes = triangle_refinements{refinement_level}(current_outer_triangle_index,:);
 				
-				FEM_nodes.position(edge_node_1_index,:) = 0.5*(FEM_nodes.position(current_vertex_global,:)+...
-					FEM_nodes.position(clockwise_vertex_global,:));
+				edge_node_1_index =...
+					find((FEM_nodes.edge(:,1)==current_triangle_nodes(1)&FEM_nodes.edge(:,2)==current_triangle_nodes(2))|...
+					(FEM_nodes.edge(:,1)==current_triangle_nodes(2)&FEM_nodes.edge(:,2)==current_triangle_nodes(1)),1);
 				
-				FEM_nodes.edge(edge_node_1_index,:) = [current_vertex_global clockwise_vertex_global];
+				if isempty(edge_node_1_index)
+					
+					edge_node_counters(refinement_level) = edge_node_counters(refinement_level)+1;
+					edge_node_1_index = edge_node_counters(refinement_level);
+					
+					FEM_nodes.position(edge_node_1_index,:) = 0.5*(FEM_nodes.position(current_triangle_nodes(1),:)+...
+						FEM_nodes.position(current_triangle_nodes(2),:));
+					
+					FEM_nodes.edge(edge_node_1_index,:) = [current_triangle_nodes(1) current_triangle_nodes(2)];
+					
+				end
 				
-			end
-			
-			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-			
-			edge_node_2_index =...
-				find((FEM_nodes.edge(:,1)==current_vertex_global&FEM_nodes.edge(:,2)==cell_centre_node_index)|...
-				(FEM_nodes.edge(:,1)==cell_centre_node_index&FEM_nodes.edge(:,2)==current_vertex_global),1);
-			
-			if isempty(edge_node_2_index)
+				%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 				
-				edge_node_counter = edge_node_counter+1;
-				edge_node_2_index = edge_node_counter;
+				edge_node_2_index =...
+					find((FEM_nodes.edge(:,1)==current_triangle_nodes(1)&FEM_nodes.edge(:,2)==current_triangle_nodes(3))|...
+					(FEM_nodes.edge(:,1)==current_triangle_nodes(3)&FEM_nodes.edge(:,2)==current_triangle_nodes(1)),1);
 				
-				FEM_nodes.position(edge_node_2_index,:) = 0.5*(FEM_nodes.position(current_vertex_global,:)+...
-					cell_centre_position);
+				if isempty(edge_node_2_index)
+					
+					edge_node_counters(refinement_level) = edge_node_counters(refinement_level)+1;
+					edge_node_2_index = edge_node_counters(refinement_level);
+					
+					FEM_nodes.position(edge_node_2_index,:) = 0.5*(FEM_nodes.position(current_triangle_nodes(1),:)+...
+						cell_centre_position);
+					
+					FEM_nodes.edge(edge_node_2_index,:) = [current_triangle_nodes(1) current_triangle_nodes(3)];
+					
+				end
 				
-				FEM_nodes.edge(edge_node_2_index,:) = [current_vertex_global cell_centre_node_index];
+				%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 				
-			end
-			
-			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-			
-			edge_node_3_index =...
-				find((FEM_nodes.edge(:,1)==clockwise_vertex_global&FEM_nodes.edge(:,2)==cell_centre_node_index)|...
-				(FEM_nodes.edge(:,1)==cell_centre_node_index&FEM_nodes.edge(:,2)==clockwise_vertex_global),1);
-			
-			if isempty(edge_node_3_index)
+				edge_node_3_index =...
+					find((FEM_nodes.edge(:,1)==current_triangle_nodes(2)&FEM_nodes.edge(:,2)==current_triangle_nodes(3))|...
+					(FEM_nodes.edge(:,1)==current_triangle_nodes(3)&FEM_nodes.edge(:,2)==current_triangle_nodes(2)),1);
 				
-				edge_node_counter = edge_node_counter+1;
-				edge_node_3_index = edge_node_counter;
+				if isempty(edge_node_3_index)
+					
+					edge_node_counters(refinement_level) = edge_node_counters(refinement_level)+1;
+					edge_node_3_index = edge_node_counters(refinement_level);
+					
+					FEM_nodes.position(edge_node_3_index,:) = 0.5*(FEM_nodes.position(current_triangle_nodes(2),:)+...
+						cell_centre_position);
+					
+					FEM_nodes.edge(edge_node_3_index,:) = [current_triangle_nodes(2) current_triangle_nodes(3)];
+					
+				end
 				
-				FEM_nodes.position(edge_node_3_index,:) = 0.5*(FEM_nodes.position(clockwise_vertex_global,:)+...
-					cell_centre_position);
+				no_triangles_at_current_level = no_triangles_at_current_level+1;
+				triangle_refinements{refinement_level+1}(no_triangles_at_current_level,:) = ...
+					[current_triangle_nodes(1) edge_node_1_index edge_node_2_index];
 				
-				FEM_nodes.edge(edge_node_3_index,:) = [clockwise_vertex_global cell_centre_node_index];
+				no_triangles_at_current_level = no_triangles_at_current_level+1;
+				triangle_refinements{refinement_level+1}(no_triangles_at_current_level,:) = ...
+					[edge_node_1_index edge_node_3_index edge_node_2_index];
+				
+				no_triangles_at_current_level = no_triangles_at_current_level+1;
+				triangle_refinements{refinement_level+1}(no_triangles_at_current_level,:) = ...
+					[edge_node_1_index current_triangle_nodes(2) edge_node_3_index];
+				
+				no_triangles_at_current_level = no_triangles_at_current_level+1;
+				triangle_refinements{refinement_level+1}(no_triangles_at_current_level,:) = ...
+					[edge_node_2_index edge_node_3_index current_triangle_nodes(3)];
+				
 				
 			end
 			
 		end
 		
-		no_elements = no_elements+1;
-		FEM_elements.nodes(no_elements,:) = [current_vertex_global edge_node_1_index edge_node_2_index];
-		
-		no_elements = no_elements+1;
-		FEM_elements.nodes(no_elements,:) = [edge_node_1_index edge_node_3_index edge_node_2_index];
-		
-		no_elements = no_elements+1;
-		FEM_elements.nodes(no_elements,:) = [edge_node_1_index clockwise_vertex_global edge_node_3_index];
-		
-		no_elements = no_elements+1;
-		FEM_elements.nodes(no_elements,:) = [edge_node_2_index edge_node_3_index cell_centre_node_index];
+		FEM_elements.nodes(no_elements+1:no_elements+4^no_refinements,:) = triangle_refinements{refinement_level+1};
+		no_elements = no_elements+4^no_refinements;
 		
 	end
+	
+	
+	
 end
