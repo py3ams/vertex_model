@@ -3,7 +3,7 @@ function [FEM_elements,FEM_nodes,cell_elements] =...
 
 % refinement_logical = true;
 
-no_refinements = 3;
+no_refinements = 0;
 
 % size of the vectors to set aside to store node positions of the nodes
 % associated with different levels of refinement. the first refinement, for
@@ -134,13 +134,19 @@ for current_cell = 1:no_cells
 				
 			end
 			
-		end
+        end
 		
+        if no_refinements == 0
+            refinement_level = 0;
+        end
+        
 		FEM_elements.nodes(no_elements+1:no_elements+4^no_refinements,:) = triangle_refinements{refinement_level+1};
 		no_elements = no_elements+4^no_refinements;
 		
 	end
 	
-	
-	
 end
+
+FEM_elements.nodes = FEM_elements.nodes(FEM_elements.nodes(:,1)>0,:);
+
+

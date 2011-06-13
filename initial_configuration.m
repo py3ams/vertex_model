@@ -146,6 +146,16 @@ else
         [FEM_elements,FEM_nodes,cells.FEM_elements] =...
             create_FEM_mesh(cells.vertices,vertices.position);
         
+        figure('position',[100 100 800 800])
+        trisurf(FEM_elements.nodes,FEM_nodes.position(:,1),FEM_nodes.position(:,2),...
+            zeros(length(FEM_nodes.position(:,1)),1),'linewidth',1);     
+        axis off;grid off;view([0 90]);axis equal
+        hold on;
+        for current_cell = 1:length(cells.vertices)
+            hold on
+            patchAS(vertices.position(cells.vertices{current_cell},:),[50,200,50]/256,4)
+        end
+        
         FEM_nodes.concentration =...
             initialise_concentration(vertices.no_cells,FEM_nodes,...
             gradient_type,initial_concentration_magnitude,...
