@@ -4,7 +4,7 @@ no_cells = sum(~cellfun('isempty',cells.vertices));
 
 figure_text = [];
 if view_iteration_number
-	figure_text = [' Iteration ',num2str(iteration)];
+	figure_text = [' Iteration ',num2str(iteration),' '];
 end
 
 if view_number_cells

@@ -4,3 +4,4 @@ FEM_m_files/*
 *.mex*
 *.cpp~
 *.m~
+Figs/*

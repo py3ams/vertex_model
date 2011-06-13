@@ -1,5 +1,5 @@
 function plot_FEM(cells,FEM_elements,FEM_nodes,axis_values_FEM,chemical_to_view,...
-	linewidth_cells,linewidth_elements,view_FEM_concentration)
+	linewidth_cells,linewidth_elements,vertices,view_FEM_concentration)
 
 if view_FEM_concentration
 	FEM_angle = [0 50];
