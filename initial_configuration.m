@@ -3,7 +3,7 @@ function [cell_growth_speeds_matrix,cells,FEM_elements,FEM_nodes,refined_edge_ma
     average_cell_growth_speeds,boundary_force_constants,configuration_noise,...
     gradient_type,grid_size,FEM_solve_logical,file_to_load,initial_concentration_magnitude,...
 	initial_force_constant_magnitudes,load_from_file_logical,max_no_cells,...
-    medial_lateral_threshold_factor,no_chemicals,source_width)
+    medial_lateral_threshold_factor,no_chemicals,no_refinements,source_width)
 
 if load_from_file_logical
 
@@ -144,17 +144,17 @@ else
     if FEM_solve_logical
         
         [FEM_elements,FEM_nodes,cells.FEM_elements] =...
-            create_FEM_mesh(cells.vertices,vertices.position);
+            create_FEM_mesh(cells.vertices,vertices.position,no_refinements);
         
-        figure('position',[100 100 800 800])
-        trisurf(FEM_elements.nodes,FEM_nodes.position(:,1),FEM_nodes.position(:,2),...
-            zeros(length(FEM_nodes.position(:,1)),1),'linewidth',1);     
-        axis off;grid off;view([0 90]);axis equal
-        hold on;
-        for current_cell = 1:length(cells.vertices)
-            hold on
-            patchAS(vertices.position(cells.vertices{current_cell},:),[50,200,50]/256,4)
-        end
+%         figure('position',[100 100 800 800])
+%         trisurf(FEM_elements.nodes,FEM_nodes.position(:,1),FEM_nodes.position(:,2),...
+%             zeros(length(FEM_nodes.position(:,1)),1),'linewidth',1);     
+%         axis off;grid off;view([0 90]);axis equal
+%         hold on;
+%         for current_cell = 1:length(cells.vertices)
+%             hold on
+%             patchAS(vertices.position(cells.vertices{current_cell},:),[50,200,50]/256,4)
+%         end
         
         FEM_nodes.concentration =...
             initialise_concentration(vertices.no_cells,FEM_nodes,...

@@ -2,9 +2,9 @@ disp('busy');tic;close all;clear all;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 0.01;
+total_time = 0.001;
 
-max_iterations = 10;
+max_iterations = 100;
 simulation_name = '';
 
 grid_size = [10,10];
@@ -86,7 +86,7 @@ protection_time = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Cell growth and mitosis parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
-cell_growth_logical = true;
+cell_growth_logical = false;
 cell_growth_start = 0;
 cell_growth_concentration_dependent = false;
 mitosis_logical = false;
@@ -190,6 +190,8 @@ source_magnitude = [0.001 0.002];
 source_magnitude(1) = 0;
 source_width = [0.15 0.1];
 
+no_refinements = 2;
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 movie_logical = 1;
@@ -238,7 +240,7 @@ compile_mex_functions(compile_mex_functions_logical);
 	average_cell_growth_speed,boundary_force_constants,configuration_noise,...
 	gradient_type,grid_size,FEM_solve_logical,file_to_load,initial_concentration_magnitude,...
 	initial_force_constant_magnitudes,load_from_file_logical,...
-	max_no_cells,medial_lateral_threshold_factor,no_chemicals,source_width);
+	max_no_cells,medial_lateral_threshold_factor,no_chemicals,no_refinements,source_width);
 
 % cell_growth_speeds(original_cells) = -0.1;
 
