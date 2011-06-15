@@ -2,13 +2,13 @@ disp('busy');tic;close all;clear all;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 0.001;
+total_time = 0.0001;
 
-max_iterations = 100;
+max_iterations = 10;
 simulation_name = '';
 
-grid_size = [10,10];
-max_no_cells = 500;
+grid_size = [2,2];
+max_no_cells = 5;
 
 delta_t = total_time/max_iterations;
 viscosity = 0.0007;
@@ -209,7 +209,7 @@ linewidth_elements = 1;
 movie_name = simulation_name;
 movie_start = 0;
 no_frames_for_statistical_plots = 100;
-update_period = 50;
+update_period = 10;
 view_FEM_mesh = 1;
 view_FEM_concentration = 1;
 view_initial_config = 1;

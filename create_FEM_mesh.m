@@ -1,14 +1,10 @@
 function [FEM_elements,FEM_nodes,cell_elements] =...
     create_FEM_mesh(cells,vertex_positions,no_refinements)
 
-% refinement_logical = true;
-
-% no_refinements = 0;
-
 % size of the vectors to set aside to store node positions of the nodes
 % associated with different levels of refinement. the first refinement, for
 % example, will be given refinement_level_size(1)*length(vertex_positions)
-refinement_level_sizes = [3 6 9 12];
+refinement_level_sizes = [4 9 27];
 
 no_cells = length(cells);
 cell_elements = cell(no_cells,1);
@@ -28,7 +24,7 @@ no_elements = 0;
 cell_centre_node_index = size(FEM_nodes.position,1)-no_cells;
 
 % there is an edge_node_counter for each level of refinement
-edge_node_counters = length(vertex_positions)*refinement_level_sizes;
+edge_node_counters = length(vertex_positions)+([0 refinement_level_sizes(1:end-1)])*length(vertex_positions);
 
 for current_cell = 1:no_cells
     

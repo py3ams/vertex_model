@@ -21,7 +21,7 @@ if load_from_file_logical
 
 else
 	
-	max_no_vertices = 3*max_no_cells;
+	max_no_vertices = 4*max_no_cells;
     
     [cells.vertices,vertices.position] =...
         initial_cell_mesh(max_no_vertices,configuration_noise,grid_size);
