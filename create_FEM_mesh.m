@@ -2,9 +2,14 @@ function [FEM_elements,FEM_nodes,cell_elements] =...
     create_FEM_mesh(cells,vertex_positions,no_refinements)
 
 % size of the vectors to set aside to store node positions of the nodes
-% associated with different levels of refinement. the first refinement, for
-% example, will be given refinement_level_size(1)*length(vertex_positions)
-refinement_level_sizes = [4 9 27];
+% associated with different levels of refinement. the total number of FEM_nodes after
+% a refinement is up to four times the previous number (consider Euler's formula -
+% there is a new node on each edge). therefore the cumulative number of FEM_nodes 
+% set aside is equal to 4^refinement_level*initial_no_nodes. however, we do not take
+% account of the fact that there are also nodes at cell centres, which we should.
+% instead we are relying on the fact that we already leave plenty of space for new
+% cells etc.
+refinement_level_sizes = [3 13 47];
 
 no_cells = length(cells);
 cell_elements = cell(no_cells,1);
