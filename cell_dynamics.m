@@ -2,22 +2,23 @@ disp('busy');tic;close all;clear all;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 0.0001;
+total_time = 1;
 
-max_iterations = 10;
+max_iterations = 1000;
 simulation_name = '';
 
-grid_size = [2,2];
-max_no_cells = 5;
+grid_size = [10,10];
+max_no_cells = 200;
 
 delta_t = total_time/max_iterations;
 viscosity = 0.0007;
+% viscosity = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Initial configuration parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 anneal_initial_configuration_logical = false;
 
-compile_mex_functions_logical = true;
+compile_mex_functions_logical = false;
 configuration_noise = 0.5;
 
 load_from_file_logical = false;
@@ -190,11 +191,11 @@ source_magnitude = [0.001 0.002];
 source_magnitude(1) = 0;
 source_width = [0.15 0.1];
 
-no_refinements = 2;
+no_refinements = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 1;
+movie_logical = 0;
 
 axis_values = 1*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
@@ -209,7 +210,7 @@ linewidth_elements = 1;
 movie_name = simulation_name;
 movie_start = 0;
 no_frames_for_statistical_plots = 100;
-update_period = 10;
+update_period = 1;
 view_FEM_mesh = 1;
 view_FEM_concentration = 1;
 view_initial_config = 1;

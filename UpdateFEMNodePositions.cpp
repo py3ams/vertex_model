@@ -10,7 +10,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     unsigned no_vertices = mxGetM(prhs[1]);
     unsigned no_FEM_nodes = mxGetM(prhs[3]);
     
-    double* node_positions = mxGetPr(prhs[1]);
+    double* vertex_positions = mxGetPr(prhs[1]);
     double* cell_areas = mxGetPr(prhs[2]);
     double* edges = mxGetPr(prhs[3]);
     
@@ -18,14 +18,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     double* FEM_node_positions = mxGetPr(plhs[0]);
     
     // for the normal FEM node positions (i.e. not the edge nodes or the centroid nodes,
-    // we can simply copy the values from previous position. if the node does not actually 
+    // we can simply copy the values from vertex positions. if the node does not actually 
     // exist its position should be 0 so this will be copied across
     for(unsigned current_node_local=0;current_node_local<no_vertices;current_node_local++){
         
         for(unsigned dim=0;dim<2;dim++){
             
             FEM_node_positions[current_node_local+dim*no_FEM_nodes] =
-                    node_positions[current_node_local+dim*no_vertices];
+                    vertex_positions[current_node_local+dim*no_vertices];
             
         }
     }
@@ -54,11 +54,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
                 unsigned current_cell_node_ci = (unsigned)cell_nodes[i]-1;
                 unsigned clockwise_cell_node_ci = (unsigned)cell_nodes[(i+1)%no_cell_nodes]-1;
                 
-                x_i = node_positions[current_cell_node_ci];
-                x_iplus1 = node_positions[clockwise_cell_node_ci];
+                x_i = vertex_positions[current_cell_node_ci];
+                x_iplus1 = vertex_positions[clockwise_cell_node_ci];
                 
-                y_i = node_positions[current_cell_node_ci+no_vertices];
-                y_iplus1 = node_positions[clockwise_cell_node_ci+no_vertices];
+                y_i = vertex_positions[current_cell_node_ci+no_vertices];
+                y_iplus1 = vertex_positions[clockwise_cell_node_ci+no_vertices];
                 
                 cx = cx + (x_i + x_iplus1)*(x_i*y_iplus1 - x_iplus1*y_i);
                 cy = cy + (y_i + y_iplus1)*(x_i*y_iplus1 - x_iplus1*y_i);
@@ -74,8 +74,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     }
 	
 	// for the edge nodes we must first check if the node actually exists, then work out its position
-    // as the mid-point of the edge it is on. we do this after cell centres have been moved in case 
-	// the edge node is on an edge with a cell centre.
+    // as the mid-point of the edge it is on. we do this after cell centres have been moved for cases 
+	// where edge node is on an edge with a cell centre. it is important that the FEM_node_positions
+    // vector be structured such that the higher levels of refinement come first. this ensures that the
+    // edge node dividing two vertices is moved first, then the edge nodes dividing that node with the 
+    // vertices, etc.
     for(unsigned current_FEM_node_local=no_vertices;current_FEM_node_local<FEM_index_zero_cell;current_FEM_node_local++){
         
         unsigned edge_node_1_mi = (unsigned)edges[current_FEM_node_local];
