@@ -17,7 +17,7 @@ viscosity = 0.0007;
 
 anneal_initial_configuration_logical = false;
 
-compile_mex_functions_logical = false;
+compile_mex_functions_logical = true;
 configuration_noise = 0.5;
 
 load_from_file_logical = false;

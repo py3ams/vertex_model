@@ -144,7 +144,7 @@ else
     if FEM_solve_logical
         
         [FEM_elements,FEM_nodes,cells.FEM_elements] =...
-            create_FEM_mesh(cells.vertices,vertices.position,no_refinements);
+            create_FEM_mesh(cells,vertices,no_refinements);
         
 %         figure('position',[100 100 800 800])
 %         trisurf(FEM_elements.nodes,FEM_nodes.position(:,1),FEM_nodes.position(:,2),...
