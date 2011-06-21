@@ -191,7 +191,7 @@ source_magnitude = [0.001 0.002];
 source_magnitude(1) = 0;
 source_width = [0.15 0.1];
 
-no_refinements = 2;
+no_refinements = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -210,7 +210,7 @@ linewidth_elements = 1;
 movie_name = simulation_name;
 movie_start = 0;
 no_frames_for_statistical_plots = 100;
-update_period = 10;
+update_period = 1;
 view_FEM_mesh = 1;
 view_FEM_concentration = 1;
 view_initial_config = 1;
