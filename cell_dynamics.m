@@ -2,26 +2,27 @@ disp('busy');tic;close all;clear all;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 0.0001;
+total_time = 1;
 
-max_iterations = 10;
+max_iterations = 1000;
 simulation_name = '';
 
-grid_size = [2,2];
-max_no_cells = 5;
+grid_size = [10,10];
+max_no_cells = 200;
 
 delta_t = total_time/max_iterations;
-viscosity = 0.0007;
+viscosity = 0.001;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Initial configuration parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 anneal_initial_configuration_logical = false;
 
-compile_mex_functions_logical = true;
+compile_mex_functions_logical = false;
 configuration_noise = 0.5;
 
-load_from_file_logical = false;
-file_to_load = 'steady_gradient';
+load_from_file_logical = true;
+load_FEM_from_file_logical = false;
+file_to_load = 'initial_save';
 
 % to set the colour of the original cells to be different in figures and
 % movies, need to edit figure_loop.m. otherwise would have to pass a variable
@@ -194,7 +195,7 @@ no_refinements = 2;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 1;
+movie_logical = 0;
 
 axis_values = 1*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
@@ -239,7 +240,7 @@ compile_mex_functions(compile_mex_functions_logical);
 	refined_edge_matrix,vertices] = initial_configuration(anneal_initial_configuration_logical,...
 	average_cell_growth_speed,boundary_force_constants,configuration_noise,...
 	gradient_type,grid_size,FEM_solve_logical,file_to_load,initial_concentration_magnitude,...
-	initial_force_constant_magnitudes,load_from_file_logical,...
+	initial_force_constant_magnitudes,load_FEM_from_file_logical,load_from_file_logical,...
 	max_no_cells,medial_lateral_threshold_factor,no_chemicals,no_refinements,source_width);
 
 % cell_growth_speeds(original_cells) = -0.1;
