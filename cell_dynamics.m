@@ -2,12 +2,12 @@ disp('busy');tic;close all;clear all;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 1;
+total_time = 0.001;
 
-max_iterations = 1000;
+max_iterations = 1;
 simulation_name = '';
 
-grid_size = [10,10];
+grid_size = [20,20];
 max_no_cells = 500;
 
 delta_t = total_time/max_iterations;
@@ -192,7 +192,7 @@ source_width = [0.15 0.1];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 1;
+movie_logical = 0;
 
 axis_values = 1.2*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
