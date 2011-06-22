@@ -7,21 +7,22 @@ total_time = 0.001;
 max_iterations = 1;
 simulation_name = '';
 
-grid_size = [20,20];
-max_no_cells = 500;
+grid_size = [10,10];
+max_no_cells = 200;
 
 delta_t = total_time/max_iterations;
-viscosity = 0.0007;
+viscosity = 0.001;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Initial configuration parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-anneal_initial_configuration_logical = true;
+anneal_initial_configuration_logical = false;
 
 compile_mex_functions_logical = false;
 configuration_noise = 0.5;
 
-load_from_file_logical = false;
-file_to_load = 'steady_gradient';
+load_from_file_logical = true;
+load_FEM_from_file_logical = false;
+file_to_load = 'initial_save';
 
 % to set the colour of the original cells to be different in figures and
 % movies, need to edit figure_loop.m. otherwise would have to pass a variable
@@ -75,7 +76,7 @@ tension_anisotropy_factor = 0.0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex rearrangement parameters %%%%%%%%%%%%%%%%%%%%%%%%%
 
-T1_swaps_logical = true;
+T1_swaps_logical = false;
 T1_swaps_start = 0;
 T1_probability = 1.0;
 
@@ -86,10 +87,10 @@ protection_time = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Cell growth and mitosis parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
-cell_growth_logical = true;
+cell_growth_logical = false;
 cell_growth_start = 0;
 cell_growth_concentration_dependent = false;
-mitosis_logical = true;
+mitosis_logical = false;
 
 % growth speeds of medial (1) and lateral cells (2)
 average_cell_growth_speed(1) = 0.5;
@@ -138,7 +139,7 @@ target_volume_factor = 1.1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cell death parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cell_death_logical = true;
+cell_death_logical = false;
 cell_death_start = 0;
 
 % sets the area threshold below which cells can die, as a fraction of the mean area.
@@ -186,15 +187,17 @@ maximum_source_to_release(1) = 100;
 % set up at the moment requires concentration values to be of the order 1
 % for them to have a suitable effect on growth. the trade-offs between
 % source magnitude and degradation etc are therefore important.
-source_magnitude = [0.01 0.002];
+source_magnitude = [0.001 0.002];
 source_magnitude(1) = 0;
 source_width = [0.15 0.1];
+
+no_refinements = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 movie_logical = 0;
 
-axis_values = 1.2*[-1 1 -1 1];
+axis_values = 1*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
 % axis_values = 'equal';
 % axis_values_FEM = [-1 1 -1 1 -0.5 1.5];
@@ -207,7 +210,7 @@ linewidth_elements = 1;
 movie_name = simulation_name;
 movie_start = 0;
 no_frames_for_statistical_plots = 100;
-update_period = 50;
+update_period = 1;
 view_FEM_mesh = 1;
 view_FEM_concentration = 1;
 view_initial_config = 1;
@@ -237,8 +240,8 @@ compile_mex_functions(compile_mex_functions_logical);
 	refined_edge_matrix,vertices] = initial_configuration(anneal_initial_configuration_logical,...
 	average_cell_growth_speed,boundary_force_constants,configuration_noise,...
 	gradient_type,grid_size,FEM_solve_logical,file_to_load,initial_concentration_magnitude,...
-	initial_force_constant_magnitudes,load_from_file_logical,...
-	max_no_cells,medial_lateral_threshold_factor,no_chemicals,source_width);
+	initial_force_constant_magnitudes,load_FEM_from_file_logical,load_from_file_logical,...
+	max_no_cells,medial_lateral_threshold_factor,no_chemicals,no_refinements,source_width);
 
 % cell_growth_speeds(original_cells) = -0.1;
 
@@ -519,13 +522,13 @@ while true
 	% this seems to be the most logical place for this to go
 	if FEM_solve_logical
 		
-		[cells,FEM_elements,FEM_nodes,refined_edge_matrix] = remove_FEM_nodes_from_short_edges(cells,...
-			FEM_elements,FEM_nodes,vertices,mesh_refinement_threshold,refined_edge_matrix);
+% 		[cells,FEM_elements,FEM_nodes,refined_edge_matrix] = remove_FEM_nodes_from_short_edges(cells,...
+% 			FEM_elements,FEM_nodes,vertices,mesh_refinement_threshold,refined_edge_matrix);
 		
 		% 		test_refined_edge_matrix
 		
-		[cells,FEM_elements,FEM_nodes,refined_edge_matrix] = add_FEM_nodes_to_long_edges(...
-			cells,FEM_elements,FEM_nodes,long_edges,refined_edge_matrix,vertices);
+% 		[cells,FEM_elements,FEM_nodes,refined_edge_matrix] = add_FEM_nodes_to_long_edges(...
+% 			cells,FEM_elements,FEM_nodes,long_edges,refined_edge_matrix,vertices);
 		
 	end
 	

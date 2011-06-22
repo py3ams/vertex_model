@@ -63,7 +63,15 @@ xlabel('Time')
 ylabel('XY ratio')
 axis([0 time 0.9*min(xy_ratio) 1.1*max(xy_ratio)])
 
-
+% mesh_peclet_number = stats.mesh_peclet_number(1:statistics_counter,:);
+% subplot(2,3,6)
+% plot(time_range,mesh_peclet_number)
+% hold on
+% xlabel('Time')
+% ylabel('Maximum mesh peclet number')
+% if max(mesh_peclet_number)>0
+%     axis([0 time 0 1.1*max(mesh_peclet_number)])
+% end
 
 % add the figure to the movie if necessary
 if movie_logical == 2
@@ -381,16 +389,6 @@ ylabel('Triangle Quality')
 if max(triangle_quality_stats(:,1))>0
     axis([0 time 0 1.1*max(triangle_quality_stats(:,1)+2*triangle_quality_stats(:,4))])
 end
-
-% mesh_peclet_number = stats.mesh_peclet_number(1:statistics_counter,:);
-% subplot(2,3,6)
-% plot(time_range,mesh_peclet_number)
-% hold on
-% xlabel('Time')
-% ylabel('Maximum mesh peclet number')
-% if max(mesh_peclet_number)>0
-%     axis([0 time 0 1.1*max(mesh_peclet_number)])
-% end
 
 death_locations = stats.death_locations(stats.death_locations(:,1)~=0,:);
 no_bars = 10;

@@ -10,7 +10,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     double* node_positions = mxGetPr(prhs[1]);
     
     unsigned no_elements = mxGetM(prhs[0]);
-    unsigned array_sizes = mxGetM(prhs[1]);
+    unsigned no_nodes = mxGetM(prhs[1]);
     
     plhs[0] = mxCreateDoubleMatrix(9*no_elements, 1, mxREAL);
     plhs[1] = mxCreateDoubleMatrix(9*no_elements, 1, mxREAL);
@@ -39,7 +39,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
             for(unsigned k=0;k<2;k++){
                 
                 node_positions_current_element[current_node_local][k] =
-                        node_positions[current_node_global_ci+k*array_sizes];
+                        node_positions[current_node_global_ci+k*no_nodes];
                 
             }
         }
