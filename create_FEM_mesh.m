@@ -10,7 +10,7 @@ function [FEM_elements,FEM_nodes,cell_elements] =...
 % account of the fact that there are also nodes at cell centres, which we should.
 % instead we are relying on the fact that we already leave plenty of space for new
 % cells etc.
-refinement_level_sizes = [3 13 47];
+refinement_level_sizes = [3 12 48 192];
 
 no_cells = length(cells.vertices);
 cell_elements = cell(no_cells,1);

@@ -2,13 +2,13 @@ disp('busy');tic;close all;clear all;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 0.001;
+total_time = 1;
 
-max_iterations = 1;
+max_iterations = 1000;
 simulation_name = '';
 
 grid_size = [10,10];
-max_no_cells = 200;
+max_no_cells = 101;
 
 delta_t = total_time/max_iterations;
 viscosity = 0.001;
@@ -191,7 +191,7 @@ source_magnitude = [0.001 0.002];
 source_magnitude(1) = 0;
 source_width = [0.15 0.1];
 
-no_refinements = 0;
+no_refinements = 4;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
