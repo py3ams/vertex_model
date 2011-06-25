@@ -5,13 +5,13 @@ disp('busy');tic;close all;clear all;%profile on
 total_time = 1;
 
 max_iterations = 1000;
-simulation_name = '';
+simulation_name = 'refinement_4';
 
 grid_size = [10,10];
 max_no_cells = 101;
 
 delta_t = total_time/max_iterations;
-viscosity = 0.001;
+viscosity = 0.01;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Initial configuration parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -168,7 +168,7 @@ chemical_to_view = 1;
 
 % degradation_constant(1) = 0.0005;
 degradation_constant = [0.00000 0.00002];
-diffusion_speed = [0.08 0.00002];
+diffusion_speed = [0.1 0.00002];
 % diffusion_speed(1) = 0;
 
 % gradient type can be either 1 - in the x direction (with peak at x = 0), 2 -
@@ -195,9 +195,9 @@ no_refinements = 4;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 0;
+movie_logical = 2;
 
-axis_values = 1*[-1 1 -1 1];
+axis_values = 0.8*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
 % axis_values = 'equal';
 % axis_values_FEM = [-1 1 -1 1 -0.5 1.5];
@@ -205,6 +205,7 @@ axis_values_FEM = [axis_values -0.05 0.15];
 % axis_values_FEM = 'equal';
 extra_pause = 0.0;
 % extra_pause = 0.1;
+include_statistical_plots_in_movie = false;
 linewidth_cells = 5;
 linewidth_elements = 1;
 movie_name = simulation_name;
@@ -213,16 +214,16 @@ no_frames_for_statistical_plots = 100;
 update_period = 1;
 view_FEM_mesh = 1;
 view_FEM_concentration = 1;
-view_initial_config = 1;
+view_initial_config = 0;
 view_iteration_number = 0;
 view_number_cells = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-fig_saves_logical = false;
+fig_saves_logical = true;
 fig_saves_name = simulation_name;
 
-full_saves_logical = false;
+full_saves_logical = true;
 full_saves_name = simulation_name;
 full_saves_period = max(floor(max_iterations/3),1);
 
@@ -282,7 +283,7 @@ visualiser(cells,vertices,FEM_elements,FEM_nodes,axis_values,...
     view_FEM_concentration,view_FEM_mesh,view_initial_config,...
     view_iteration_number,view_number_cells);
 
-if movie_logical == 2 && iteration > movie_start && ~rem(iteration,movie_period)
+if movie_logical == 2 && iteration > movie_start && ~rem(iteration,update_period)
 	
 	M(1) = getframe(gcf);
 	frame_counter = 2;
@@ -579,7 +580,7 @@ while true
         view_FEM_concentration,view_FEM_mesh,view_initial_config,...
         view_iteration_number,view_number_cells);
 	
-	if movie_logical == 2 && iteration > movie_start && ~rem(iteration,movie_period)
+	if movie_logical == 2 && iteration > movie_start && ~rem(iteration,update_period)
 		
 		M(frame_counter) = getframe(gcf);
 		frame_counter = frame_counter+1;
@@ -653,8 +654,8 @@ if movie_logical == 2
 end
 
 statistical_plots(delta_t,fig_saves_location,fig_saves_logical,figure_position,...
-    movie_location,movie_logical,movie_name,no_frames_for_statistical_plots,...
-    stats.counter,stats,time);
+    include_statistical_plots_in_movie,movie_location,movie_logical,...
+    movie_name,no_frames_for_statistical_plots,stats.counter,stats,time);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Display simulation info %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

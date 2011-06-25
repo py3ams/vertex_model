@@ -6,11 +6,12 @@ function [FEM_elements,FEM_nodes,cell_elements] =...
 % the size of the vector that stores vertex positions. the total number of FEM_nodes after
 % a refinement is up to four times the previous number (consider Euler's formula -
 % there is a new node on each edge). therefore the cumulative number of FEM_nodes
-% set aside is equal to 4^refinement_level*initial_no_nodes. however, we do not take
-% account of the fact that there are also nodes at cell centres, which we should.
-% instead we are relying on the fact that we already leave plenty of space for new
-% cells etc.
-refinement_level_sizes = [3 12 48 192];
+% set aside is equal to 4^refinement_level*initial_no_nodes. we need to
+% remember to take into account the initial nodes that are cell centres,
+% which are why the numbers in this vector are bigger than
+% 4^refinement_level, as we multiply them by the initial_no_vertices, not
+% initial_no_nodes.
+refinement_level_sizes = [4 16 64 256];
 
 no_cells = length(cells.vertices);
 cell_elements = cell(no_cells,1);
