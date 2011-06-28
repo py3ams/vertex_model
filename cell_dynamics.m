@@ -4,8 +4,8 @@ disp('busy');tic;close all;clear all;%profile on
 
 total_time = 1;
 
-max_iterations = 1000;
-simulation_name = 'refinement_4';
+max_iterations = 4000;
+simulation_name = 'true_solution';
 
 grid_size = [10,10];
 max_no_cells = 101;
@@ -195,7 +195,7 @@ no_refinements = 4;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 2;
+movie_logical = 0;
 
 axis_values = 0.8*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
@@ -220,12 +220,13 @@ view_number_cells = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-fig_saves_logical = true;
+fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
 full_saves_logical = true;
 full_saves_name = simulation_name;
-full_saves_period = max(floor(max_iterations/3),1);
+% full_saves_period = max(floor(max_iterations/3),1);
+full_saves_period = 1;
 
 regular_tests_logical = false;
 
@@ -603,7 +604,7 @@ while true
 	if full_saves_logical && ~rem(iteration,full_saves_period)
 		
 		full_saves_file_name = [full_saves_location,'iteration_',num2str(iteration)];
-		save(full_saves_file_name);
+		eval(['save ',full_saves_file_name,' FEM_nodes FEM_elements']);
 		
 	end
 	
@@ -632,7 +633,7 @@ save cells cell_growth_speeds_matrix FEM_elements FEM_nodes ...
 if full_saves_logical
 	
 	full_saves_file_name = [full_saves_location,'final_save'];
-	save(full_saves_file_name);
+	eval(['save ',full_saves_file_name,' FEM_nodes FEM_elements']);
 	
 end
 
