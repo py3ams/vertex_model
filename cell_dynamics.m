@@ -1,11 +1,14 @@
-disp('busy');tic;close all;clear all;%profile on
+disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 total_time = 1;
 
-max_iterations = 4000;
-simulation_name = 'true_solution';
+max_iterations = 500;
+no_refinements = 0;
+
+simulation_name = ['iterations_',num2str(max_iterations),...
+   '_refinements_',num2str(no_refinements)];
 
 grid_size = [10,10];
 max_no_cells = 101;
@@ -22,7 +25,7 @@ configuration_noise = 0.5;
 
 load_from_file_logical = true;
 load_FEM_from_file_logical = false;
-file_to_load = 'initial_save';
+file_to_load = 'Saves/true_solution/initial_save';
 
 % to set the colour of the original cells to be different in figures and
 % movies, need to edit figure_loop.m. otherwise would have to pass a variable
@@ -191,8 +194,6 @@ source_magnitude = [0.001 0.002];
 source_magnitude(1) = 0;
 source_width = [0.15 0.1];
 
-no_refinements = 4;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 movie_logical = 0;
@@ -315,6 +316,9 @@ total_source_released = 0;
 total_ingestion = 0;
 
 baseline_target_volume = cells.target_volume(1);
+
+time_taken_to_start_of_loop = toc;
+tic;
 
 while true
 	
@@ -627,13 +631,15 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of main loop %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-save cells cell_growth_speeds_matrix FEM_elements FEM_nodes ...
+save final_save cells cell_growth_speeds_matrix FEM_elements FEM_nodes ...
 	refined_edge_matrix vertices
+
+time_taken_in_main_loop = toc;
 
 if full_saves_logical
 	
 	full_saves_file_name = [full_saves_location,'final_save'];
-	eval(['save ',full_saves_file_name,' FEM_nodes FEM_elements']);
+	save(full_saves_file_name);
 	
 end
 
@@ -660,9 +666,7 @@ statistical_plots(delta_t,fig_saves_location,fig_saves_logical,figure_position,.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Display simulation info %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-time_taken = toc;
-
 disp(['Number of iterations: ',int2str(iteration)])
-disp(['Time taken: ',num2str(round(time_taken)),' seconds'])
+disp(['Time taken: ',num2str(round(time_taken_in_main_loop+time_taken_to_start_of_loop)),' seconds'])
 
 % profile viewer
