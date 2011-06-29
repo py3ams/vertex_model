@@ -1,17 +1,21 @@
-disp('busy');tic;close all;clear all;%profile on
+disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 1;
+total_time = 0.01;
 
-max_iterations = 1000;
-simulation_name = '';
+max_iterations = 50;
+no_refinements = 0;
+
+% simulation_name = '';
+simulation_name = ['iterations_',num2str(max_iterations),...
+   '_refinements_',num2str(no_refinements)];
 
 grid_size = [10,10];
 max_no_cells = 101;
 
 delta_t = total_time/max_iterations;
-viscosity = 0.001;
+viscosity = 0.01;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Initial configuration parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -22,7 +26,7 @@ configuration_noise = 0.5;
 
 load_from_file_logical = true;
 load_FEM_from_file_logical = false;
-file_to_load = 'initial_save';
+file_to_load = 'Saves/test_true_solution/initial_save';
 
 % to set the colour of the original cells to be different in figures and
 % movies, need to edit figure_loop.m. otherwise would have to pass a variable
@@ -168,7 +172,7 @@ chemical_to_view = 1;
 
 % degradation_constant(1) = 0.0005;
 degradation_constant = [0.00000 0.00002];
-diffusion_speed = [0.08 0.00002];
+diffusion_speed = [0.1 0.00002];
 % diffusion_speed(1) = 0;
 
 % gradient type can be either 1 - in the x direction (with peak at x = 0), 2 -
@@ -191,13 +195,11 @@ source_magnitude = [0.001 0.002];
 source_magnitude(1) = 0;
 source_width = [0.15 0.1];
 
-no_refinements = 4;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 movie_logical = 0;
 
-axis_values = 1*[-1 1 -1 1];
+axis_values = 0.8*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
 % axis_values = 'equal';
 % axis_values_FEM = [-1 1 -1 1 -0.5 1.5];
@@ -205,6 +207,7 @@ axis_values_FEM = [axis_values -0.05 0.15];
 % axis_values_FEM = 'equal';
 extra_pause = 0.0;
 % extra_pause = 0.1;
+include_statistical_plots_in_movie = false;
 linewidth_cells = 5;
 linewidth_elements = 1;
 movie_name = simulation_name;
@@ -222,9 +225,10 @@ view_number_cells = 0;
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = false;
+full_saves_logical = true;
 full_saves_name = simulation_name;
-full_saves_period = max(floor(max_iterations/3),1);
+% full_saves_period = max(floor(max_iterations/3),1);
+full_saves_period = 1;
 
 regular_tests_logical = false;
 
@@ -282,7 +286,7 @@ visualiser(cells,vertices,FEM_elements,FEM_nodes,axis_values,...
     view_FEM_concentration,view_FEM_mesh,view_initial_config,...
     view_iteration_number,view_number_cells);
 
-if movie_logical == 2 && iteration > movie_start && ~rem(iteration,movie_period)
+if movie_logical == 2 && iteration > movie_start && ~rem(iteration,update_period)
 	
 	M(1) = getframe(gcf);
 	frame_counter = 2;
@@ -313,6 +317,9 @@ total_source_released = 0;
 total_ingestion = 0;
 
 baseline_target_volume = cells.target_volume(1);
+
+time_taken_to_start_of_loop = toc;
+tic;
 
 while true
 	
@@ -579,7 +586,7 @@ while true
         view_FEM_concentration,view_FEM_mesh,view_initial_config,...
         view_iteration_number,view_number_cells);
 	
-	if movie_logical == 2 && iteration > movie_start && ~rem(iteration,movie_period)
+	if movie_logical == 2 && iteration > movie_start && ~rem(iteration,update_period)
 		
 		M(frame_counter) = getframe(gcf);
 		frame_counter = frame_counter+1;
@@ -602,7 +609,7 @@ while true
 	if full_saves_logical && ~rem(iteration,full_saves_period)
 		
 		full_saves_file_name = [full_saves_location,'iteration_',num2str(iteration)];
-		save(full_saves_file_name);
+		eval(['save ',full_saves_file_name,' FEM_nodes FEM_elements']);
 		
 	end
 	
@@ -625,8 +632,10 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of main loop %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-save cells cell_growth_speeds_matrix FEM_elements FEM_nodes ...
+save final_save cells cell_growth_speeds_matrix FEM_elements FEM_nodes ...
 	refined_edge_matrix vertices
+
+time_taken_in_main_loop = toc;
 
 if full_saves_logical
 	
@@ -653,14 +662,12 @@ if movie_logical == 2
 end
 
 statistical_plots(delta_t,fig_saves_location,fig_saves_logical,figure_position,...
-    movie_location,movie_logical,movie_name,no_frames_for_statistical_plots,...
-    stats.counter,stats,time);
+    include_statistical_plots_in_movie,movie_location,movie_logical,...
+    movie_name,no_frames_for_statistical_plots,stats.counter,stats,time);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Display simulation info %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-time_taken = toc;
-
 disp(['Number of iterations: ',int2str(iteration)])
-disp(['Time taken: ',num2str(round(time_taken)),' seconds'])
+disp(['Time taken: ',num2str(round(time_taken_in_main_loop+time_taken_to_start_of_loop)),' seconds'])
 
 % profile viewer

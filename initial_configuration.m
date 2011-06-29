@@ -162,8 +162,6 @@ end
 % FEM_elements and FEM_nodes loaded
 if FEM_solve_logical && ~load_FEM_from_file_logical
    
-   
-   
    [FEM_elements,FEM_nodes,cells.FEM_elements] =...
       create_FEM_mesh(cells,vertices,no_refinements);
    
