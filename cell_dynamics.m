@@ -2,11 +2,12 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 1;
+total_time = 0.01;
 
-max_iterations = 500;
+max_iterations = 50;
 no_refinements = 0;
 
+% simulation_name = '';
 simulation_name = ['iterations_',num2str(max_iterations),...
    '_refinements_',num2str(no_refinements)];
 
@@ -25,7 +26,7 @@ configuration_noise = 0.5;
 
 load_from_file_logical = true;
 load_FEM_from_file_logical = false;
-file_to_load = 'Saves/true_solution/initial_save';
+file_to_load = 'Saves/test_true_solution/initial_save';
 
 % to set the colour of the original cells to be different in figures and
 % movies, need to edit figure_loop.m. otherwise would have to pass a variable
@@ -215,7 +216,7 @@ no_frames_for_statistical_plots = 100;
 update_period = 1;
 view_FEM_mesh = 1;
 view_FEM_concentration = 1;
-view_initial_config = 0;
+view_initial_config = 1;
 view_iteration_number = 0;
 view_number_cells = 0;
 
