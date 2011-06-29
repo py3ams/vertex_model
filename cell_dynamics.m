@@ -4,10 +4,10 @@ disp('busy');close all;clear all;tic;%profile on
 
 total_time = 0.01;
 
-max_iterations = 50;
-no_refinements = 0;
+max_iterations = 100;
+no_refinements = 1;
 
-% simulation_name = '';
+% simulation_name = 'test_true_solution';
 simulation_name = ['iterations_',num2str(max_iterations),...
    '_refinements_',num2str(no_refinements)];
 
@@ -249,10 +249,7 @@ compile_mex_functions(compile_mex_functions_logical);
 
 % cell_growth_speeds(original_cells) = -0.1;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-save initial_save cells cell_growth_speeds_matrix FEM_elements FEM_nodes ...
-	refined_edge_matrix vertices
+save('initial_save')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Initialise simulations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -549,13 +546,13 @@ while true
         cells = set_source_and_ingestion_rates(cells,FEM_nodes,gradient_type,...
             no_chemicals,source_magnitude,source_width);
         
-		[cells,FEM_nodes,source_magnitude,stats,total_ingestion,total_source_released] = ...
+		[cells,FEM_nodes,M,source_magnitude,stats,total_ingestion,total_source_released] = ...
 			FEM_solver(cells,degradation_constant,delta_t,diffusion_speed,FEM_elements,...
 			FEM_nodes,gradient_type,maximum_source_to_release,no_chemicals,source_magnitude,...
 			source_width,refined_edge_matrix,stats,total_ingestion,total_source_released);
 		
 		FEM_nodes.previous_position = FEM_nodes.position;
-		
+		        
 %         cells.target_volume = baseline_target_volume*(1+1000*cells.internal_chemical_quantity);
 %         cells.target_volume = 1e-3*cells.internal_chemical_quantity/max(cells.internal_chemical_quantity);
 
@@ -609,7 +606,8 @@ while true
 	if full_saves_logical && ~rem(iteration,full_saves_period)
 		
 		full_saves_file_name = [full_saves_location,'iteration_',num2str(iteration)];
-		eval(['save ',full_saves_file_name,' FEM_nodes FEM_elements']);
+% 		eval(['save ',full_saves_file_name,' FEM_nodes FEM_elements M']);
+        save(full_saves_file_name)
 		
 	end
 	
@@ -632,8 +630,7 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of main loop %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-save final_save cells cell_growth_speeds_matrix FEM_elements FEM_nodes ...
-	refined_edge_matrix vertices
+save('final_save');
 
 time_taken_in_main_loop = toc;
 
