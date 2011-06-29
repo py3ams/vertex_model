@@ -91,6 +91,9 @@ for true_iteration = 1:iterations_in_true_solution
    
 end
 
+toc
+
 eval(['save Saves/',simulation_name,'/solution_error solution_error error_per_iteration'])
 
-toc
+plot(error_per_iteration)
+disp(['Total solution error : ',num2str(solution_error)])
