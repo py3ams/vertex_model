@@ -4,7 +4,7 @@ disp('busy');close all;clear all;tic;%profile on
 
 total_time = 0.01;
 
-max_iterations = 100;
+max_iterations = 50;
 no_refinements = 1;
 
 % simulation_name = 'test_true_solution';

@@ -1,7 +1,7 @@
 disp('busy');close all;clear all;tic;
 
-iterations_in_test_solution = 100;
-no_refinements = 2;
+iterations_in_test_solution = 50;
+no_refinements = 1;
 
 simulation_name = ['iterations_',num2str(iterations_in_test_solution),...
    '_refinements_',num2str(no_refinements)];
@@ -43,7 +43,7 @@ test_iteration = 0;
 % test. this gets updated to the solution at the first iteration of test
 % when the correct number of true iterations have passed corresponding to one
 % test iteration. could instead update mid-way through or at the start - are these
-% equally valid?
+% equally valid? the errors are much bigger when I try this!
 test_solution_vars.FEM_nodes = test_solution_initial_vars.FEM_nodes;
 true_solution_vars.FEM_nodes = true_solution_initial_vars.FEM_nodes;
 
@@ -79,7 +79,7 @@ for true_iteration = 1:iterations_in_true_solution
    true_solution_vars = load(['Saves/test_true_solution/iteration_',num2str(true_iteration)]);
    
    % for a period of 4, for example, this will cause the test solution to update at iteration 4,8,12,.. 
-   if ~rem(true_iteration,test_solution_period)
+   if rem(true_iteration,test_solution_period)==0
       
       test_iteration = test_iteration+1;
       test_solution_vars = load(['Saves/',simulation_name,'/iteration_',num2str(test_iteration)]);

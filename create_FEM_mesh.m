@@ -11,7 +11,7 @@ function [FEM_elements,FEM_nodes,cell_elements] =...
 % which are why the numbers in this vector are bigger than
 % 4^refinement_level, as we multiply them by the initial_no_vertices, not
 % initial_no_nodes.
-refinement_level_sizes = [4 16 64 256];
+refinement_level_sizes = [5 20 80 320];
 
 no_cells = length(cells.vertices);
 cell_elements = cell(no_cells,1);
@@ -43,7 +43,9 @@ FEM_nodes.edge = zeros(size(FEM_nodes.position,1),2);
 cell_centre_node_index = size(FEM_nodes.position,1)-no_cells;
 
 % finds the index for the first node associated with each level of refinement
-edge_node_indices = length(vertices.position)+([0 refinement_level_sizes(1:end-1)])*length(vertices.position);
+% (actually finds node before first node as we add 1 before we store a node)
+edge_node_indices = length(vertices.position)+([0 cumsum(refinement_level_sizes(...
+    1:end-1))])*length(vertices.position);
 
 no_elements = 0;
 
