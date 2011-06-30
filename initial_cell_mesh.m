@@ -1,6 +1,10 @@
 function [cells,node_positions,voronoi_points] = initial_cell_mesh(...
 	array_sizes,configuration_noise,grid_size,tessellation_type)
 	
+if nargin < 4
+   tessellation_type = 'square';
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% set up the tessellation points %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
