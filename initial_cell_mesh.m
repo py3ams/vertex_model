@@ -1,5 +1,5 @@
-function [cells,node_positions] =...
-	initial_cell_mesh(array_sizes,configuration_noise,grid_size)
+function [cells,node_positions,voronoi_points] =...
+	initial_cell_mesh(array_sizes,configuration_noise,grid_size,tessellation_type)
 	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% set up the tessellation points %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -18,7 +18,7 @@ spacing = 1/grid_size(1);
 y_max = floor(grid_size(2)/2)*spacing-0.5*spacing*rem(grid_size(2)+1,2);
 
 % cell centres we want are from -x_max+1/2*spacing to x_max-1/2*spacing -
-% we add three extra cells either size
+% we add three extra cells either side
 x_coords = linspace(-x_max-2.5*spacing,x_max+2.5*spacing,grid_size(1)+6);
 y_coords = linspace(-y_max-2.5*spacing,y_max+2.5*spacing,grid_size(2)+6)';
 
@@ -29,6 +29,29 @@ y_coords = linspace(-y_max-2.5*spacing,y_max+2.5*spacing,grid_size(2)+6)';
 x_coords_matrix = repmat(x_coords,length(y_coords),1);
 y_coords_matrix = repmat(y_coords,1,length(x_coords));
 
+if strcmp(tessellation_type,'random')
+
+    % we store this matrix as we are going to use it to add the outer layers back in
+    % after we have randomised everything
+    temp_x_coords_matrix = x_coords_matrix;
+    temp_y_coords_matrix = y_coords_matrix;
+
+    size_real_x_coords_matrix = size(x_coords_matrix(4:grid_size(1)+3,:));
+    x_coords_matrix(4:grid_size(1)+3,:) = rand(size_real_x_coords_matrix)-0.5;
+    y_coords_matrix(4:grid_size(1)+3,:) = rand(size_real_x_coords_matrix)-0.5;
+    
+    x_coords_matrix(:,1:3) = temp_x_coords_matrix(:,1:3);
+    x_coords_matrix(:,end-3:end) = temp_x_coords_matrix(:,end-3:end);
+    
+    y_coords_matrix(:,1:3) = temp_y_coords_matrix(:,1:3);
+    y_coords_matrix(:,end-3:end) = temp_y_coords_matrix(:,end-3:end);
+
+end
+
+if strcmp(tessellation_type,'hexagonal')
+    y_coords_matrix(:,1:2:end) = y_coords_matrix(:,1:2:end)+0.5*spacing;
+end
+    
 x_coords = x_coords_matrix(:);
 y_coords = y_coords_matrix(:);
 
