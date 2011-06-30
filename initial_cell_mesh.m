@@ -1,5 +1,5 @@
-function [cells,node_positions,voronoi_points] =...
-	initial_cell_mesh(array_sizes,configuration_noise,grid_size,tessellation_type)
+function [cells,node_positions,voronoi_points] = initial_cell_mesh(...
+	array_sizes,configuration_noise,grid_size,tessellation_type)
 	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% set up the tessellation points %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -26,39 +26,52 @@ y_coords = linspace(-y_max-2.5*spacing,y_max+2.5*spacing,grid_size(2)+6)';
 %%%%%%%%%%%%%%%% sort the coordinates out and do the tessellation %%%%%%%%%%%%%%%%%%% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% by default tessellation is square based
+
 x_coords_matrix = repmat(x_coords,length(y_coords),1);
 y_coords_matrix = repmat(y_coords,1,length(x_coords));
-
-if strcmp(tessellation_type,'random')
-
-    % we store this matrix as we are going to use it to add the outer layers back in
-    % after we have randomised everything
-    temp_x_coords_matrix = x_coords_matrix;
-    temp_y_coords_matrix = y_coords_matrix;
-
-    size_real_x_coords_matrix = size(x_coords_matrix(4:grid_size(1)+3,:));
-    x_coords_matrix(4:grid_size(1)+3,:) = rand(size_real_x_coords_matrix)-0.5;
-    y_coords_matrix(4:grid_size(1)+3,:) = rand(size_real_x_coords_matrix)-0.5;
-    
-    x_coords_matrix(:,1:3) = temp_x_coords_matrix(:,1:3);
-    x_coords_matrix(:,end-3:end) = temp_x_coords_matrix(:,end-3:end);
-    
-    y_coords_matrix(:,1:3) = temp_y_coords_matrix(:,1:3);
-    y_coords_matrix(:,end-3:end) = temp_y_coords_matrix(:,end-3:end);
-
-end
 
 if strcmp(tessellation_type,'hexagonal')
     y_coords_matrix(:,1:2:end) = y_coords_matrix(:,1:2:end)+0.5*spacing;
 end
+
+% we store this matrix as we are going to use it to add the outer layers back in
+% after we have randomised everything
+temp_x_coords_matrix = x_coords_matrix;
+temp_y_coords_matrix = y_coords_matrix;
+
+if strcmp(tessellation_type,'random')
+
+    % tried changing this to simply randomise the whole matrix then copy
+    % the necessary rows and columns from above, but didn't seem to work.
+    size_real_x_coords_matrix = size(x_coords_matrix(4:grid_size(1)+3,:));
+    x_coords_matrix(4:grid_size(1)+3,:) = rand(size_real_x_coords_matrix)-0.5;
+    y_coords_matrix(4:grid_size(1)+3,:) = rand(size_real_x_coords_matrix)-0.5;
+
+else
+   
+   % it is a bit pointless adding noise when the configuration is random, but
+   % it shouldn't do any harm
+   x_coords_matrix = x_coords_matrix +...
+      spacing*configuration_noise*(rand(size(x_coords_matrix))-0.5);
+   y_coords_matrix = y_coords_matrix +...
+      spacing*configuration_noise*(rand(size(x_coords_matrix))-0.5);
+
+end
+
+x_coords_matrix(:,1:3) = temp_x_coords_matrix(:,1:3);
+x_coords_matrix(:,end-2:end) = temp_x_coords_matrix(:,end-2:end);
+x_coords_matrix(1:3,:) = temp_x_coords_matrix(1:3,:);
+x_coords_matrix(end-2:end,:) = temp_x_coords_matrix(end-2:end,:);
+
+y_coords_matrix(:,1:3) = temp_y_coords_matrix(:,1:3);
+y_coords_matrix(:,end-2:end) = temp_y_coords_matrix(:,end-2:end);
+y_coords_matrix(1:3,:) = temp_y_coords_matrix(1:3,:);
+y_coords_matrix(end-2:end,:) = temp_y_coords_matrix(end-2:end,:);
     
 x_coords = x_coords_matrix(:);
 y_coords = y_coords_matrix(:);
 
-x_coords = x_coords +...
-	spacing*configuration_noise*(rand(length(x_coords),1)-0.5);
-y_coords = y_coords +...
-	spacing*configuration_noise*(rand(length(y_coords),1)-0.5);
 
 voronoi_points = [x_coords y_coords];
 

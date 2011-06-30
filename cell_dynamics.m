@@ -4,8 +4,8 @@ disp('busy');close all;clear all;tic;%profile on
 
 total_time = 0.01;
 
-max_iterations = 50;
-no_refinements = 1;
+max_iterations = 100;
+no_refinements = 0;
 
 % simulation_name = 'test_true_solution';
 simulation_name = ['iterations_',num2str(max_iterations),...
@@ -24,7 +24,7 @@ anneal_initial_configuration_logical = false;
 compile_mex_functions_logical = false;
 configuration_noise = 0.5;
 
-load_from_file_logical = true;
+load_from_file_logical = false;
 load_FEM_from_file_logical = false;
 file_to_load = 'Saves/test_true_solution/initial_save';
 
