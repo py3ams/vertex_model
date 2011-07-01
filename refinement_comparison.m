@@ -8,7 +8,7 @@ simulation_name = ['iterations_',num2str(iterations_in_test_solution),...
 
 iterations_in_true_solution = 100;
 
-true_solution_initial_vars = load('Saves/test_true_solution/initial_save');
+true_solution_initial_vars = load('Saves/true_solution/initial_save');
 test_solution_initial_vars = load(['Saves/',simulation_name,'/initial_save']);
 
 true_solution_delta_t = true_solution_initial_vars.delta_t;
@@ -76,7 +76,7 @@ disp(['Initial solution error = ',num2str(initial_solution_error)])
 % loop over every iteration in the true solution
 for true_iteration = 1:iterations_in_true_solution
       
-   true_solution_vars = load(['Saves/test_true_solution/iteration_',num2str(true_iteration)]);
+   true_solution_vars = load(['Saves/true_solution/iteration_',num2str(true_iteration)]);
    
    % for a period of 4, for example, this will cause the test solution to update at iteration 4,8,12,.. 
    if rem(true_iteration,test_solution_period)==0

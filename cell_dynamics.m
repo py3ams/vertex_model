@@ -4,14 +4,12 @@ disp('busy');close all;clear all;tic;%profile on
 
 total_time = 1;
 
-max_iterations = 4000;
+max_iterations = 2000;
+no_refinements = 2;
 
-% 1 - forward euler 2 - 4th order runge-kutta
-ode_solver_type = 2;
-
-% simulation_name = 'ode_comparison/true_solution';
-simulation_name = ['ode_comparison/iterations_',num2str(max_iterations),...
-   '_ode_solver_',num2str(ode_solver_type)];
+simulation_name = 'refinement_comparison/true_solution';
+% simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
+%    '_refinements_',num2str(no_refinements)];
 
 grid_size = [10,10];
 max_no_cells = 101;
@@ -28,7 +26,7 @@ configuration_noise = 0.5;
 
 load_from_file_logical = true;
 load_FEM_from_file_logical = false;
-file_to_load = 'Saves/ode_comparison/true_solution/initial_save';
+file_to_load = 'Saves/refinement_comparison/true_solution/initial_save';
 
 % to set the colour of the original cells to be different in figures and
 % movies, need to edit figure_loop.m. otherwise would have to pass a variable
@@ -45,7 +43,8 @@ end
 update_positions_logical = true;
 update_positions_start = 0;
 
-
+% 1 - forward euler 2 - 4th order runge-kutta
+ode_solver_type = 1;
 
 target_area_factor = 1.0;
 
@@ -165,8 +164,8 @@ apoptosis_no_baseline_put_pc = 0.025;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FEM parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FEM_solve_logical = false;
-no_refinements = 0;
+FEM_solve_logical = true;
+
 % mesh_refinement_threshold_factor = 1.2;
 mesh_refinement_threshold_factor = 10;
 no_chemicals = 1;
@@ -216,7 +215,7 @@ movie_name = simulation_name;
 movie_start = 0;
 no_frames_for_statistical_plots = 100;
 update_period = 1;
-view_FEM_mesh = 0;
+view_FEM_mesh = 1;
 view_FEM_concentration = 1;
 view_initial_config = 0;
 view_iteration_number = 0;
@@ -230,7 +229,7 @@ fig_saves_name = simulation_name;
 full_saves_logical = true;
 full_saves_name = simulation_name;
 % full_saves_period = max(floor(max_iterations/3),1);
-full_saves_period = 1000000;
+full_saves_period = 1;
 
 regular_tests_logical = false;
 
