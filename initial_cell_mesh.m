@@ -1,8 +1,8 @@
 function [cells,node_positions,voronoi_points] = initial_cell_mesh(...
-	array_sizes,configuration_noise,grid_size,tessellation_type)
+	array_sizes,configuration_noise,configuration_type,grid_size)
 	
 if nargin < 4
-   tessellation_type = 'square';
+   configuration_type = 'square';
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35,7 +35,7 @@ y_coords = linspace(-y_max-2.5*spacing,y_max+2.5*spacing,grid_size(2)+6)';
 x_coords_matrix = repmat(x_coords,length(y_coords),1);
 y_coords_matrix = repmat(y_coords,1,length(x_coords));
 
-if strcmp(tessellation_type,'hexagonal')
+if strcmp(configuration_type,'hexagonal')
     y_coords_matrix(:,1:2:end) = y_coords_matrix(:,1:2:end)+0.5*spacing;
 end
 
@@ -44,7 +44,7 @@ end
 temp_x_coords_matrix = x_coords_matrix;
 temp_y_coords_matrix = y_coords_matrix;
 
-if strcmp(tessellation_type,'random')
+if strcmp(configuration_type,'random')
 
     % tried changing this to simply randomise the whole matrix then copy
     % the necessary rows and columns from above, but didn't seem to work.

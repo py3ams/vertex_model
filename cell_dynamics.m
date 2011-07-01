@@ -4,10 +4,10 @@ disp('busy');close all;clear all;tic;%profile on
 
 total_time = 1;
 
-max_iterations = 4000;
+max_iterations = 1000;
 
 % 1 - forward euler 2 - 4th order runge-kutta
-ode_solver_type = 2;
+ode_solver_type = 1;
 
 % simulation_name = 'ode_comparison/true_solution';
 simulation_name = ['ode_comparison/iterations_',num2str(max_iterations),...
@@ -25,8 +25,10 @@ anneal_initial_configuration_logical = false;
 
 compile_mex_functions_logical = false;
 configuration_noise = 0.5;
+% can be 'square', 'random', or 'hexagonal'
+configuration_type = 'random';
 
-load_from_file_logical = true;
+load_from_file_logical = false;
 load_FEM_from_file_logical = false;
 file_to_load = 'Saves/ode_comparison/true_solution/initial_save';
 
@@ -199,7 +201,7 @@ source_width = [0.15 0.1];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 0;
+movie_logical = 1;
 
 axis_values = 0.8*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
@@ -227,7 +229,7 @@ view_number_cells = 0;
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = true;
+full_saves_logical = false;
 full_saves_name = simulation_name;
 % full_saves_period = max(floor(max_iterations/3),1);
 full_saves_period = 1000000;
@@ -244,7 +246,7 @@ compile_mex_functions(compile_mex_functions_logical);
 
 [cell_growth_speeds_matrix,cells,FEM_elements,FEM_nodes,...
 	refined_edge_matrix,vertices] = initial_configuration(anneal_initial_configuration_logical,...
-	average_cell_growth_speed,boundary_force_constants,configuration_noise,...
+	average_cell_growth_speed,boundary_force_constants,configuration_noise,configuration_type,...
 	gradient_type,grid_size,FEM_solve_logical,file_to_load,initial_concentration_magnitude,...
 	initial_force_constant_magnitudes,load_FEM_from_file_logical,load_from_file_logical,...
 	max_no_cells,medial_lateral_threshold_factor,no_chemicals,no_refinements,source_width);
