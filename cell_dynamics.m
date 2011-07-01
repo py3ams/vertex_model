@@ -4,7 +4,7 @@ disp('busy');close all;clear all;tic;%profile on
 
 total_time = 1;
 
-max_iterations = 1000;
+max_iterations = 4000;
 
 % 1 - forward euler 2 - 4th order runge-kutta
 ode_solver_type = 1;
@@ -26,9 +26,9 @@ anneal_initial_configuration_logical = false;
 compile_mex_functions_logical = false;
 configuration_noise = 0.5;
 % can be 'square', 'random', or 'hexagonal'
-configuration_type = 'random';
+configuration_type = 'hexagonal';
 
-load_from_file_logical = false;
+load_from_file_logical = true;
 load_FEM_from_file_logical = false;
 file_to_load = 'Saves/ode_comparison/true_solution/initial_save';
 
@@ -201,7 +201,7 @@ source_width = [0.15 0.1];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 1;
+movie_logical = 0;
 
 axis_values = 0.8*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
@@ -229,10 +229,10 @@ view_number_cells = 0;
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = false;
+full_saves_logical = true;
 full_saves_name = simulation_name;
 % full_saves_period = max(floor(max_iterations/3),1);
-full_saves_period = 1000000;
+full_saves_period = 1;
 
 regular_tests_logical = false;
 
