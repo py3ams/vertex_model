@@ -1,4 +1,4 @@
-disp('busy');close all;clear all;tic;profile on
+disp('busy');close all;clear all;tic;%profile on
 
 iterations_in_test_solution = 2000;
 no_refinements = 2;
@@ -129,7 +129,7 @@ end
 
 toc
 
-eval(['save ',root_directory,simulation_name,'solution_error solution_error error_per_iteration'])
+eval(['save ',root_directory,simulation_name,'solution_error2 solution_error error_per_iteration'])
 
 figure('position',[100 100 1100 500])
 subplot(1,2,1)
@@ -147,4 +147,4 @@ figure
 plot(error_per_iteration)
 disp(['Total solution error : ',num2str(solution_error)])
 
-profile viewer
+% profile viewer
