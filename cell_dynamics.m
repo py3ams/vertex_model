@@ -7,9 +7,9 @@ total_time = 1;
 max_iterations = 2000;
 no_refinements = 2;
 
-simulation_name = 'refinement_comparison/true_solution';
-% simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
-%    '_refinements_',num2str(no_refinements)];
+% simulation_name = 'refinement_comparison/true_solution';
+simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
+   '_refinements_',num2str(no_refinements)];
 
 grid_size = [10,10];
 max_no_cells = 101;
@@ -26,7 +26,7 @@ configuration_noise = 0.5;
 % can be 'square', 'random', or 'hexagonal'
 configuration_type = 'random';
 
-load_from_file_logical = false;
+load_from_file_logical = true;
 load_FEM_from_file_logical = false;
 file_to_load = 'Saves/refinement_comparison/true_solution/initial_save';
 
@@ -200,7 +200,7 @@ source_width = [0.15 0.1];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 1;
+movie_logical = 0;
 
 axis_values = 0.8*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
@@ -228,7 +228,7 @@ view_number_cells = 0;
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = false;
+full_saves_logical = true;
 full_saves_name = simulation_name;
 % full_saves_period = max(floor(max_iterations/3),1);
 full_saves_period = 1;

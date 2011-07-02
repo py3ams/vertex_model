@@ -14,9 +14,9 @@ patch_colour(cells.original_logical,:) = normal_colour;
 patch_colour(cells.state==3) = 'k';
 patch_colour(cells.state==2) = 'g';
 
-for i =1:length_cells
-    hold on
-    patchAS(vertices.position(cells.vertices{i},:),patch_colour(i),linewidth)
+hold on
+for current_cell =1:length_cells
+    patchAS(vertices.position(cells.vertices{current_cell},:),patch_colour(current_cell),linewidth)
 end
 
 % cellfun(@(x)patchAS(vertices.position(x,:),patch_colour,linewidth),cells.vertices);

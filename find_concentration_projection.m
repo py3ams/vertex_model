@@ -20,15 +20,19 @@ FEM_node_concentration_projection(end-no_cells+1:end) =...
 % important not to loop over all nodes, as values will be overwritten
 % in cases where refinement has occurred at a lower level to the true
 % solution.
-for current_node = no_nodes_in_test_solution-no_cells+1:no_nodes_in_true_solution-no_cells
-   
-   if true_solution_vars.FEM_nodes.edge(current_node,1)>0
-      
-      FEM_node_concentration_projection(current_node) = 0.5*...
-         (FEM_node_concentration_projection(true_solution_vars.FEM_nodes.edge(current_node,1))+...
-         FEM_node_concentration_projection(true_solution_vars.FEM_nodes.edge(current_node,2)));
-      
-   end
-   
-end
+% for current_node = no_nodes_in_test_solution-no_cells+1:no_nodes_in_true_solution-no_cells
+%    
+%    if true_solution_vars.FEM_nodes.edge(current_node,1)>0
+%       
+%       FEM_node_concentration_projection(current_node) = 0.5*...
+%          (FEM_node_concentration_projection(true_solution_vars.FEM_nodes.edge(current_node,1))+...
+%          FEM_node_concentration_projection(true_solution_vars.FEM_nodes.edge(current_node,2)));
+%       
+%    end
+%    
+% end
+
+FEM_node_concentration_projection = FindConcentrationProjectionEdgeNodes(...
+   FEM_node_concentration_projection,true_solution_vars.FEM_nodes.edge,...
+   no_cells,no_nodes_in_test_solution);
 
