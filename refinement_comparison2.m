@@ -1,7 +1,7 @@
 disp('busy');close all;clear all;tic;%profile on
 
 iterations_in_test_solution = 500;
-no_refinements = 2;
+no_refinements = 0;
 
 root_directory = 'Saves/refinement_comparison/';
 
@@ -11,17 +11,29 @@ simulation_name = ['iterations_',num2str(iterations_in_test_solution),...
 iterations_in_true_solution = 4000;
 
 true_solution_initial_vars = load([root_directory,'true_solution/initial_save']);
-test_solution_initial_vars = load([root_directory,simulation_name,'initial_save']);
 
 true_solution_delta_t = true_solution_initial_vars.delta_t;
+test_solution_delta_t = 1/iterations_in_test_solution;
 
 % find no cells in true solution and check this is the same as the test
 % solution. if it is not something has gone very wrong!
 no_cells = length(true_solution_initial_vars.cells.vertices);
-assert(length(test_solution_initial_vars.cells.vertices)==no_cells);
 
-no_nodes_in_test_solution = length(test_solution_initial_vars.FEM_nodes.concentration);
-no_nodes_in_true_solution = length(true_solution_initial_vars.FEM_nodes.concentration);
+test_solution_vars.cells = true_solution_initial_vars.cells;
+test_solution_vars.vertices = true_solution_initial_vars.vertices;
+
+[test_solution_vars.FEM_elements,test_solution_vars.FEM_nodes,test_solution_vars.cell_elements] =...
+   create_FEM_mesh(test_solution_vars.cells,test_solution_vars.vertices,no_refinements);
+
+test_solution_vars.FEM_nodes.previous_position = test_solution_vars.FEM_nodes.position;
+
+test_solution_vars.FEM_nodes.concentration = initialise_concentration(test_solution_vars.vertices.no_cells,...
+   test_solution_vars.FEM_nodes,true_solution_initial_vars.gradient_type,...
+   true_solution_initial_vars.initial_concentration_magnitude,no_cells,...
+   true_solution_initial_vars.no_chemicals,true_solution_initial_vars.source_width);
+
+no_nodes_in_test_solution = length(test_solution_vars.FEM_nodes.position);
+no_nodes_in_true_solution = length(true_solution_initial_vars.FEM_nodes.position);
 
 % might want to divide error by this to understand relative magnitude
 total_concentration = CalculateTotalDpp(true_solution_initial_vars.FEM_nodes.concentration,...
@@ -51,24 +63,23 @@ test_iteration = 0;
 % when the correct number of true iterations have passed corresponding to one
 % test iteration. could instead update mid-way through or at the start - are these
 % equally valid? the errors are much bigger when I try this!
-test_solution_vars.FEM_nodes = test_solution_initial_vars.FEM_nodes;
 true_solution_vars.FEM_nodes = true_solution_initial_vars.FEM_nodes;
 
 FEM_node_concentration_projection =...
    find_concentration_projection(no_cells,no_nodes_in_test_solution,...
    no_nodes_in_true_solution,test_solution_vars,true_solution_vars);
 
-figure('position',[100 100 1100 500])
-subplot(1,2,1)
-trisurf(true_solution_initial_vars.FEM_elements.nodes(true_solution_initial_vars.FEM_elements.nodes(:,1)>0,:),...
-   true_solution_initial_vars.FEM_nodes.previous_position(:,1),true_solution_initial_vars.FEM_nodes.previous_position(:,2),...
-   true_solution_initial_vars.FEM_nodes.concentration(:,1),'linewidth',2)
-axis off;grid off;axis([-0.6 0.6 -0.6 0.6 0 1]);view([0 90]);shading('interp');
-subplot(1,2,2)
-trisurf(true_solution_initial_vars.FEM_elements.nodes(true_solution_initial_vars.FEM_elements.nodes(:,1)>0,:),...
-   true_solution_initial_vars.FEM_nodes.previous_position(:,1),true_solution_initial_vars.FEM_nodes.previous_position(:,2),...
-   FEM_node_concentration_projection,'linewidth',2)
-axis off;grid off;axis([-0.6 0.6 -0.6 0.6 0 1]);view([0 90]);shading('interp');
+% figure('position',[100 100 1100 500])
+% subplot(1,2,1)
+% trisurf(true_solution_initial_vars.FEM_elements.nodes(true_solution_initial_vars.FEM_elements.nodes(:,1)>0,:),...
+%    true_solution_initial_vars.FEM_nodes.previous_position(:,1),true_solution_initial_vars.FEM_nodes.previous_position(:,2),...
+%    true_solution_initial_vars.FEM_nodes.concentration(:,1),'linewidth',2)
+% axis off;grid off;axis([-0.6 0.6 -0.6 0.6 0 1]);view([0 90]);shading('interp');
+% subplot(1,2,2)
+% trisurf(test_solution_initial_vars.FEM_elements.nodes(test_solution_initial_vars.FEM_elements.nodes(:,1)>0,:),...
+%    test_solution_initial_vars.FEM_nodes.previous_position(:,1),test_solution_initial_vars.FEM_nodes.previous_position(:,2),...
+%    FEM_node_concentration_projection,'linewidth',2)
+% axis off;grid off;axis([-0.6 0.6 -0.6 0.6 0 1]);view([0 90]);shading('interp');
 
 
 % the following are needed to calculate M for the initial condition, as this is
@@ -102,8 +113,20 @@ for true_iteration = 1:iterations_in_true_solution
    % for a period of 4, for example, this will cause the test solution to update at iteration 4,8,12,.. 
    if rem(true_iteration,test_solution_period)==0
       
-      test_iteration = test_iteration+1;
-      test_solution_vars = load([root_directory,simulation_name,'iteration_',num2str(test_iteration)]);
+      test_solution_vars.FEM_nodes.position = UpdateFEMNodePositions(true_solution_vars.cells.vertices,...
+			true_solution_vars.vertices.position,true_solution_vars.cells.area,test_solution_vars.FEM_nodes.edge);
+      
+      assert(test_solution_vars.FEM_nodes.position(1,1)==true_solution_vars.FEM_nodes.position(1,1));
+      
+      [~,test_solution_vars.FEM_nodes] = ...
+			FEM_solver(true_solution_vars.cells,true_solution_vars.degradation_constant,test_solution_delta_t,...
+         true_solution_vars.diffusion_speed,test_solution_vars.FEM_elements,...
+			test_solution_vars.FEM_nodes,true_solution_vars.gradient_type,...
+         true_solution_vars.maximum_source_to_release,true_solution_vars.no_chemicals,true_solution_vars.source_magnitude,...
+			true_solution_vars.source_width,true_solution_vars.refined_edge_matrix,true_solution_vars.stats,...
+         true_solution_vars.total_ingestion,true_solution_vars.total_source_released);
+
+      test_solution_vars.FEM_nodes.previous_position = test_solution_vars.FEM_nodes.position;
       
       % takes the FEM node concentrations of the test solution and uses interpolation
       % to find values at the extra nodes that are in the true solution but not the
@@ -129,19 +152,19 @@ end
 
 toc
 
-eval(['save ',root_directory,simulation_name,'solution_error solution_error error_per_iteration'])
+eval(['save ',root_directory,simulation_name,'solution_error_new solution_error error_per_iteration'])
 
-figure('position',[100 100 1100 500])
-subplot(1,2,1)
-trisurf(true_solution_vars.FEM_elements.nodes(true_solution_vars.FEM_elements.nodes(:,1)>0,:),...
-   true_solution_vars.FEM_nodes.previous_position(:,1),true_solution_vars.FEM_nodes.previous_position(:,2),...
-   true_solution_vars.FEM_nodes.concentration(:,1),'linewidth',2)
-axis off;grid off;axis([-0.6 0.6 -0.6 0.6 0 1]);view([0 90]);shading('interp');
-subplot(1,2,2)
-trisurf(true_solution_initial_vars.FEM_elements.nodes(true_solution_vars.FEM_elements.nodes(:,1)>0,:),...
-   true_solution_vars.FEM_nodes.previous_position(:,1),true_solution_vars.FEM_nodes.previous_position(:,2),...
-   FEM_node_concentration_projection,'linewidth',2)
-axis off;grid off;axis([-0.6 0.6 -0.6 0.6 0 1]);view([0 90]);shading('interp');
+% figure('position',[100 100 1100 500])
+% subplot(1,2,1)
+% trisurf(true_solution_vars.FEM_elements.nodes(true_solution_vars.FEM_elements.nodes(:,1)>0,:),...
+%    true_solution_vars.FEM_nodes.previous_position(:,1),true_solution_vars.FEM_nodes.previous_position(:,2),...
+%    true_solution_vars.FEM_nodes.concentration(:,1),'linewidth',2)
+% axis off;grid off;axis([-0.6 0.6 -0.6 0.6 0 1]);view([0 90]);shading('interp');
+% subplot(1,2,2)
+% trisurf(test_solution_initial_vars.FEM_elements.nodes(test_solution_vars.FEM_elements.nodes(:,1)>0,:),...
+%    test_solution_vars.FEM_nodes.previous_position(:,1),test_solution_vars.FEM_nodes.previous_position(:,2),...
+%    FEM_node_concentration_projection,'linewidth',2)
+% axis off;grid off;axis([-0.6 0.6 -0.6 0.6 0 1]);view([0 90]);shading('interp');
 
 figure
 plot(error_per_iteration)
