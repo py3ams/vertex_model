@@ -1,7 +1,7 @@
 disp('busy');close all;clear all;tic;%profile on
 
-iterations_in_test_solution = 4000;
-no_refinements = 1;
+iterations_in_test_solution = 500;
+no_refinements = 4;
 
 iterations_in_true_solution = 4000;
 
