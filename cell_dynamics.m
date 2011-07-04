@@ -2,31 +2,33 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 1;
+total_time = 20;
 
-max_iterations = 1000;
-no_refinements = 2;
+max_iterations = 20000;
+no_refinements = 0;
+
+simulation_name = 'simulation_time';
 
 % simulation_name = 'refinement_comparison/true_solution';
-simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
-   '_refinements_',num2str(no_refinements)];
+% simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
+%    '_refinements_',num2str(no_refinements)];
 
 grid_size = [10,10];
-max_no_cells = 101;
+max_no_cells = 10000;
 
 delta_t = total_time/max_iterations;
-viscosity = 0.01;
+viscosity = 0.001;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Initial configuration parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 anneal_initial_configuration_logical = false;
 
 compile_mex_functions_logical = false;
-configuration_noise = 0.5;
+configuration_noise = 0.2;
 % can be 'square', 'random', or 'hexagonal'
-configuration_type = 'random';
+configuration_type = 'hexagonal';
 
-load_from_file_logical = true;
+load_from_file_logical = false;
 load_FEM_from_file_logical = false;
 file_to_load = 'Saves/refinement_comparison/true_solution/initial_save';
 
@@ -82,21 +84,21 @@ tension_anisotropy_factor = 0.0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex rearrangement parameters %%%%%%%%%%%%%%%%%%%%%%%%%
 
-T1_swaps_logical = false;
+T1_swaps_logical = true;
 T1_swaps_start = 0;
 T1_probability = 1.0;
 
-threshold_T1_swaps_factor = 0.05;
+threshold_T1_swaps_factor = 0.1;
 
 % protection_time = 100;
 protection_time = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Cell growth and mitosis parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
-cell_growth_logical = false;
+cell_growth_logical = true;
 cell_growth_start = 0;
 cell_growth_concentration_dependent = false;
-mitosis_logical = false;
+mitosis_logical = true;
 
 % growth speeds of medial (1) and lateral cells (2)
 average_cell_growth_speed(1) = 0.5;
@@ -122,9 +124,9 @@ mitosis_angles_type = 'uniform';
 % mitosis_angles_type = [0 0];
 
 % mitosis_dependence can currently be either 'volume' or 'area'
-mitosis_dependence = 'volume';
+mitosis_dependence = 'none';
 % this is only used if mitosos_dependence is set to 'none';
-mitosis_period = 0.2;
+mitosis_period = 0.1;
 
 % determines whether mitosis takes place at a set volume (a certain
 % fraction of the target volume) or stochastically. couldn't we just have a
@@ -166,7 +168,7 @@ apoptosis_no_baseline_put_pc = 0.025;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FEM parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FEM_solve_logical = true;
+FEM_solve_logical = false;
 
 % mesh_refinement_threshold_factor = 1.2;
 mesh_refinement_threshold_factor = 10;
@@ -202,7 +204,7 @@ source_width = [0.15 0.1];
 
 movie_logical = 0;
 
-axis_values = 0.8*[-1 1 -1 1];
+axis_values = 1.5*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
 % axis_values = 'equal';
 % axis_values_FEM = [-1 1 -1 1 -0.5 1.5];
@@ -216,19 +218,23 @@ linewidth_elements = 1;
 movie_name = simulation_name;
 movie_start = 0;
 no_frames_for_statistical_plots = 100;
-update_period = 1;
-view_FEM_mesh = 1;
+update_period = 10;
+view_FEM_mesh = 0;
 view_FEM_concentration = 1;
 view_initial_config = 0;
 view_iteration_number = 0;
-view_number_cells = 0;
+view_number_cells = 1;
 
+if ~FEM_solve_logical
+    view_FEM_mesh = 0;
+end
+    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = true;
+full_saves_logical = false;
 full_saves_name = simulation_name;
 % full_saves_period = max(floor(max_iterations/3),1);
 full_saves_period = 1;
@@ -299,8 +305,8 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Main loop %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-vertices.previous_positions = repmat(vertices.position,1,10);
-cells.previous_vertices = repmat({cells.vertices},1,10);
+% vertices.previous_positions = repmat(vertices.position,1,10);
+% cells.previous_vertices = repmat({cells.vertices},1,10);
 
 time = 0;
 death_counter = 0;
@@ -335,8 +341,8 @@ while true
 		stats.counter = stats.counter+1;
 	end
 	
-	vertices.previous_positions = [vertices.position vertices.previous_positions(:,1:18)];
-	cells.previous_vertices = {cells.vertices,cells.previous_vertices{1:9}};
+% 	vertices.previous_positions = [vertices.position vertices.previous_positions(:,1:18)];
+% 	cells.previous_vertices = {cells.vertices,cells.previous_vertices{1:9}};
 	
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Mitosis %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 		
@@ -346,6 +352,8 @@ while true
 	% need edge_lengths to do mitosis so can't do on first iteration
 	if mitosis_logical && iteration > min(mitosis_start,2)
 		
+        mitosis_period = 10/length(cells.vertices);
+        
 		[cells,vertices,cell_growth_speeds_matrix,FEM_elements,FEM_nodes,...
 			mitosis_counter,refined_edge_matrix,stats] = mitosis(cells,vertices,...
 			cell_growth_speeds_matrix,delta_t,FEM_elements,FEM_nodes,...
@@ -600,9 +608,10 @@ while true
 			clear M
 			frame_counter = 1;
 		end
-	end
+    end
 	
-	pause(extra_pause);
+    % this actually takes up time even when extra_pause is 0!
+% 	pause(extra_pause);
 	
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Full saves %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
