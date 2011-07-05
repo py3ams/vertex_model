@@ -1,6 +1,7 @@
 function FEM_node_concentration_projection =...
    find_concentration_projection(no_cells,no_nodes_in_test_solution,...
-   no_nodes_in_true_solution,test_solution_vars,true_solution_vars)
+   no_nodes_in_true_solution,test_solution_FEM_node_concentrations,...
+   true_solution_FEM_node_edges)
 
 % create a vector the same size as true FEM_nodes.concentration to
 % store the projection/interpolation of the test solution
@@ -10,10 +11,10 @@ FEM_node_concentration_projection = zeros(no_nodes_in_true_solution,1);
 % in the projection. cell centres go at the end, everything else at
 % the start.
 FEM_node_concentration_projection(1:no_nodes_in_test_solution-no_cells) =...
-   test_solution_vars.FEM_nodes.concentration(1:no_nodes_in_test_solution-no_cells);
+   test_solution_FEM_node_concentrations(1:no_nodes_in_test_solution-no_cells);
 
 FEM_node_concentration_projection(end-no_cells+1:end) =...
-   test_solution_vars.FEM_nodes.concentration(end-no_cells+1:end);
+   test_solution_FEM_node_concentrations(end-no_cells+1:end);
 
 % loop over nodes that are not part of the test solution and find
 % their value as a linear combination of neighbouring nodes. it is
@@ -33,6 +34,6 @@ FEM_node_concentration_projection(end-no_cells+1:end) =...
 % end
 
 FEM_node_concentration_projection = FindConcentrationProjectionEdgeNodes(...
-   FEM_node_concentration_projection,true_solution_vars.FEM_nodes.edge,...
+   FEM_node_concentration_projection,true_solution_FEM_node_edges,...
    no_cells,no_nodes_in_test_solution);
 
