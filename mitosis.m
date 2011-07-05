@@ -555,43 +555,43 @@ if no_cells_to_divide > 0
 			% 			error('Dpp not conserved during mitosis');
 			% 		end
 			
-			% we are going to create a new FEM_node, which is an edge node
-			% at the mid-point on the newly created edge. we will use the
-			% concentration of the mother cell centroid. the cell centroid
-			% sits somewhere along this edge by definition of the edge, but
-			% is not necessarily at it's mid-point.
-			total_no_vertices = length(vertices.position);
-			new_FEM_node = find(FEM_nodes.previous_position(total_no_vertices+1:FEM_index_zero_cell,1)==0,1)+total_no_vertices;
-			
-			if isempty(new_FEM_node)
-				error('no space for new FEM edge node');
-			end
-			
-			FEM_nodes.concentration(new_FEM_node) = FEM_nodes.concentration(FEM_index_zero_cell+cell_to_divide);
-			
-			% There seems to be something of a choice here. We could use the position
-			% of the old centroid for the new FEM node. This will lie somewhere along
-			% the mitosis line, but not neccessarily at the mid-point. The ALE can
-			% then take care of the movement at the next iteration. We could
-			% alternatively make an approximation and put the new node at the
-			% mid-point with the concentration from the old centroid. Doing it this
-			% way is consistent with what we do in T1 swaps.
-			% it is really important to do this step before calculating the
-			% concentration values at the centroids of the daughter cells, which
-			% obviously depend on the position of this node. this must also
-			% be done before we set the previous_position of the centroid
-			% of new cell 1, as this is going to re-use the same spot in
-			% the array as the cell_to_divide.
-			
-			FEM_nodes.previous_position(new_FEM_node,:) = FEM_nodes.previous_position(FEM_index_zero_cell+cell_to_divide,:);
-			
-			%             FEM_nodes.previous_position(new_FEM_node,:) = ...
-			%                 0.5*(FEM_nodes.previous_position(new_vertex_1,:) +...
-			%                 FEM_nodes.previous_position(new_vertex_2,:));
-			
-			FEM_nodes.edge(new_FEM_node,:) = [new_vertex_1 new_vertex_2];
-			refined_edge_matrix(new_vertex_1,new_vertex_2) = 1;
-			refined_edge_matrix(new_vertex_2,new_vertex_1) = 1;
+% 			% we are going to create a new FEM_node, which is an edge node
+% 			% at the mid-point on the newly created edge. we will use the
+% 			% concentration of the mother cell centroid. the cell centroid
+% 			% sits somewhere along this edge by definition of the edge, but
+% 			% is not necessarily at it's mid-point.
+% 			total_no_vertices = length(vertices.position);
+% 			new_FEM_node = find(FEM_nodes.previous_position(total_no_vertices+1:FEM_index_zero_cell,1)==0,1)+total_no_vertices;
+% 			
+% 			if isempty(new_FEM_node)
+% 				error('no space for new FEM edge node');
+% 			end
+% 			
+% 			FEM_nodes.concentration(new_FEM_node) = FEM_nodes.concentration(FEM_index_zero_cell+cell_to_divide);
+% 			
+% 			% There seems to be something of a choice here. We could use the position
+% 			% of the old centroid for the new FEM node. This will lie somewhere along
+% 			% the mitosis line, but not neccessarily at the mid-point. The ALE can
+% 			% then take care of the movement at the next iteration. We could
+% 			% alternatively make an approximation and put the new node at the
+% 			% mid-point with the concentration from the old centroid. Doing it this
+% 			% way is consistent with what we do in T1 swaps.
+% 			% it is really important to do this step before calculating the
+% 			% concentration values at the centroids of the daughter cells, which
+% 			% obviously depend on the position of this node. this must also
+% 			% be done before we set the previous_position of the centroid
+% 			% of new cell 1, as this is going to re-use the same spot in
+% 			% the array as the cell_to_divide.
+% 			
+% 			FEM_nodes.previous_position(new_FEM_node,:) = FEM_nodes.previous_position(FEM_index_zero_cell+cell_to_divide,:);
+% 			
+% 			%             FEM_nodes.previous_position(new_FEM_node,:) = ...
+% 			%                 0.5*(FEM_nodes.previous_position(new_vertex_1,:) +...
+% 			%                 FEM_nodes.previous_position(new_vertex_2,:));
+% 			
+% 			FEM_nodes.edge(new_FEM_node,:) = [new_vertex_1 new_vertex_2];
+% 			refined_edge_matrix(new_vertex_1,new_vertex_2) = 1;
+% 			refined_edge_matrix(new_vertex_2,new_vertex_1) = 1;
 			
 			% it is important to do this step after setting the previous
 			% position of the new_FEM_node, as this uses the
@@ -672,8 +672,8 @@ if no_cells_to_divide > 0
 			no_FEM_nodes_found_cell_1 = no_FEM_nodes_found_cell_1+1;
 			FEM_nodes_without_centre_new_cell_1_global(no_FEM_nodes_found_cell_1) = new_vertex_2;
 			
-			no_FEM_nodes_found_cell_1 = no_FEM_nodes_found_cell_1+1;
-			FEM_nodes_without_centre_new_cell_1_global(no_FEM_nodes_found_cell_1) = new_FEM_node;
+% 			no_FEM_nodes_found_cell_1 = no_FEM_nodes_found_cell_1+1;
+% 			FEM_nodes_without_centre_new_cell_1_global(no_FEM_nodes_found_cell_1) = new_FEM_node;
 			
 			% remove the zeros
 			FEM_nodes_without_centre_new_cell_1_global =...
@@ -716,8 +716,8 @@ if no_cells_to_divide > 0
 				no_FEM_nodes_found_cell_2 = no_FEM_nodes_found_cell_2+1;
 				FEM_nodes_without_centre_new_cell_2_global(no_FEM_nodes_found_cell_2) = new_vertex_1;
 				
-				no_FEM_nodes_found_cell_2 = no_FEM_nodes_found_cell_2+1;
-				FEM_nodes_without_centre_new_cell_2_global(no_FEM_nodes_found_cell_2) = new_FEM_node;
+% 				no_FEM_nodes_found_cell_2 = no_FEM_nodes_found_cell_2+1;
+% 				FEM_nodes_without_centre_new_cell_2_global(no_FEM_nodes_found_cell_2) = new_FEM_node;
 				
 			else
 				
@@ -802,8 +802,8 @@ if no_cells_to_divide > 0
 				no_FEM_nodes_found_cell_2 = no_FEM_nodes_found_cell_2+1;
 				FEM_nodes_without_centre_new_cell_2_global(no_FEM_nodes_found_cell_2) = new_vertex_1;
 				
-				no_FEM_nodes_found_cell_2 = no_FEM_nodes_found_cell_2+1;
-				FEM_nodes_without_centre_new_cell_2_global(no_FEM_nodes_found_cell_2) = new_FEM_node;
+% 				no_FEM_nodes_found_cell_2 = no_FEM_nodes_found_cell_2+1;
+% 				FEM_nodes_without_centre_new_cell_2_global(no_FEM_nodes_found_cell_2) = new_FEM_node;
 				
 			end
 			

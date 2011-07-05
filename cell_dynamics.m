@@ -2,9 +2,9 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 20;
+total_time = 1;
 
-max_iterations = 20000;
+max_iterations = 1000;
 no_refinements = 0;
 
 simulation_name = 'simulation_time';
@@ -124,7 +124,7 @@ mitosis_angles_type = 'uniform';
 % mitosis_angles_type = [0 0];
 
 % mitosis_dependence can currently be either 'volume' or 'area'
-mitosis_dependence = 'none';
+mitosis_dependence = 'volume';
 % this is only used if mitosos_dependence is set to 'none';
 mitosis_period = 0.1;
 
@@ -143,7 +143,7 @@ mitosis_threshold = 0.9;
 % determines the fraction of the initial maximum cell volume that the
 % target volume is set to. if less than one a load of divisions will likely
 % occur at the start of a simulation.
-target_volume_factor = 1.1;
+target_volume_factor = 1.0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cell death parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -168,7 +168,7 @@ apoptosis_no_baseline_put_pc = 0.025;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FEM parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FEM_solve_logical = false;
+FEM_solve_logical = true;
 
 % mesh_refinement_threshold_factor = 1.2;
 mesh_refinement_threshold_factor = 10;

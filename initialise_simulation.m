@@ -105,6 +105,8 @@ stats.internal_chemical_quantity = zeros(max_statistics,5);
 stats.chemical_in_cell_1 = zeros(max_statistics,1);
 stats.dead_chemical = zeros(max_statistics,1);
 
+stats.time_to_solve_FEM = zeros(max_statistics,1);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 movie_location = 'Movies/';

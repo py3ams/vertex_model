@@ -90,7 +90,9 @@ for current_chemical = 1:no_chemicals
     % rhs = M_prev*concentration(real_nodes_logical);
     % rhs = M*concentration(real_nodes_logical);
     
+    t_start = tic;
     FEM_nodes.concentration(real_nodes_logical,current_chemical) = COEFF_MAT\rhs;
+    t_elapsed = toc(t_start);
     
     total_concentration(current_chemical) = CalculateTotalDpp(...
         FEM_nodes.concentration(:,current_chemical),FEM_elements_stripped,...
@@ -127,6 +129,8 @@ cells = calculate_ingested_amount(cells,cell_ingestion_functions,delta_t,...
 	FEM_elements,FEM_nodes,no_chemicals,previous_concentration);
 
 if stats.this_iteration_logical
+    
+    stats.time_to_solve_FEM(stats.counter) = t_elapsed;
     
     real_FEM_concentrations = FEM_nodes.concentration(real_nodes_logical,1);
     stats.concentration_node_values(stats.counter,:) =...
