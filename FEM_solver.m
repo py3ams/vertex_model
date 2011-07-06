@@ -1,5 +1,5 @@
-function [FEM_nodes,M] = FEM_solver(delta_t,diffusion_speed,FEM_elements,...
-   FEM_nodes)
+function [FEM_nodes,M,real_nodes_logical] =...
+    FEM_solver(delta_t,diffusion_speed,FEM_elements,FEM_nodes)
 
 % find the nodes that are actually currrently in use.
 real_nodes_logical = FEM_nodes.position(:,1)~=0;

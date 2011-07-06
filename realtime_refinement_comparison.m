@@ -4,10 +4,16 @@ disp('busy');close all;clear all;tic;%profile on
 % number of refinements will increase by one each time (equivalent to halving the
 % spatial step) and the number of iterations doubles, halving the time step
 iterations_in_first_test_solution = 500;
-no_test_solutions = 3;
+no_test_solutions = 5;
 
-iterations_in_true_solution = 2000;
-no_refinements_in_true_solution = 2;
+iterations_in_true_solution = 8000;
+no_refinements_in_true_solution = 4;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+root_directory = 'Saves/realtime_refinement_comparison/';
+simulation_name = ['true_iterations_',num2str(iterations_in_true_solution),...
+    '_refinements_',num2str(no_refinements_in_true_solution),'/'];
 
 configuration_noise = 0.5;
 configuration_type = 'hexagonal';
@@ -33,6 +39,25 @@ gradient_type = 4;
 
 tension_anisotropy_factor = 0.0;
 
+movie_logical = false;
+chemical_to_view = 1;
+view_FEM_concentration = true;
+view_FEM_mesh = true;
+view_initial_config = false;
+update_period = 100;
+axis_values = 0.6*[-1 1 -1 1];
+axis_values_FEM = [axis_values 0 0.1];
+view_iteration_number = true;
+view_number_cells = true;
+linewidth_cells = 2;
+linewidth_elements = 1;
+solution_to_view = 1;
+
+full_saves_logical = true;
+full_saves_period = 8;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 max_no_cells = prod(grid_size);
 no_vertices = 4*max_no_cells;
 
@@ -40,6 +65,8 @@ no_vertices = 4*max_no_cells;
     initial_cell_mesh(no_vertices,configuration_noise,configuration_type,grid_size);
 
 no_cells = length(cells.vertices);
+cells.original_logical = true(no_cells,1);
+cells.state = ones(no_cells,1);
 
 [vertices.cells,vertices.no_cells] = CreateCellStore(cells.vertices,no_vertices);
 
@@ -62,9 +89,11 @@ cells.force_constants.perimeter =...
 cells.force_constants.tension =...
     initial_force_constant_magnitudes.tension*ones(no_cells,1);
 
-% find no cells in true solution and check this is the same as the test
-% solution. if it is not something has gone very wrong!
 no_cells = length(cells.vertices);
+
+full_saves_location = [root_directory,simulation_name];
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 [true_solution_FEM_elements,true_solution_FEM_nodes] =...
     create_FEM_mesh(cells,vertices,no_refinements_in_true_solution);
@@ -75,10 +104,10 @@ true_solution_FEM_nodes.concentration = initialise_concentration(...
     vertices.no_cells,true_solution_FEM_nodes,gradient_type,...
     initial_concentration_magnitude,no_cells,no_chemicals,source_width);
 
-real_nodes_logical = true_solution_FEM_nodes.position(:,1)~=0|true_solution_FEM_nodes.position(:,2)~=0;
-
 no_nodes_in_true_solution = length(true_solution_FEM_nodes.position);
 true_solution_delta_t = 1/iterations_in_true_solution;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % we initialise these oddly so the first two lines of the following loop work
 no_refinements_in_current_test_solution = -1;
@@ -134,31 +163,46 @@ for current_solution = 1:no_test_solutions
     
 end
 
+if full_saves_logical
+    if exist(full_saves_location,'dir')
+        yesno = input(['Are you sure you want to overwrite directory ',...
+            full_saves_location,'? '],'s');
+        if strcmp(yesno,'yes') || strcmp(yesno,'y')
+            delete([full_saves_location,'*']);
+        else
+            error(['Could not delete directory ',full_saves_location]);
+        end
+    else
+        mkdir(full_saves_location);
+    end
+    save([full_saves_location,'initial_save'])
+end
+
+if movie_logical
+    
+    if strcmp(solution_to_view,'true')
+
+        visualiser(cells,vertices,true_solution_FEM_elements,true_solution_FEM_nodes,...
+            axis_values,axis_values_FEM,chemical_to_view,false,0,...
+            linewidth_cells,linewidth_elements,movie_logical,update_period,...
+            view_FEM_concentration,view_FEM_mesh,view_initial_config,...
+            view_iteration_number,view_number_cells)
+        
+    else
+        
+        visualiser(cells,vertices,FEM_elements{solution_to_view},FEM_nodes{solution_to_view},...
+            axis_values,axis_values_FEM,chemical_to_view,false,0,...
+            linewidth_cells,linewidth_elements,movie_logical,update_period,...
+            view_FEM_concentration,view_FEM_mesh,view_initial_config,...
+            view_iteration_number,view_number_cells);
+        
+    end
+    
+end
+
 boundary_element =...
     CreateBoundaryElement(vertices.cells,cells.vertices,vertices.no_cells);
 
-chemical_to_view = 1;
-view_FEM_concentration = true;
-view_FEM_mesh = true;
-view_initial_config = false;
-movie_logical = true;
-update_period = 10;
-axis_values = 0.6*[-1 1 -1 1];
-axis_values_FEM = [axis_values 0 0.1];
-view_iteration_number = true;
-view_number_cells = true;
-linewidth_cells = 2;
-linewidth_elements = 1;
-cells.original_logical = true(no_cells,1);
-cells.state = ones(no_cells,1);
-
-% visualiser(cells,vertices,true_solution_FEM_elements,true_solution_FEM_nodes,...
-%     axis_values,axis_values_FEM,chemical_to_view,false,0,...
-%     linewidth_cells,linewidth_elements,movie_logical,update_period,...
-%     view_FEM_concentration,view_FEM_mesh,view_initial_config,...
-%     view_iteration_number,view_number_cells)
-
-% loop over every iteration in the true solution
 for true_iteration = 1:iterations_in_true_solution
       
     [cells.area,cells.perimeter,cells.edge_lengths,~,~,~,current_edge_length_stats] =...
@@ -180,16 +224,11 @@ for true_iteration = 1:iterations_in_true_solution
     true_solution_FEM_nodes.position = UpdateFEMNodePositions(cells.vertices,...
         vertices.position,cells.area,true_solution_FEM_nodes.edge);
     
-    [true_solution_FEM_nodes,M] = FEM_solver(true_solution_delta_t,diffusion_speed,...
-        true_solution_FEM_elements,true_solution_FEM_nodes);
+    [true_solution_FEM_nodes,M,real_nodes_logical] = FEM_solver(...
+        true_solution_delta_t,diffusion_speed,true_solution_FEM_elements,...
+        true_solution_FEM_nodes);
     
     true_solution_FEM_nodes.previous_position = true_solution_FEM_nodes.position;
-    
-%     visualiser(cells,vertices,true_solution_FEM_elements,true_solution_FEM_nodes,...
-%         axis_values,axis_values_FEM,chemical_to_view,false,true_iteration,...
-%         linewidth_cells,linewidth_elements,movie_logical,update_period,...
-%         view_FEM_concentration,view_FEM_mesh,view_initial_config,...
-%         view_iteration_number,view_number_cells);
     
     for current_solution = 1:no_test_solutions
         
@@ -238,17 +277,40 @@ for true_iteration = 1:iterations_in_true_solution
         
     end
     
-%     visualiser(cells,vertices,FEM_elements{3},FEM_nodes{3},...
-%         axis_values,axis_values_FEM,chemical_to_view,false,true_iteration,...
-%         linewidth_cells,linewidth_elements,movie_logical,update_period,...
-%         view_FEM_concentration,view_FEM_mesh,view_initial_config,...
-%         view_iteration_number,view_number_cells);
+    if full_saves_logical && ~rem(true_iteration,full_saves_period)
+    
+        save([full_saves_location,'iteration_',num2str(true_iteration)]);
+        
+    end
+        
+    if movie_logical
+        
+        if strcmp(solution_to_view,'true')
+            
+            visualiser(cells,vertices,true_solution_FEM_elements,true_solution_FEM_nodes,...
+                axis_values,axis_values_FEM,chemical_to_view,false,true_iteration,...
+                linewidth_cells,linewidth_elements,movie_logical,update_period,...
+                view_FEM_concentration,view_FEM_mesh,view_initial_config,...
+                view_iteration_number,view_number_cells)
+            
+        else
+            
+            visualiser(cells,vertices,FEM_elements{solution_to_view},FEM_nodes{solution_to_view},...
+                axis_values,axis_values_FEM,chemical_to_view,false,true_iteration,...
+                linewidth_cells,linewidth_elements,movie_logical,update_period,...
+                view_FEM_concentration,view_FEM_mesh,view_initial_config,...
+                view_iteration_number,view_number_cells);
+            
+        end
+        
+    end
    
 end
 
 toc
 
 for current_solution = 1:no_test_solutions
+    
     solution_error(current_solution) = sqrt(solution_error_squared(current_solution));
     
     disp(['Iterations : ',num2str(test_solution_iterations(current_solution)),...
@@ -256,3 +318,9 @@ for current_solution = 1:no_test_solutions
         ', Solution error : ',num2str(solution_error(current_solution))])
 end
 
+if full_saves_logical
+    
+    save([full_saves_location,'final_save']);
+    eval(['save ',root_directory,simulation_name,'solution_error solution_error'])
+    
+end
