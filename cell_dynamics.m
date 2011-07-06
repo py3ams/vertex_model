@@ -13,7 +13,7 @@ simulation_name = 'simulation_time';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-grid_size = [10,10];
+grid_size = [40,25];
 max_no_cells = 10000;
 
 delta_t = total_time/max_iterations;
@@ -98,7 +98,7 @@ protection_time = 0;
 cell_growth_logical = true;
 cell_growth_start = 0;
 cell_growth_concentration_dependent = false;
-mitosis_logical = true;
+mitosis_logical = false;
 
 % growth speeds of medial (1) and lateral cells (2)
 average_cell_growth_speed(1) = 0.5;
@@ -219,7 +219,7 @@ movie_name = simulation_name;
 movie_start = 0;
 no_frames_for_statistical_plots = 100;
 update_period = 10;
-view_FEM_mesh = 0;
+view_FEM_mesh = 1;
 view_FEM_concentration = 1;
 view_initial_config = 0;
 view_iteration_number = 0;

@@ -36,6 +36,7 @@ M_prev = sparse(I_prev,J_prev,MV_prev);
 % create the M, A, and W matrices for the current node positions. M_const is the M
 % matrix using piecewise constant basis functions, whereas M uses piecewise linear
 % functions
+t_start = tic;
 [I,J,AV,MV,WV,triangle_quality] =...
     Stiff2D(delta_t,FEM_elements_real_node_indices,real_node_positions,...
     real_previous_node_positions);
@@ -43,6 +44,8 @@ M_prev = sparse(I_prev,J_prev,MV_prev);
 A = sparse(I,J,AV);
 M = sparse(I,J,MV);
 W = sparse(I,J,WV);
+
+t_elapsed = toc(t_start);
 
 total_concentration = zeros(no_chemicals,1);
 source_this_iteration = zeros(no_chemicals,1);
@@ -55,7 +58,9 @@ for current_chemical = 1:no_chemicals
     
     %     source_functions = zeros(no_real_nodes,1);
     
+    t_start = tic;
     COEFF_MAT = M+delta_t*(diffusion_speed(current_chemical)*A+W);
+    t_elapsed = t_elapsed+toc(t_start);
     % COEFF_MAT = M+delta_t*(diffusion_speed(current_chemical)*A);
 
 %     ingestion_term = calculate_ingestion_term(cells,current_chemical,FEM_elements,...
@@ -83,6 +88,7 @@ for current_chemical = 1:no_chemicals
 	
 	source_this_iteration(current_chemical) = delta_t*sum(cells.source_rate(:,current_chemical));
 	
+    t_start = tic;
 	rhs = M_prev*FEM_nodes.concentration(real_nodes_logical,current_chemical)*...
 		(1-ingestion_constant(current_chemical)) + delta_t*source_term -...
         delta_t*ingestion_term;
@@ -90,9 +96,9 @@ for current_chemical = 1:no_chemicals
     % rhs = M_prev*concentration(real_nodes_logical);
     % rhs = M*concentration(real_nodes_logical);
     
-    t_start = tic;
+    
     FEM_nodes.concentration(real_nodes_logical,current_chemical) = COEFF_MAT\rhs;
-    t_elapsed = toc(t_start);
+    t_elapsed = t_elapsed+toc(t_start);
     
     total_concentration(current_chemical) = CalculateTotalDpp(...
         FEM_nodes.concentration(:,current_chemical),FEM_elements_stripped,...
@@ -129,6 +135,9 @@ cells = calculate_ingested_amount(cells,cell_ingestion_functions,delta_t,...
 	FEM_elements,FEM_nodes,no_chemicals,previous_concentration);
 
 if stats.this_iteration_logical
+    
+    stats.no_real_FEM_nodes(stats.counter) = no_real_nodes;
+    stats.no_real_FEM_elements(stats.counter) = length(FEM_elements_stripped(:,1));
     
     stats.time_to_solve_FEM(stats.counter) = t_elapsed;
     

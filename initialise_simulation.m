@@ -107,6 +107,9 @@ stats.dead_chemical = zeros(max_statistics,1);
 
 stats.time_to_solve_FEM = zeros(max_statistics,1);
 
+stats.no_real_FEM_nodes = zeros(max_statistics,1);
+stats.no_real_FEM_elements = zeros(max_statistics,1);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 movie_location = 'Movies/';

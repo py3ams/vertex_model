@@ -76,13 +76,11 @@ axis([0 time 0.9*min(xy_ratio) 1.1*max(xy_ratio)])
 
 time_to_solve_FEM = stats.time_to_solve_FEM(1:statistics_counter,:);
 subplot(2,3,6)
-plot(total_no_cells,time_to_solve_FEM)
+% plot(total_no_cells,time_to_solve_FEM)
+plot(time_range,time_to_solve_FEM,'x')
 hold on
 xlabel('No cells')
 ylabel('Time to solve FEM')
-% if max(mesh_peclet_number)>0
-%     axis([0 time 0 1.1*max(mesh_peclet_number)])
-% end
 
 % add the figure to the movie if necessary
 if movie_logical == 2

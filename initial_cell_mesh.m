@@ -14,8 +14,12 @@ node_positions = zeros(array_sizes,2);
 
 % we make the initial width 1 (-0.5 to 0.5) so all distances are normalized to this
 % initial width
-x_max = 0.5;
-spacing = 1/grid_size(1);
+% x_max = 0.5;
+% spacing = 1/grid_size(1);
+x_max = 2;
+spacing = 4/grid_size(1);
+% x_max = 5;
+% spacing = 10/grid_size(1);
 
 % find y_max based on grid size and spacing - there is probably a better
 % way of doing this
