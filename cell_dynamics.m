@@ -4,14 +4,14 @@ disp('busy');close all;clear all;tic;%profile on
 
 total_time = 1;
 
-max_iterations = 4000;
+max_iterations = 16000;
 
 % 1 - forward euler 2 - 4th order runge-kutta
-ode_solver_type = 1;
+ode_solver_type = 2;
 
-% simulation_name = 'ode_comparison/true_solution';
-simulation_name = ['ode_comparison/iterations_',num2str(max_iterations),...
-   '_ode_solver_',num2str(ode_solver_type)];
+simulation_name = 'ode_comparison/true_solution2';
+% simulation_name = ['ode_comparison/iterations_',num2str(max_iterations),...
+%    '_ode_solver_',num2str(ode_solver_type)];
 
 grid_size = [10,10];
 max_no_cells = 101;
@@ -46,8 +46,6 @@ end
 
 update_positions_logical = true;
 update_positions_start = 0;
-
-
 
 target_area_factor = 1.0;
 
@@ -232,7 +230,7 @@ fig_saves_name = simulation_name;
 full_saves_logical = true;
 full_saves_name = simulation_name;
 % full_saves_period = max(floor(max_iterations/3),1);
-full_saves_period = 1;
+full_saves_period = 4;
 
 regular_tests_logical = false;
 
