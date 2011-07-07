@@ -11,6 +11,7 @@ no_refinements = 2;
 simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
    '_refinements_',num2str(no_refinements)];
 
+
 grid_size = [10,10];
 max_no_cells = 101;
 
@@ -24,7 +25,7 @@ anneal_initial_configuration_logical = false;
 compile_mex_functions_logical = false;
 configuration_noise = 0.5;
 % can be 'square', 'random', or 'hexagonal'
-configuration_type = 'random';
+configuration_type = 'hexagonal';
 
 load_from_file_logical = true;
 load_FEM_from_file_logical = false;
@@ -47,7 +48,6 @@ update_positions_start = 0;
 
 % 1 - forward euler 2 - 4th order runge-kutta
 ode_solver_type = 1;
-
 target_area_factor = 1.0;
 
 % For ~50 cells
