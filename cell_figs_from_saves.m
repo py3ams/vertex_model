@@ -1,5 +1,7 @@
 disp('busy');clear all;close all;
 
+FEM_saves_logical = false;
+
 Dpp_view = [0 75];
 temp_axis_values = 0.6*[-1 1 -1 1];
 temp_axis_values_FEM = [temp_axis_values 0 0.1];
@@ -15,10 +17,8 @@ shading_style = 'faceted';
 
 refinement_level = 2;
 
-alphabet = 'abcdefghijklmnopqrstuvwxyz';
-
-folder_name = 'realtime_refinement_comparison/true_iterations_8000_refinements_4/';
-saved_iterations = 800:800:8000;
+folder_name = 'ode_comparison/true_solution2/';
+saved_iterations = 1600:1600:16000;
 
 if ~exist(['Figs/',folder_name],'dir')
     mkdir('Figs/',folder_name);
@@ -48,25 +48,29 @@ saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Dpp Image %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-figure('position',[200 200 500 500],'color','white','PaperPositionMode','auto')
-axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
-    'zcolor','w','ticklength',[0 0],'xtick',[],'ytick',[])
+if FEM_saves_logical
 
-trisurf(FEM_elements{refinement_level}.nodes(FEM_elements{refinement_level}.nodes(...
-    :,1)>0,:),FEM_nodes{refinement_level}.position(:,1),FEM_nodes{refinement_level...
-    }.position(:,2),FEM_nodes{refinement_level}.concentration,'linewidth',1)
+    figure('position',[200 200 500 500],'color','white','PaperPositionMode','auto')
+    axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
+        'zcolor','w','ticklength',[0 0],'xtick',[],'ytick',[])
+    
+    trisurf(FEM_elements{refinement_level}.nodes(FEM_elements{refinement_level}.nodes(...
+        :,1)>0,:),FEM_nodes{refinement_level}.position(:,1),FEM_nodes{refinement_level...
+        }.position(:,2),FEM_nodes{refinement_level}.concentration,'linewidth',1)
+    
+    grid off;
+    axis off;
+    shading(shading_style);
+    axis(temp_axis_values_FEM);
+    caxis(caxis_vals);
+    colormap(colormap_val);
+    view(Dpp_view);
+    
+    fig_name = ['FEM_initial'];
+    saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
+    % close;
 
-grid off;
-axis off;
-shading(shading_style);
-axis(temp_axis_values_FEM);
-caxis(caxis_vals);
-colormap(colormap_val);
-view(Dpp_view);
-
-fig_name = ['FEM_initial'];
-saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
-% close;
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -99,24 +103,28 @@ for unused_variable = 1:length(saved_iterations)
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    figure('position',[200 200 500 500],'color','white','PaperPositionMode','auto')
-    axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
-        'zcolor','w','ticklength',[0 0],'xtick',[],'ytick',[])
+    if FEM_saves_logical
+        
+        figure('position',[200 200 500 500],'color','white','PaperPositionMode','auto')
+        axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
+            'zcolor','w','ticklength',[0 0],'xtick',[],'ytick',[])
+        
+        trisurf(FEM_elements{refinement_level}.nodes(FEM_elements{refinement_level}.nodes(...
+            :,1)>0,:),FEM_nodes{refinement_level}.position(:,1),FEM_nodes{refinement_level...
+            }.position(:,2),FEM_nodes{refinement_level}.concentration,'linewidth',1)
+        
+        grid off;
+        axis off;
+        shading(shading_style);
+        axis(temp_axis_values_FEM);
+        caxis(caxis_vals);
+        colormap(colormap_val);
+        view(Dpp_view);
+        
+        fig_name = ['FEM_',num2str(saved_iterations(unused_variable))];
+        saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
+        %     close;
     
-    trisurf(FEM_elements{refinement_level}.nodes(FEM_elements{refinement_level}.nodes(...
-        :,1)>0,:),FEM_nodes{refinement_level}.position(:,1),FEM_nodes{refinement_level...
-        }.position(:,2),FEM_nodes{refinement_level}.concentration,'linewidth',1)
-    
-    grid off;
-    axis off;
-    shading(shading_style);
-    axis(temp_axis_values_FEM);
-    caxis(caxis_vals);
-    colormap(colormap_val);
-    view(Dpp_view);
-   
-    fig_name = ['FEM_',num2str(saved_iterations(unused_variable))];
-    saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
-    %     close;
+    end
     
 end
