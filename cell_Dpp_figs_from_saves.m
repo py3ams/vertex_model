@@ -1,9 +1,9 @@
 disp('busy');clear all;close all;
 
 Dpp_view = [0 75];
-temp_axis_values = 1.2*[-1 1 -1 1];
-temp_axis_values_Dpp = [temp_axis_values 0 0.55];
-caxis_vals = [0 0.6];
+temp_axis_values = 0.6*[-1 1 -1 1];
+temp_axis_values_FEM = [temp_axis_values 0 0.1];
+caxis_vals = [0 0.1];
 green1 = [50,180,50]/255;
 green2 = [50,255,50]/255;
 white = [255,255,0]/255;
@@ -11,131 +11,112 @@ colormap_val = [linspace(green1(1),white(1),300)' ...
     linspace(green1(2),white(2),300)' linspace(green1(3),white(3),300)'];
 % colormap_val = 'summer';
 % colormap_val = [0 150 256]/256;
+shading_style = 'faceted';
+
+refinement_level = 2;
 
 alphabet = 'abcdefghijklmnopqrstuvwxyz';
 
-folder_name = 'Dpp_gradient_lambda_2/';
-saved_iterations = 8333:8333:24999;
+folder_name = 'realtime_refinement_comparison/true_iterations_8000_refinements_4/';
+saved_iterations = 800:800:8000;
 
 if ~exist(['Figs/',folder_name],'dir')
-	mkdir('Figs/',folder_name);
+    mkdir('Figs/',folder_name);
 end
 
-load(['Saves/',folder_name,'iteration_',num2str(saved_iterations(1)),'.mat'])
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 load(['Saves/',folder_name,'initial_save.mat'])
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cell Image %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% fig_name = ['cells_',alphabet(1)];
+figure('position',[200 200 500 500],'color','white','PaperPositionMode','auto')
+axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
+    'zcolor','w','ticklength',[0 0],'xtick',[],'ytick',[])
 
-% if exist(['Figs/',folder_name,fig_name,'.eps'],'file')
-% 	yesno = input(['Are you sure you want to overwrite file ',fig_name,'.eps? '],'s');
-% 	if ~numel(yesno) || ~(strcmp(yesno(1),'y'))
-% 		error(['Could not delete file ',fig_name,'.eps'])
-% 	end
-% end
+for current_cell = 1:length(cells.vertices)
+    hold on
+    patchAS(vertices.position(cells.vertices{current_cell},:),'r',2)
+end
 
-figure('outerposition',[100 100 600 600])%,'PaperPositionMode','auto')
-axes('position',[0 0 1 1])
-figure_loop(cells,node_positions,1,'r',1);
-axis(temp_axis_values);
-set(gca,'xcolor','w')
-set(gca,'ycolor','w')
-set(gca,'zcolor','w')
-set(gca,'ticklength',[0 0])
-axis equal
+axis(temp_axis_values)
+% box on
 
-% saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
+fig_name = ['Cells_initial'];
+saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
 % close;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Dpp Image %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% fig_name = ['Dpp_',alphabet(1)];
+figure('position',[200 200 500 500],'color','white','PaperPositionMode','auto')
+axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
+    'zcolor','w','ticklength',[0 0],'xtick',[],'ytick',[])
 
-% if exist(['Figs/',folder_name,fig_name,'.eps'],'file')
-% 	yesno = input(['Are you sure you want to overwrite file ',fig_name,'.eps? '],'s');
-% 	if ~numel(yesno) || ~(strcmp(yesno(1),'y'))
-% 		error(['Could not delete file ',fig_name,'.eps'])
-% 	end
-% end
+trisurf(FEM_elements{refinement_level}.nodes(FEM_elements{refinement_level}.nodes(...
+    :,1)>0,:),FEM_nodes{refinement_level}.position(:,1),FEM_nodes{refinement_level...
+    }.position(:,2),FEM_nodes{refinement_level}.concentration,'linewidth',1)
 
-figure('outerposition',[100 100 600 600])%,'PaperPositionMode','auto')
-axes('position',[0 0 1 1])
-trisurf(FEM_elements,FEM_node_positions(:,1),FEM_node_positions(:,2),Dpp,'linewidth',1)
 grid off;
-shading(shading_style)
-axis(temp_axis_values_Dpp);
-caxis(caxis_vals)
-set(gca,'xcolor','w')
-set(gca,'ycolor','w')
-set(gca,'zcolor','w')
-set(gca,'ticklength',[0 0])
+axis off;
+shading(shading_style);
+axis(temp_axis_values_FEM);
+caxis(caxis_vals);
+colormap(colormap_val);
 view(Dpp_view);
-colormap(colormap_val)
 
-% saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
+fig_name = ['FEM_initial'];
+saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
 % close;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 for unused_variable = 1:length(saved_iterations)
-	
-	if ~exist(['Saves/',folder_name,'iteration_',num2str(saved_iterations(unused_variable)),'.mat'],'file')
-		error(['No save for iteration_',num2str(saved_iterations(unused_variable)),'.mat'])
-	end
-	
-	load(['Saves/',folder_name,'iteration_',num2str(saved_iterations(unused_variable)),'.mat']);
-	
-	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
-% 	fig_name = ['cells_',alphabet(unused_variable+1)];
-	
-% 	if exist(['Figs/',folder_name,fig_name,'.eps'],'file')
-% 		yesno = input(['Are you sure you want to overwrite file ',fig_name,'.eps? '],'s');
-% 		if ~numel(yesno) || ~(strcmp(yesno(1),'y'))
-% 			error(['Could not delete file ',fig_name,'.eps'])
-% 		end
-% 	end
-	
-    figure('outerposition',[100 100 600 600])%,'PaperPositionMode','auto')
-    axes('position',[0 0 1 1])
-    figure_loop(cells,node_positions,1,'r',1);
-    axis(temp_axis_values);
-    set(gca,'xcolor','w')
-    set(gca,'ycolor','w')
-    set(gca,'zcolor','w')
-    set(gca,'ticklength',[0 0])
-    axis equal
-	
-% 	saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
-% 	close;
-	
-	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
-	fig_name = ['Dpp_',alphabet(unused_variable+1)];
-% 	if exist(['Figs/',folder_name,fig_name,'.eps'],'file')
-% 		yesno = input(['Are you sure you want to overwrite file ',fig_name,'.eps? '],'s');
-% 		if ~numel(yesno) || ~(strcmp(yesno(1),'y'))
-% 			error(['Could not delete file ',fig_name,'.eps'])
-% 		end
-% 	end
-	
-%     FEM_elements = FEM_elements(FEM_elements(:,1)>0);
-	figure('outerposition',[100 100 600 600])%,'PaperPositionMode','auto')
-	axes('position',[0 0 1 1])
-	trisurf(FEM_elements,FEM_node_positions(:,1),FEM_node_positions(:,2),Dpp,'linewidth',1)
-	grid off;
-	shading(shading_style)
-	axis(temp_axis_values_Dpp);
-	caxis(caxis_vals)
-    set(gca,'xcolor','w')
-    set(gca,'ycolor','w')
-    set(gca,'zcolor','w')
-    set(gca,'ticklength',[0 0])
-	view(Dpp_view);
-	colormap(colormap_val)
-	
-% 	saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
-% 	close;
-	
+    
+    if ~exist(['Saves/',folder_name,'iteration_',num2str(saved_iterations(unused_variable)),'.mat'],'file')
+        error(['No save for iteration_',num2str(saved_iterations(unused_variable)),'.mat'])
+    end
+    
+    load(['Saves/',folder_name,'iteration_',num2str(saved_iterations(unused_variable)),'.mat']);
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    figure('position',[200 200 500 500],'color','white','PaperPositionMode','auto')
+    axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
+        'zcolor','w','ticklength',[0 0],'xtick',[],'ytick',[])
+    
+    for current_cell = 1:length(cells.vertices)
+        hold on
+        patchAS(vertices.position(cells.vertices{current_cell},:),'r',2)
+    end
+    
+    %     box on
+    
+    axis(temp_axis_values)
+    
+    fig_name = ['Cells_',num2str(saved_iterations(unused_variable))];
+    saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
+    %     close;
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    figure('position',[200 200 500 500],'color','white','PaperPositionMode','auto')
+    axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
+        'zcolor','w','ticklength',[0 0],'xtick',[],'ytick',[])
+    
+    trisurf(FEM_elements{refinement_level}.nodes(FEM_elements{refinement_level}.nodes(...
+        :,1)>0,:),FEM_nodes{refinement_level}.position(:,1),FEM_nodes{refinement_level...
+        }.position(:,2),FEM_nodes{refinement_level}.concentration,'linewidth',1)
+    
+    grid off;
+    axis off;
+    shading(shading_style);
+    axis(temp_axis_values_FEM);
+    caxis(caxis_vals);
+    colormap(colormap_val);
+    view(Dpp_view);
+   
+    fig_name = ['FEM_',num2str(saved_iterations(unused_variable))];
+    saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
+    %     close;
+    
 end
