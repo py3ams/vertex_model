@@ -1,6 +1,6 @@
 disp('busy');clear all;close all;
 
-FEM_saves_logical = false;
+FEM_saves_logical = true;
 
 Dpp_view = [0 75];
 temp_axis_values = 0.6*[-1 1 -1 1];
@@ -17,8 +17,8 @@ shading_style = 'faceted';
 
 refinement_level = 2;
 
-folder_name = 'ode_comparison/true_solution2/';
-saved_iterations = 1600:1600:16000;
+folder_name = 'realtime_refinement_comparison/true_iterations_8000_refinements_4/';
+saved_iterations = 800:800:8000;
 
 if ~exist(['Figs/',folder_name],'dir')
     mkdir('Figs/',folder_name);
