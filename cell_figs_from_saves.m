@@ -1,24 +1,17 @@
-disp('busy');clear all;close all;
+function cell_figs_from_saves()
 
-FEM_saves_logical = true;
-
-Dpp_view = [0 75];
-temp_axis_values = 0.6*[-1 1 -1 1];
-temp_axis_values_FEM = [temp_axis_values 0 0.1];
-caxis_vals = [0 0.1];
-green1 = [50,180,50]/255;
-green2 = [50,255,50]/255;
-white = [255,255,0]/255;
-colormap_val = [linspace(green1(1),white(1),300)' ...
-    linspace(green1(2),white(2),300)' linspace(green1(3),white(3),300)'];
-% colormap_val = 'summer';
-% colormap_val = [0 150 256]/256;
-shading_style = 'faceted';
+disp('busy');close all;
 
 refinement_level = 2;
 
-folder_name = 'realtime_refinement_comparison/true_iterations_8000_refinements_4/';
-saved_iterations = 800:800:8000;
+save_figs_logical = 0;
+
+folder_name = 'T1_figs/';
+saved_iterations = 10:15;
+
+% we set these outside function so both cell_fig and fem_fig have access to them
+% temp_axis_values = 0.7*[-1 1 -1 1];
+temp_axis_values = [-0.1 0.1 -0.07 0.13];
 
 if ~exist(['Figs/',folder_name],'dir')
     mkdir('Figs/',folder_name);
@@ -30,47 +23,24 @@ load(['Saves/',folder_name,'initial_save.mat'])
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cell Image %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-figure('position',[200 200 500 500],'color','white','PaperPositionMode','auto')
-axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
-    'zcolor','w','ticklength',[0 0],'xtick',[],'ytick',[])
-
-for current_cell = 1:length(cells.vertices)
-    hold on
-    patchAS(vertices.position(cells.vertices{current_cell},:),'r',2)
-end
-
-axis(temp_axis_values)
-% box on
-
-fig_name = ['Cells_initial'];
-saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
-% close;
+fig_name = ['Cells_0'];
+cell_vertices = cells.vertices;
+vertex_positions = vertices.position;
+cell_fig(cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Dpp Image %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if FEM_saves_logical
+% FEM_element_nodes = FEM_elements{refinement_level}.nodes;
+% FEM_node_positions = FEM_nodes{refinement_level}.position;
+% FEM_node_concentrations = FEM_nodes{refinement_level}.concentration;
 
-    figure('position',[200 200 500 500],'color','white','PaperPositionMode','auto')
-    axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
-        'zcolor','w','ticklength',[0 0],'xtick',[],'ytick',[])
-    
-    trisurf(FEM_elements{refinement_level}.nodes(FEM_elements{refinement_level}.nodes(...
-        :,1)>0,:),FEM_nodes{refinement_level}.position(:,1),FEM_nodes{refinement_level...
-        }.position(:,2),FEM_nodes{refinement_level}.concentration,'linewidth',1)
-    
-    grid off;
-    axis off;
-    shading(shading_style);
-    axis(temp_axis_values_FEM);
-    caxis(caxis_vals);
-    colormap(colormap_val);
-    view(Dpp_view);
-    
-    fig_name = ['FEM_initial'];
-    saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
-    % close;
+FEM_element_nodes = FEM_elements.nodes;
+FEM_node_positions = FEM_nodes.position;
+FEM_node_concentrations = FEM_nodes.concentration;
 
-end
+fig_name = ['FEM_0'];
+fem_fig(FEM_element_nodes,FEM_node_positions,FEM_node_concentrations,fig_name,save_figs_logical,temp_axis_values)
+    
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -84,47 +54,93 @@ for unused_variable = 1:length(saved_iterations)
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
+    cell_vertices = cells.vertices;
+    vertex_positions = vertices.position;
+    fig_name = ['Cells_',num2str(saved_iterations(unused_variable))];
+    cell_fig(cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values);
+    
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+%     FEM_element_nodes = FEM_elements{refinement_level}.nodes;
+%     FEM_node_positions = FEM_nodes{refinement_level}.position;
+%     FEM_node_concentrations = FEM_nodes{refinement_level}.concentration;
+    
+    FEM_element_nodes = FEM_elements.nodes;
+    FEM_node_positions = FEM_nodes.position;
+    FEM_node_concentrations = FEM_nodes.concentration;
+    
+    fig_name = ['FEM_',num2str(saved_iterations(unused_variable))];
+    fem_fig(FEM_element_nodes,FEM_node_positions,FEM_node_concentrations,...
+        fig_name,save_figs_logical,temp_axis_values)
+    
+end
+
+end
+
+% we delibrately pass fields rather than structures into the function to make the
+% function more versatile
+function cell_fig(cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values)
+
+figure('position',[200 200 500 500],'color','white','PaperPositionMode','auto')
+axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
+    'zcolor','w','ticklength',[0 0],'xtick',[],'ytick',[])
+
+for current_cell = 1:length(cell_vertices)
+    hold on
+    patchAS(vertex_positions(cell_vertices{current_cell},:),'r',2)
+end
+
+axis(temp_axis_values)
+% box on
+
+if save_figs_logical
+    saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
+end
+    % close;
+
+end
+
+function fem_fig(FEM_element_nodes,FEM_node_positions,FEM_node_concentrations,fig_name,save_figs_logical,temp_axis_values)
+
+FEM_saves_logical = true;
+Dpp_view = [0 75];
+temp_axis_values_FEM = [temp_axis_values 0 0.1];
+caxis_vals = [0 0.1];
+green1 = [50,180,50]/255;
+% green2 = [50,255,50]/255;
+white = [255,255,0]/255;
+colormap_val = [linspace(green1(1),white(1),300)' ...
+    linspace(green1(2),white(2),300)' linspace(green1(3),white(3),300)'];
+% colormap_val = 'summer';
+% colormap_val = [0 150 256]/256;
+shading_style = 'faceted';
+
+if FEM_saves_logical
+    
     figure('position',[200 200 500 500],'color','white','PaperPositionMode','auto')
     axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
         'zcolor','w','ticklength',[0 0],'xtick',[],'ytick',[])
     
-    for current_cell = 1:length(cells.vertices)
-        hold on
-        patchAS(vertices.position(cells.vertices{current_cell},:),'r',2)
-    end
+    FEM_element_nodes = FEM_element_nodes(FEM_element_nodes(:,1)>0,:);
     
-    %     box on
+    trisurf(FEM_element_nodes,FEM_node_positions(:,1),FEM_node_positions(:,2),...
+        FEM_node_concentrations,'linewidth',1)
     
-    axis(temp_axis_values)
-    
-    fig_name = ['Cells_',num2str(saved_iterations(unused_variable))];
-    saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
-    %     close;
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    if FEM_saves_logical
-        
-        figure('position',[200 200 500 500],'color','white','PaperPositionMode','auto')
-        axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
-            'zcolor','w','ticklength',[0 0],'xtick',[],'ytick',[])
-        
-        trisurf(FEM_elements{refinement_level}.nodes(FEM_elements{refinement_level}.nodes(...
-            :,1)>0,:),FEM_nodes{refinement_level}.position(:,1),FEM_nodes{refinement_level...
-            }.position(:,2),FEM_nodes{refinement_level}.concentration,'linewidth',1)
-        
-        grid off;
-        axis off;
-        shading(shading_style);
-        axis(temp_axis_values_FEM);
-        caxis(caxis_vals);
-        colormap(colormap_val);
-        view(Dpp_view);
-        
-        fig_name = ['FEM_',num2str(saved_iterations(unused_variable))];
+    grid off;
+    axis off;
+    shading(shading_style);
+    axis(temp_axis_values_FEM);
+    caxis(caxis_vals);
+    colormap(colormap_val);
+    view(Dpp_view);
+
+    if save_figs_logical
         saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
-        %     close;
-    
     end
+    % close;
     
 end
+
+end
+
