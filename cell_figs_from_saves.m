@@ -7,12 +7,14 @@ refinement_level = 2;
 save_figs_logical = 1;
 initial_fig_logical = 0;
 
-folder_name = 'T1_figs/';
-saved_iterations = 11:12;
+folder_name = 'apoptosis_figs/';
+saved_iterations = [700 800 820 830 833 835];
 
 % we set these outside function so both cell_fig and fem_fig have access to them
-% temp_axis_values = 0.7*[-1 1 -1 1];
-temp_axis_values = [-0.1 0.1 -0.07 0.13];
+temp_axis_values = 0.7*[-1 1 -1 1];
+% temp_axis_values = [-0.1 0.1 -0.07 0.13];
+% apoptosis_figs
+temp_axis_values = [0.115 0.215 0.195 0.295];
 
 if ~exist(['Figs/',folder_name],'dir')
     mkdir('Figs/',folder_name);
