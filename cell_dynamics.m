@@ -5,9 +5,13 @@ disp('busy');close all;clear all;tic;%profile on
 total_time = 1;
 
 max_iterations = 1000;
-no_refinements = 0;
+no_refinements = 2;
 
-simulation_name = 'growth_comparison_analytical';
+% simulation_name = 'refinement_comparison/true_solution';
+% simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
+%    '_refinements_',num2str(no_refinements)];
+
+simulation_name = '';
 
 grid_size = [10,10];
 max_no_cells = 101;
@@ -24,9 +28,9 @@ configuration_noise = 0.5;
 % can be 'square', 'random', or 'hexagonal'
 configuration_type = 'hexagonal';
 
-load_from_file_logical = true;
+load_from_file_logical = false;
 load_FEM_from_file_logical = false;
-file_to_load = 'Saves/growth_comparison_numerical/initial_save';
+file_to_load = 'Saves/refinement_comparison/true_solution/initial_save';
 
 % to set the colour of the original cells to be different in figures and
 % movies, need to edit figure_loop.m. otherwise would have to pass a variable
@@ -94,6 +98,9 @@ cell_growth_logical = true;
 cell_growth_start = 0;
 cell_growth_concentration_dependent = false;
 mitosis_logical = false;
+
+% solver_type 1 = numerical, 2 = analytic
+growth_solver_type = 2;
 
 % growth speeds of medial (1) and lateral cells (2)
 average_cell_growth_speed(1) = 0.5;
@@ -225,7 +232,7 @@ view_number_cells = 0;
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = true;
+full_saves_logical = false;
 full_saves_name = simulation_name;
 % full_saves_period = max(floor(max_iterations/3),1);
 full_saves_period = 1;
@@ -442,7 +449,7 @@ while true
 		
         [cells,FEM_elements,FEM_nodes,stats,vertices] = cell_volume_growth(...
             cell_growth_concentration_dependent,cells,delta_t,FEM_elements,...
-            FEM_nodes,lambda,no_growth_time,stats,time,vertices);
+            FEM_nodes,growth_solver_type,lambda,no_growth_time,stats,time,vertices);
 		
 		% 	concentration_after = FEM_nodes.concentration;
 		
