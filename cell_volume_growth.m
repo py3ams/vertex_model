@@ -1,6 +1,6 @@
 function [cells,FEM_elements,FEM_nodes,stats,vertices] = cell_volume_growth(...
     cell_growth_concentration_dependent,cells,delta_t,FEM_elements,...
-    FEM_nodes,lambda,no_growth_time,stats,time,vertices)
+    FEM_nodes,growth_solver_type,lambda,no_growth_time,stats,time,vertices)
 
 % find cells that are not apoptotic or dead and have had sufficient time since
 % division. could we not include this third condition in baby cells (i.e.
@@ -27,12 +27,31 @@ if cell_growth_concentration_dependent
     end
     
 else
-    
-    cells.volume(cells.growing_logical) =...
-        cells.volume(cells.growing_logical).*(1+delta_t*cells.growth_speed(...
-        cells.growing_logical).*(1-cells.volume(cells.growing_logical)./...
-        cells.target_volume(cells.growing_logical)));
-    
+   
+   growing_cells_target_volume = cells.target_volume(cells.growing_logical);
+   growing_cells_initial_volume = cells.initial_volume(cells.growing_logical);
+   growing_cells_volume = cells.volume(cells.growing_logical);
+   growing_cells_speed = cells.growth_speed(cells.growing_logical);
+   
+   if growth_solver_type == 1
+      
+      cells.volume(cells.growing_logical) =...
+         growing_cells_volume.*(1+delta_t*growing_cells_speed.*...
+         (1-growing_cells_volume./growing_cells_target_volume));
+      
+   elseif growth_solver_type == 2
+      
+      cells.volume(cells.growing_logical) =...
+         growing_cells_initial_volume.*growing_cells_target_volume./...
+         (growing_cells_initial_volume+(growing_cells_target_volume-...
+         growing_cells_initial_volume).*exp(-growing_cells_speed*time));
+      
+   else
+      
+      error('Invalid growth_solver_type');
+      
+   end
+   
 end
 
 

@@ -5,12 +5,9 @@ disp('busy');close all;clear all;tic;%profile on
 total_time = 1;
 
 max_iterations = 1000;
-no_refinements = 2;
+no_refinements = 0;
 
-% simulation_name = 'refinement_comparison/true_solution';
-simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
-   '_refinements_',num2str(no_refinements)];
-
+simulation_name = 'growth_comparison_analytical';
 
 grid_size = [10,10];
 max_no_cells = 101;
@@ -29,7 +26,7 @@ configuration_type = 'hexagonal';
 
 load_from_file_logical = true;
 load_FEM_from_file_logical = false;
-file_to_load = 'Saves/refinement_comparison/true_solution/initial_save';
+file_to_load = 'Saves/growth_comparison_numerical/initial_save';
 
 % to set the colour of the original cells to be different in figures and
 % movies, need to edit figure_loop.m. otherwise would have to pass a variable
@@ -93,7 +90,7 @@ protection_time = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Cell growth and mitosis parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
-cell_growth_logical = false;
+cell_growth_logical = true;
 cell_growth_start = 0;
 cell_growth_concentration_dependent = false;
 mitosis_logical = false;
@@ -166,7 +163,7 @@ apoptosis_no_baseline_put_pc = 0.025;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FEM parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FEM_solve_logical = true;
+FEM_solve_logical = false;
 
 % mesh_refinement_threshold_factor = 1.2;
 mesh_refinement_threshold_factor = 10;
