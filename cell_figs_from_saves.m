@@ -46,6 +46,7 @@ fem_fig(FEM_element_nodes,FEM_node_positions,FEM_node_concentrations,fig_name,sa
 
 for unused_variable = 1:length(saved_iterations)
     
+   % won't we get an error from the following line anyway?
     if ~exist(['Saves/',folder_name,'iteration_',num2str(saved_iterations(unused_variable)),'.mat'],'file')
         error(['No save for iteration_',num2str(saved_iterations(unused_variable)),'.mat'])
     end
