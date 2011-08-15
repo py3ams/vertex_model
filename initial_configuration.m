@@ -67,6 +67,8 @@ else
    cells.volume = max(mean_volume*(1+0.5*randn(no_cells,1)),...
       0.2*mean_volume*ones(no_cells,1));
    
+   cells.initial_volume = cells.volume;
+   
    %     cells.volume = 2*mean_volume*rand(no_cells,1);
    
    %     cells.volume = mean_volume*ones(no_cells,1);
