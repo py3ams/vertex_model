@@ -11,7 +11,7 @@ no_refinements = 0;
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'area_force_only';
+simulation_name = 'deformation_force_only';
 
 grid_size = [10,10];
 max_no_cells = 101;
@@ -24,7 +24,7 @@ viscosity = 0.01;
 anneal_initial_configuration_logical = false;
 
 compile_mex_functions_logical = false;
-configuration_noise = 0.5;
+configuration_noise = 0.85;
 % can be 'square', 'random', or 'hexagonal'
 configuration_type = 'hexagonal';
 
@@ -53,8 +53,8 @@ target_area_factor = 1.0;
 
 % For ~50 cells
 
-initial_force_constant_magnitudes.area = 1e2;
-% initial_force_constant_magnitudes.deformation = 5e-4;
+% initial_force_constant_magnitudes.area = 1e2;
+initial_force_constant_magnitudes.deformation = 5e-3;
 % initial_force_constant_magnitudes.elongation = 1e-5;
 % initial_force_constant_magnitudes.perimeter = 1e-4;
 % initial_force_constant_magnitudes.tension = 2e-4;
@@ -70,8 +70,8 @@ initial_force_constant_magnitudes.area = 1e2;
 % boundary_force_constants.deformation = 5e-3;
 % boundary_force_constants.edge = 1e-1;
 
-% initial_force_constant_magnitudes.area = 0;
-initial_force_constant_magnitudes.deformation = 0;
+initial_force_constant_magnitudes.area = 0;
+% initial_force_constant_magnitudes.deformation = 0;
 initial_force_constant_magnitudes.elongation = 0;
 initial_force_constant_magnitudes.perimeter = 0;
 initial_force_constant_magnitudes.tension = 0;
@@ -220,10 +220,10 @@ linewidth_elements = 1;
 movie_name = simulation_name;
 movie_start = 0;
 no_frames_for_statistical_plots = 100;
-update_period = 1;
+update_period = 16;
 view_FEM_mesh = 0;
 view_FEM_concentration = 1;
-view_initial_config = 0;
+view_initial_config = 1;
 view_iteration_number = 0;
 view_number_cells = 0;
 
