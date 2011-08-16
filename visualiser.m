@@ -40,7 +40,6 @@ if ~iteration
       plot_FEM(cells,FEM_elements,FEM_nodes,axis_values_FEM,chemical_to_view,...
          linewidth_cells,linewidth_elements,vertices,view_FEM_concentration);
       
-      
    else%if ~view_FEM_mesh
       
       if view_number_cells || view_iteration_number
@@ -103,4 +102,3 @@ elseif movie_logical && ~rem(iteration,update_period) || final_iteration_logical
    drawnow;
    
 end
-

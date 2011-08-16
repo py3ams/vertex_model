@@ -5,13 +5,13 @@ disp('busy');close all;clear all;tic;%profile on
 total_time = 1;
 
 max_iterations = 1000;
-no_refinements = 2;
+no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = '';
+simulation_name = 'area_force_only';
 
 grid_size = [10,10];
 max_no_cells = 101;
@@ -53,11 +53,11 @@ target_area_factor = 1.0;
 
 % For ~50 cells
 
-initial_force_constant_magnitudes.area = 1e0;
-initial_force_constant_magnitudes.deformation = 5e-4;
-initial_force_constant_magnitudes.elongation = 1e-5;
-initial_force_constant_magnitudes.perimeter = 1e-4;
-initial_force_constant_magnitudes.tension = 2e-4;
+initial_force_constant_magnitudes.area = 1e2;
+% initial_force_constant_magnitudes.deformation = 5e-4;
+% initial_force_constant_magnitudes.elongation = 1e-5;
+% initial_force_constant_magnitudes.perimeter = 1e-4;
+% initial_force_constant_magnitudes.tension = 2e-4;
 
 % For ~250 cells
 
@@ -67,23 +67,23 @@ initial_force_constant_magnitudes.tension = 2e-4;
 % initial_force_constant_magnitudes.perimeter = 1e-4;
 % initial_force_constant_magnitudes.tension = 2e-4;
 
-boundary_force_constants.deformation = 5e-3;
-boundary_force_constants.edge = 1e-1;
+% boundary_force_constants.deformation = 5e-3;
+% boundary_force_constants.edge = 1e-1;
 
 % initial_force_constant_magnitudes.area = 0;
-% initial_force_constant_magnitudes.deformation = 0;
-% initial_force_constant_magnitudes.elongation = 0;
-% initial_force_constant_magnitudes.perimeter = 0;
-% initial_force_constant_magnitudes.tension = 0;
+initial_force_constant_magnitudes.deformation = 0;
+initial_force_constant_magnitudes.elongation = 0;
+initial_force_constant_magnitudes.perimeter = 0;
+initial_force_constant_magnitudes.tension = 0;
 
-% boundary_force_constants.deformation = 0;
-% boundary_force_constants.edge = 0;
+boundary_force_constants.deformation = 0;
+boundary_force_constants.edge = 0;
 
 tension_anisotropy_factor = 0.0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex rearrangement parameters %%%%%%%%%%%%%%%%%%%%%%%%%
 
-T1_swaps_logical = false;
+T1_swaps_logical = true;
 T1_swaps_start = 0;
 T1_probability = 1.0;
 
@@ -94,7 +94,7 @@ protection_time = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Cell growth and mitosis parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
-cell_growth_logical = true;
+cell_growth_logical = false;
 cell_growth_start = 0;
 cell_growth_concentration_dependent = false;
 mitosis_logical = false;
@@ -206,7 +206,7 @@ source_width = [0.15 0.1];
 
 movie_logical = 0;
 
-axis_values = 0.8*[-1 1 -1 1];
+axis_values = 0.6*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
 % axis_values = 'equal';
 % axis_values_FEM = [-1 1 -1 1 -0.5 1.5];
@@ -221,7 +221,7 @@ movie_name = simulation_name;
 movie_start = 0;
 no_frames_for_statistical_plots = 100;
 update_period = 1;
-view_FEM_mesh = 1;
+view_FEM_mesh = 0;
 view_FEM_concentration = 1;
 view_initial_config = 0;
 view_iteration_number = 0;
@@ -232,7 +232,7 @@ view_number_cells = 0;
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = false;
+full_saves_logical = true;
 full_saves_name = simulation_name;
 % full_saves_period = max(floor(max_iterations/3),1);
 full_saves_period = 1;
