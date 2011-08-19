@@ -11,20 +11,19 @@ no_refinements = 0;
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'deformation_force_only';
-
+simulation_name = 'test';
 grid_size = [10,10];
 max_no_cells = 101;
 
 delta_t = total_time/max_iterations;
-viscosity = 0.01;
+viscosity = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Initial configuration parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 
 anneal_initial_configuration_logical = false;
 
 compile_mex_functions_logical = false;
-configuration_noise = 0.85;
+configuration_noise = 0.8;
 % can be 'square', 'random', or 'hexagonal'
 configuration_type = 'hexagonal';
 
@@ -51,13 +50,16 @@ update_positions_start = 0;
 ode_solver_type = 1;
 target_area_factor = 1.0;
 
-% For ~50 cells
+% For ~100 cells
 
-% initial_force_constant_magnitudes.area = 1e2;
-initial_force_constant_magnitudes.deformation = 5e-3;
-% initial_force_constant_magnitudes.elongation = 1e-5;
-% initial_force_constant_magnitudes.perimeter = 1e-4;
-% initial_force_constant_magnitudes.tension = 2e-4;
+initial_force_constant_magnitudes.area = 2000;
+initial_force_constant_magnitudes.deformation = 1e-1;
+initial_force_constant_magnitudes.elongation = 1e-3;
+initial_force_constant_magnitudes.perimeter = 5e-2;
+initial_force_constant_magnitudes.tension = 1e-1;
+
+boundary_force_constants.deformation = 1e-1;
+boundary_force_constants.edge = 5e1;
 
 % For ~250 cells
 
@@ -67,17 +69,19 @@ initial_force_constant_magnitudes.deformation = 5e-3;
 % initial_force_constant_magnitudes.perimeter = 1e-4;
 % initial_force_constant_magnitudes.tension = 2e-4;
 
-% boundary_force_constants.deformation = 5e-3;
-% boundary_force_constants.edge = 1e-1;
+% boundary_force_constants.deformation = 1e-1;
+% boundary_force_constants.edge = 5e1;
 
-initial_force_constant_magnitudes.area = 0;
+% For one force sims
+
+% initial_force_constant_magnitudes.area = 0;
 % initial_force_constant_magnitudes.deformation = 0;
-initial_force_constant_magnitudes.elongation = 0;
-initial_force_constant_magnitudes.perimeter = 0;
-initial_force_constant_magnitudes.tension = 0;
+% initial_force_constant_magnitudes.elongation = 0;
+% initial_force_constant_magnitudes.perimeter = 0;
+% initial_force_constant_magnitudes.tension = 0;
 
-boundary_force_constants.deformation = 0;
-boundary_force_constants.edge = 0;
+% boundary_force_constants.deformation = 0;
+% boundary_force_constants.edge = 0;
 
 tension_anisotropy_factor = 0.0;
 
@@ -232,7 +236,7 @@ view_number_cells = 0;
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = true;
+full_saves_logical = false;
 full_saves_name = simulation_name;
 % full_saves_period = max(floor(max_iterations/3),1);
 full_saves_period = 1;
