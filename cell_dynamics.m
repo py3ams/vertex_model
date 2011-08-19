@@ -11,7 +11,7 @@ no_refinements = 0;
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'test';
+simulation_name = 'simulation_of_all_forces';
 grid_size = [10,10];
 max_no_cells = 101;
 
@@ -29,7 +29,7 @@ configuration_type = 'hexagonal';
 
 load_from_file_logical = false;
 load_FEM_from_file_logical = false;
-file_to_load = 'Saves/refinement_comparison/true_solution/initial_save';
+file_to_load = 'Saves/new_ode_comparison/true_solution/initial_save';
 
 % to set the colour of the original cells to be different in figures and
 % movies, need to edit figure_loop.m. otherwise would have to pass a variable
@@ -236,7 +236,7 @@ view_number_cells = 0;
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = false;
+full_saves_logical = true;
 full_saves_name = simulation_name;
 % full_saves_period = max(floor(max_iterations/3),1);
 full_saves_period = 1;
