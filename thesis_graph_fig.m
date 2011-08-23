@@ -1,32 +1,97 @@
 function thesis_graph_fig()
 
-simulation_name = 'simulation_of_all_forces';
+disp('busy');close all;
 
+simulation_name = 'simulation_of_all_forces_with';
+plot_name = 'angle_deviations';
 save_plot_logical = 1;
+
 linewidth = 2;
 
 load(['Saves/',simulation_name,'/final_save.mat'])
 
-figure('position',[100 100 300 300],'PaperPositionMode','auto')
+figure('position',[100 100 325 300],'PaperPositionMode','auto','color','white')
 set(gcf,'DefaultLineLineWidth',linewidth)
 
-plot_name = cell_perimeter_plot(linewidth,stats);
+axes('position',[0.23 0.15 0.72 0.8])
 
+statistics_counter = stats.counter;
+time_range = linspace(0,1,stats.counter);
+
+eval([plot_name,'_plot(linewidth,stats,statistics_counter,time_range);'])
+
+% cell_area_plot(linewidth,stats,statistics_counter,time_range);
+
+addpath('~/Documents/export_fig/')
 if save_plot_logical
    if ~exist(['Figs/',simulation_name],'dir')
       mkdir('Figs/',simulation_name);
    end
-   saveas(gcf,['Figs/',simulation_name,'/',simulation_name,'_',plot_name,'.eps'],'psc2')
+%    saveas(gcf,['Figs/',simulation_name,'/',simulation_name,'_',plot_name,'.eps'],'psc2')
+   export_fig(['Figs/',simulation_name,'/',simulation_name,'_',plot_name,'.eps'],'-nocrop');
 end
 
 end
 
-function plot_name = cell_perimeter_plot(linewidth,stats)
+function height_to_area_ratios_plot(linewidth,stats,statistics_counter,time_range)
+
+cell_height_to_area = stats.cell_height_to_area(1:statistics_counter,:);
+plot(time_range,cell_height_to_area(:,1))
+hold on
+plot(time_range,cell_height_to_area(:,1)+2*cell_height_to_area(:,4),'r')
+% plot(time_range,cell_height_to_area(:,1)-2*cell_height_to_area(:,4),'r')
+
+set(gca,'FontName','arial','fontweight','bold','fontsize',13);
+xlabel('Time')
+ylabel('Height area ratio')
+
+axis([0 1 0 35])
+
+set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
+set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
+
+end
+
+function angle_deviations_plot(linewidth,stats,statistics_counter,time_range)
+
+angle_deviation = stats.angle_deviation(1:statistics_counter,:);
+plot(time_range,angle_deviation(:,1))
+set(gca,'FontName','arial','fontweight','bold','fontsize',13);
+xlabel('Time')
+ylabel('Angle deviation')
+
+axis([0 1 0 0.4])
+
+set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
+set(gca,'YTickLabel',sprintf('%0.1f|',str2num(get(gca,'YTickLabel'))))
+
+end
+
+function edge_lengths_plot(linewidth,stats,statistics_counter,time_range)
+
+edge_length = stats.edge_length(1:statistics_counter,:);
+size(stats.edge_length)
+plot(time_range,edge_length(:,1))
+hold on
+% plot(time_range,edge_length(:,2),'r')
+% plot(time_range,edge_length(:,3),'r')
+plot(time_range,edge_length(:,1)+2*edge_length(:,4),'r')
+plot(time_range,edge_length(:,1)-2*edge_length(:,4),'r')
+
+set(gca,'FontName','arial','fontweight','bold','fontsize',13);
+xlabel('Time')
+ylabel('Edge length')
+
+axis([0 1 0 0.15])
+
+set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
+set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
+
+end
+
+function plot_name = cell_perimeter_plot(linewidth,stats,statistics_counter,time_range)
 
 plot_name = 'cell_perimeters';
-
-statistics_counter = stats.counter;
-time_range = linspace(0,1,stats.counter);
 
 cell_perimeter = stats.cell_perimeter(1:statistics_counter,:);
 plot(time_range,cell_perimeter(:,1))
@@ -40,16 +105,13 @@ ylabel('Cell perimeter')
 axis([0 1 0.3 0.451])
 
 set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
-set(gca,'YTickLabel',sprintf('%0.3f|',str2num(get(gca,'YTickLabel'))))
+set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
 
 end
 
-function plot_name = boundary_force_plot(linewidth,stats)
+function plot_name = boundary_force_plot(linewidth,stats,statistics_counter,time_range)
 
 plot_name = 'boundary_forces_per_vertex';
-
-statistics_counter = stats.counter;
-time_range = linspace(0,1,stats.counter);
 
 total_boundary_deformation_force =...
 	stats.total_boundary_deformation_force(1:statistics_counter,:);
@@ -71,12 +133,9 @@ set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
 
 end
 
-function plot_name = force_plot(linewidth,stats)
+function plot_name = force_plot(linewidth,stats,statistics_counter,time_range)
 
 plot_name = 'forces_per_vertex';
-
-statistics_counter = stats.counter;
-time_range = linspace(0,1,stats.counter);
 
 total_area_force = stats.total_area_force(1:statistics_counter,:);
 total_deformation_force = stats.total_deformation_force(1:statistics_counter,:);
@@ -102,12 +161,7 @@ set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
 
 end
 
-function plot_name = cell_area_plot(linewidth,stats)
-
-plot_name = 'cell_areas';
-
-statistics_counter = stats.counter;
-time_range = linspace(0,1,stats.counter);
+function cell_areas_plot(linewidth,stats,statistics_counter,time_range)
 
 cell_area = stats.cell_area(1:statistics_counter,:);
 
@@ -119,8 +173,10 @@ set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Time')
 ylabel('Cell area')
 
+axis([0 1 0.002 0.016])
+
 set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
-set(gca,'YTickLabel',sprintf('%0.3f|',str2num(get(gca,'YTickLabel'))))
+set(gca,'YTickLabel',sprintf('%0.3f|',str2num(get(gca,'YTickLabel'))*0.001))
 
 end
 

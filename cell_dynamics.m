@@ -2,16 +2,16 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 1;
+total_time = 50;
 
-max_iterations = 1000;
+max_iterations = 10000;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'simulation_of_all_forces';
+simulation_name = 'simulation_of_all_forces_with_growth';
 grid_size = [10,10];
 max_no_cells = 101;
 
@@ -98,7 +98,7 @@ protection_time = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Cell growth and mitosis parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
-cell_growth_logical = false;
+cell_growth_logical = true;
 cell_growth_start = 0;
 cell_growth_concentration_dependent = false;
 mitosis_logical = false;
@@ -107,7 +107,7 @@ mitosis_logical = false;
 growth_solver_type = 2;
 
 % growth speeds of medial (1) and lateral cells (2)
-average_cell_growth_speed(1) = 0.5;
+average_cell_growth_speed(1) = 1;
 average_cell_growth_speed(2) = 2*average_cell_growth_speed(1);
 
 % n.b. this parameter is multiplied by the total internal chemical in each
@@ -236,10 +236,10 @@ view_number_cells = 0;
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = true;
+full_saves_logical = false;
 full_saves_name = simulation_name;
-% full_saves_period = max(floor(max_iterations/3),1);
-full_saves_period = 1;
+full_saves_period = max(floor(max_iterations/1000),1);
+% full_saves_period = 1;
 
 regular_tests_logical = false;
 
