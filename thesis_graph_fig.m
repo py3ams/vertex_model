@@ -2,13 +2,13 @@ function thesis_graph_fig()
 
 disp('busy');close all;
 
-simulation_name = 'simulation_of_all_forces_with';
-plot_name = 'angle_deviations';
+folder_name = 'simulation_with_cell_proliferation';
+plot_name = 'cell_areas';
 save_plot_logical = 1;
 
 linewidth = 2;
 
-load(['Saves/',simulation_name,'/final_save.mat'])
+load(['Saves/',folder_name,'/final_save.mat'])
 
 figure('position',[100 100 325 300],'PaperPositionMode','auto','color','white')
 set(gcf,'DefaultLineLineWidth',linewidth)
@@ -16,7 +16,7 @@ set(gcf,'DefaultLineLineWidth',linewidth)
 axes('position',[0.23 0.15 0.72 0.8])
 
 statistics_counter = stats.counter;
-time_range = linspace(0,1,stats.counter);
+time_range = linspace(0,total_time,stats.counter);
 
 eval([plot_name,'_plot(linewidth,stats,statistics_counter,time_range);'])
 
@@ -24,12 +24,48 @@ eval([plot_name,'_plot(linewidth,stats,statistics_counter,time_range);'])
 
 addpath('~/Documents/export_fig/')
 if save_plot_logical
-   if ~exist(['Figs/',simulation_name],'dir')
-      mkdir('Figs/',simulation_name);
+   if ~exist(['Figs/',folder_name],'dir')
+      mkdir('Figs/',folder_name);
    end
-%    saveas(gcf,['Figs/',simulation_name,'/',simulation_name,'_',plot_name,'.eps'],'psc2')
-   export_fig(['Figs/',simulation_name,'/',simulation_name,'_',plot_name,'.eps'],'-nocrop');
+%    saveas(gcf,['Figs/',folder_name,'/',folder_name,'_',plot_name,'.eps'],'psc2')
+   export_fig(['Figs/',folder_name,'/',folder_name,'_',plot_name,'.eps'],'-nocrop');
 end
+
+end
+
+function cell_volumes_plot(linewidth,stats,statistics_counter,time_range)
+
+cell_volume = stats.cell_volume(1:statistics_counter,:);
+plot(time_range,cell_volume(:,1))
+hold on
+% plot(time_range,cell_volume(:,2),'r')
+% plot(time_range,cell_volume(:,3),'r')
+plot(time_range,cell_volume(:,1)+2*cell_volume(:,4),'r')
+plot(time_range,cell_volume(:,1)-2*cell_volume(:,4),'r')
+% plot(time_range,target_volume*ones(size(time_range)),'g--')
+set(gca,'FontName','arial','fontweight','bold','fontsize',13);
+xlabel('Time')
+ylabel('Cell volume')
+
+axis([0 50 0 0.003])
+
+% set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
+
+set(gca,'YTick',[0 0.001 0.002 0.003])
+set(gca,'YTickLabel',sprintf('%0.3f|',str2num(get(gca,'YTickLabel'))*0.001))
+
+axes('position',[0.47 0.25 0.4 0.4])
+plot(time_range,cell_volume(:,1))
+hold on
+% plot(time_range,cell_volume(:,2),'r')
+% plot(time_range,cell_volume(:,3),'r')
+plot(time_range,cell_volume(:,1)+2*cell_volume(:,4),'r')
+plot(time_range,cell_volume(:,1)-2*cell_volume(:,4),'r')
+set(gca,'FontName','arial','fontweight','bold','fontsize',12);
+
+axis([0 10 0 0.003])
+
+set(gca,'YTick',[])
 
 end
 
@@ -37,18 +73,18 @@ function height_to_area_ratios_plot(linewidth,stats,statistics_counter,time_rang
 
 cell_height_to_area = stats.cell_height_to_area(1:statistics_counter,:);
 plot(time_range,cell_height_to_area(:,1))
-hold on
-plot(time_range,cell_height_to_area(:,1)+2*cell_height_to_area(:,4),'r')
+% hold on
+% plot(time_range,cell_height_to_area(:,1)+2*cell_height_to_area(:,4),'r')
 % plot(time_range,cell_height_to_area(:,1)-2*cell_height_to_area(:,4),'r')
 
 set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Time')
-ylabel('Height area ratio')
+ylabel('Height-to-area ratio')
 
-axis([0 1 0 35])
-
-set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
-set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
+axis([0 100 0 85])
+% 
+% set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
+% set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
 
 end
 
@@ -173,9 +209,9 @@ set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Time')
 ylabel('Cell area')
 
-axis([0 1 0.002 0.016])
+axis([0 100 0.002 0.016])
 
-set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
+% set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 set(gca,'YTickLabel',sprintf('%0.3f|',str2num(get(gca,'YTickLabel'))*0.001))
 
 end

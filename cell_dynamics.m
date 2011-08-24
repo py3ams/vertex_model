@@ -2,7 +2,7 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 50;
+total_time = 100;
 
 max_iterations = 10000;
 no_refinements = 0;
@@ -11,9 +11,9 @@ no_refinements = 0;
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'simulation_of_all_forces_with_growth';
+simulation_name = 'simulation_of_all_forces_with_death';
 grid_size = [10,10];
-max_no_cells = 101;
+max_no_cells = 1000;
 
 delta_t = total_time/max_iterations;
 viscosity = 1;
@@ -58,7 +58,7 @@ initial_force_constant_magnitudes.elongation = 1e-3;
 initial_force_constant_magnitudes.perimeter = 5e-2;
 initial_force_constant_magnitudes.tension = 1e-1;
 
-boundary_force_constants.deformation = 1e-1;
+boundary_force_constants.deformation = 1e-0;
 boundary_force_constants.edge = 5e1;
 
 % For ~250 cells
@@ -101,7 +101,7 @@ protection_time = 0;
 cell_growth_logical = true;
 cell_growth_start = 0;
 cell_growth_concentration_dependent = false;
-mitosis_logical = false;
+mitosis_logical = true;
 
 % solver_type 1 = numerical, 2 = analytic
 growth_solver_type = 2;
@@ -130,9 +130,9 @@ mitosis_angles_type = 'uniform';
 % mitosis_angles_type = [0 0];
 
 % mitosis_dependence can currently be either 'volume' or 'area'
-mitosis_dependence = 'volume';
+mitosis_dependence = 'none';
 % this is only used if mitosos_dependence is set to 'none';
-mitosis_period = 0.2;
+mitosis_period = 0.1;
 
 % determines whether mitosis takes place at a set volume (a certain
 % fraction of the target volume) or stochastically. couldn't we just have a
@@ -144,7 +144,7 @@ mitosis_random_logical = 1;
 % fraction of the target parameter. it should be set to a number less than
 % 1 if growth is logistic and mitosis is volume-dependent as a cell will
 % never actually reach its target volume.
-mitosis_threshold = 0.9;
+mitosis_threshold = 0.99;
 
 % determines the fraction of the initial maximum cell volume that the
 % target volume is set to. if less than one a load of divisions will likely
@@ -153,7 +153,7 @@ target_volume_factor = 1.1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cell death parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cell_death_logical = false;
+cell_death_logical = true;
 cell_death_start = 0;
 
 % sets the area threshold below which cells can die, as a fraction of the mean area.
@@ -170,7 +170,10 @@ apoptosis_no_put_pc_above_threshold = 1e-3;
 % apoptotic cells will be this number multiplied by the number of cells.
 % this only applied if apoptosis_concentration_depdendent is set to zero,
 % even if FEM_solve_logical is false
-apoptosis_no_baseline_put_pc = 0.025;
+apoptosis_baseline_prob_per_unit_time = 0.025;
+
+apoptosis_type = 'regular';
+apoptosis_period = 0.2;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FEM parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -210,7 +213,7 @@ source_width = [0.15 0.1];
 
 movie_logical = 0;
 
-axis_values = 0.6*[-1 1 -1 1];
+axis_values = 1.5*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
 % axis_values = 'equal';
 % axis_values_FEM = [-1 1 -1 1 -0.5 1.5];
@@ -219,17 +222,21 @@ axis_values_FEM = [axis_values -0.05 0.15];
 extra_pause = 0.0;
 % extra_pause = 0.1;
 include_statistical_plots_in_movie = false;
-linewidth_cells = 5;
+linewidth_cells = 4;
 linewidth_elements = 1;
 movie_name = simulation_name;
 movie_start = 0;
 no_frames_for_statistical_plots = 100;
-update_period = 16;
+update_period = max(floor(max_iterations/1000),1);
 view_FEM_mesh = 0;
 view_FEM_concentration = 1;
 view_initial_config = 1;
 view_iteration_number = 0;
-view_number_cells = 0;
+view_number_cells = 1;
+
+if movie_logical
+   view_initial_config = 0;
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -425,10 +432,10 @@ while true
 		% this function chooses which cells become apoptotic, and alters
 		% the force constants etc on cells that are apoptotic
 		[cells,dead_chemical,stats] = set_apoptotic_cells(cells,...
-			apoptosis_no_baseline_put_pc,apoptosis_concentration_dependent,...
-			apoptosis_concentration_threshold,apoptosis_no_put_pc_above_threshold,...
-			apoptosis_no_put_pc_below_threshold,dead_chemical,delta_t,...
-			FEM_solve_logical,stats);
+			apoptosis_baseline_prob_per_unit_time,apoptosis_concentration_dependent,...
+			apoptosis_concentration_threshold,apoptosis_period,apoptosis_no_put_pc_above_threshold,...
+			apoptosis_no_put_pc_below_threshold,apoptosis_type,dead_chemical,delta_t,...
+			FEM_solve_logical,stats,time);
 		
 		cell_death_area_threshold = cell_death_area_threshold_factor*mean_cell_area;
 		

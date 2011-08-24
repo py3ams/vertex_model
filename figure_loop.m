@@ -11,8 +11,8 @@ length_cells = length(cells.vertices);
 
 patch_colour = repmat(normal_colour,length_cells,1); 
 patch_colour(cells.original_logical,:) = normal_colour;
-patch_colour(cells.state==3) = 'k';
-patch_colour(cells.state==2) = 'g';
+patch_colour(cells.state==3) = 'r';
+patch_colour(cells.state==2) = 'r';
 
 hold on
 for current_cell =1:length_cells

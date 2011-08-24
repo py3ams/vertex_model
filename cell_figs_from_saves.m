@@ -8,11 +8,11 @@ refinement_level = 2;
 save_figs_logical = 1;
 initial_fig_logical = 1;
 
-folder_name = 'ode_comparison/true_solution2/';
-saved_iterations = [1600 16000];
+folder_name = 'simulation_with_cell_proliferation';
+saved_iterations = [10000 100000];
 
 % we set these outside function so both cell_fig and fem_fig have access to them
-temp_axis_values = 0.58*[-1 1 -1 1];
+temp_axis_values = 1.5*[-1 1 -1 1];
 % temp_axis_values = [-0.1 0.1 -0.07 0.13];
 % apoptosis_figs
 % temp_axis_values = [0.115 0.215 0.195 0.295];
@@ -25,9 +25,9 @@ if initial_fig_logical
     
     % Cell fig
     
-    load(['Saves/',folder_name,'initial_save.mat'])
+    load(['Saves/',folder_name,'/initial_save.mat'])
     
-    fig_name = ['Cells_0'];
+    fig_name = ['cells_0'];
     cell_vertices = cells.vertices;
     vertex_positions = vertices.position;
     cell_fig(cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values)
@@ -57,17 +57,17 @@ end
 for unused_variable = 1:length(saved_iterations)
     
    % won't we get an error from the following line anyway?
-    if ~exist(['Saves/',folder_name,'iteration_',num2str(saved_iterations(unused_variable)),'.mat'],'file')
+    if ~exist(['Saves/',folder_name,'/iteration_',num2str(saved_iterations(unused_variable)),'.mat'],'file')
         error(['No save for iteration_',num2str(saved_iterations(unused_variable)),'.mat'])
     end
     
-    load(['Saves/',folder_name,'iteration_',num2str(saved_iterations(unused_variable)),'.mat']);
+    load(['Saves/',folder_name,'/iteration_',num2str(saved_iterations(unused_variable)),'.mat']);
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     cell_vertices = cells.vertices;
     vertex_positions = vertices.position;
-    fig_name = ['Cells_',num2str(saved_iterations(unused_variable))];
+    fig_name = ['cells_',num2str(saved_iterations(unused_variable))];
     cell_fig(cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values);
     
 
@@ -97,7 +97,7 @@ end
 % function more versatile
 function cell_fig(cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values)
 
-linewidth = 5;
+linewidth = 3.5;
 
 figure('position',[100 100 500 500],'color','white','PaperPositionMode','auto')
 axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
@@ -112,7 +112,9 @@ axis(temp_axis_values)
 % box on
 
 if save_figs_logical
-    saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
+   addpath('~/Documents/export_fig/')
+   export_fig(['Figs/',folder_name,'/',folder_name,'_',fig_name,'.eps'],'-nocrop');
+%    saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
 end
     % close;
 

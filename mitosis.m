@@ -273,6 +273,9 @@ if no_cells_to_divide > 0
 			cell_area_new_cells(1)/cell_area_cell_to_divide*cell_volume_cell_to_divide;
 		cells.volume(new_cell_2) =...
 			cell_area_new_cells(2)/cell_area_cell_to_divide*cell_volume_cell_to_divide;
+      
+      cells.initial_volume(new_cell_1) = cells.volume(new_cell_1);
+      cells.initial_volume(new_cell_2) = cells.volume(new_cell_2);
 		
 		cells.force_constants.area(new_cell_2) = cells.force_constants.area(new_cell_1);
 		cells.force_constants.deformation(new_cell_2) = cells.force_constants.deformation(new_cell_1);
