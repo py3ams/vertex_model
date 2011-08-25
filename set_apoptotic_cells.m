@@ -32,7 +32,8 @@ else
       
       if abs(round(time/apoptosis_period)-time/apoptosis_period)<1e-6
          
-         new_apoptotic_cells = find(~cells.boundary_logical&cells.state==1);
+         %          new_apoptotic_cells = find(~cells.boundary_logical&cells.state==1);
+         new_apoptotic_cells = find(cells.state==1);
          new_apoptotic_cells = new_apoptotic_cells(ceil(rand*length(new_apoptotic_cells)));
          
       else

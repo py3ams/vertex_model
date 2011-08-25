@@ -2,9 +2,9 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 100;
+total_time = 1;
 
-max_iterations = 10000;
+max_iterations = 1000;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
@@ -27,7 +27,7 @@ configuration_noise = 0.8;
 % can be 'square', 'random', or 'hexagonal'
 configuration_type = 'hexagonal';
 
-load_from_file_logical = false;
+load_from_file_logical = true;
 load_FEM_from_file_logical = false;
 file_to_load = 'Saves/new_ode_comparison/true_solution/initial_save';
 
@@ -211,7 +211,7 @@ source_width = [0.15 0.1];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 0;
+movie_logical = 1;
 
 axis_values = 1.5*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
@@ -264,6 +264,8 @@ compile_mex_functions(compile_mex_functions_logical);
 	gradient_type,grid_size,FEM_solve_logical,file_to_load,initial_concentration_magnitude,...
 	initial_force_constant_magnitudes,load_FEM_from_file_logical,load_from_file_logical,...
 	max_no_cells,medial_lateral_threshold_factor,no_chemicals,no_refinements,source_width);
+
+% cells.vertices{54}
 
 % cell_growth_speeds(original_cells) = -0.1;
 
