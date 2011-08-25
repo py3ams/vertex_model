@@ -106,41 +106,41 @@ axis_distribution_gradients = [0 time -0.2 0.2];
 %     max_axis_value = 1.1*max_gradient_value;
 % end
 
-gradient_volume_distribution_x = stats.normalised_volume_distribution_x(:,1);
-subplot(2,2,1)
-plot(time_range,gradient_volume_distribution_x)
-xlabel('Time')
-ylabel('Volume distribution gradient (x)')
-% axis(axis_distribution_gradients)
-a = axis;
-axis([a(1) time a(3) a(4)]) 
-
-gradient_volume_distribution_y = stats.normalised_volume_distribution_y(:,1);
-subplot(2,2,2)
-plot(time_range,gradient_volume_distribution_y)
-xlabel('Time')
-ylabel('Volume distribution gradient (y)')
-% axis(axis_distribution_gradients)
-a = axis;
-axis([a(1) time a(3) a(4)]) 
-
-gradient_area_distribution_x = stats.normalised_area_distribution_x(:,1);
-subplot(2,2,3)
-plot(time_range,gradient_area_distribution_x)
-xlabel('Time')
-ylabel('Area distribution gradient (x)')
-% axis(axis_distribution_gradients)
-a = axis;
-axis([a(1) time a(3) a(4)]) 
-
-gradient_area_distribution_y = stats.normalised_area_distribution_y(:,1);
-subplot(2,2,4)
-plot(time_range,gradient_area_distribution_y)
-xlabel('Time')
-ylabel('Area distribution gradient (y)')
-% axis(axis_distribution_gradients)
-a = axis;
-axis([a(1) time a(3) a(4)]) 
+% gradient_volume_distribution_x = stats.normalised_volume_distribution_x(:,1);
+% subplot(2,2,1)
+% plot(time_range,gradient_volume_distribution_x)
+% xlabel('Time')
+% ylabel('Volume distribution gradient (x)')
+% % axis(axis_distribution_gradients)
+% a = axis;
+% axis([a(1) time a(3) a(4)]) 
+% 
+% gradient_volume_distribution_y = stats.normalised_volume_distribution_y(:,1);
+% subplot(2,2,2)
+% plot(time_range,gradient_volume_distribution_y)
+% xlabel('Time')
+% ylabel('Volume distribution gradient (y)')
+% % axis(axis_distribution_gradients)
+% a = axis;
+% axis([a(1) time a(3) a(4)]) 
+% 
+% gradient_area_distribution_x = stats.normalised_area_distribution_x(:,1);
+% subplot(2,2,3)
+% plot(time_range,gradient_area_distribution_x)
+% xlabel('Time')
+% ylabel('Area distribution gradient (x)')
+% % axis(axis_distribution_gradients)
+% a = axis;
+% axis([a(1) time a(3) a(4)]) 
+% 
+% gradient_area_distribution_y = stats.normalised_area_distribution_y(:,1);
+% subplot(2,2,4)
+% plot(time_range,gradient_area_distribution_y)
+% xlabel('Time')
+% ylabel('Area distribution gradient (y)')
+% % axis(axis_distribution_gradients)
+% a = axis;
+% axis([a(1) time a(3) a(4)]) 
 
 if movie_logical == 2
 	M(frame_counter:frame_counter+no_frames_for_statistical_plots) = getframe(gcf);

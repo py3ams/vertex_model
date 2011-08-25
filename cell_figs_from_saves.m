@@ -5,17 +5,19 @@ disp('busy');close all;
 FEM_logical = 0;
 refinement_level = 2;
 
-save_figs_logical = 1;
+save_figs_logical = 0;
 initial_fig_logical = 1;
 
-folder_name = 'simulation_with_cell_proliferation';
-saved_iterations = [10000 100000];
+folder_name = 'test';
+saved_iterations = [20:30];
 
 % we set these outside function so both cell_fig and fem_fig have access to them
 temp_axis_values = 1.5*[-1 1 -1 1];
 % temp_axis_values = [-0.1 0.1 -0.07 0.13];
 % apoptosis_figs
 % temp_axis_values = [0.115 0.215 0.195 0.295];
+
+temp_axis_values = [0.05 0.55 -0.25 0.25];
 
 if ~exist(['Figs/',folder_name],'dir')
     mkdir('Figs/',folder_name);

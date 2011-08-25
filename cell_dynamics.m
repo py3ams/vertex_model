@@ -4,14 +4,14 @@ disp('busy');close all;clear all;tic;%profile on
 
 total_time = 1;
 
-max_iterations = 1000;
+max_iterations = 10000;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'simulation_of_all_forces_with_death';
+simulation_name = 'test';
 grid_size = [10,10];
 max_no_cells = 1000;
 
@@ -227,7 +227,8 @@ linewidth_elements = 1;
 movie_name = simulation_name;
 movie_start = 0;
 no_frames_for_statistical_plots = 100;
-update_period = max(floor(max_iterations/1000),1);
+% update_period = max(floor(max_iterations/1000),1);
+update_period = 1;
 view_FEM_mesh = 0;
 view_FEM_concentration = 1;
 view_initial_config = 1;
@@ -384,6 +385,8 @@ while true
 		
 		%         error('stop')
 		
+      test_cell_store(vertices.cells,cells.vertices,'before_T1_swaps',iteration);
+      
 		[cells.vertices,vertices.position,cells.FEM_elements,vertices.cells,vertices.no_cells,FEM_nodes.concentration,...
 			FEM_elements.nodes,no_T1_swaps_this_iteration,FEM_nodes.previous_position,...
 			vertices.time_created,FEM_nodes.edge,refined_edge_matrix_edits] =...
@@ -391,6 +394,9 @@ while true
 			vertices.cells,vertices.no_cells,FEM_nodes.concentration,FEM_elements.nodes,FEM_solve_logical,...
 			FEM_nodes.previous_position,protection_time,T1_probability,...
 			threshold_T1_swaps,time,vertices.time_created,FEM_nodes.edge);
+      
+      
+      test_cell_store(vertices.cells,cells.vertices,'T1_swaps',iteration);
 		
 		%          error('stop')
 		
