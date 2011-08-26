@@ -2,16 +2,16 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 100;
+total_time = 0.01;
 
-max_iterations = 10000;
+max_iterations = 100;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'simulation_of_all_forces_with_death';
+simulation_name = 'proliferation_figs';
 grid_size = [10,10];
 max_no_cells = 1000;
 
@@ -23,7 +23,7 @@ viscosity = 1;
 anneal_initial_configuration_logical = false;
 
 compile_mex_functions_logical = false;
-configuration_noise = 0.8;
+configuration_noise = 0.1;
 % can be 'square', 'random', or 'hexagonal'
 configuration_type = 'hexagonal';
 
@@ -132,7 +132,7 @@ mitosis_angles_type = 'uniform';
 % mitosis_dependence can currently be either 'volume' or 'area'
 mitosis_dependence = 'none';
 % this is only used if mitosos_dependence is set to 'none';
-mitosis_period = 0.1;
+mitosis_period = 0.001;
 
 % determines whether mitosis takes place at a set volume (a certain
 % fraction of the target volume) or stochastically. couldn't we just have a
@@ -243,7 +243,7 @@ end
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = false;
+full_saves_logical = true;
 full_saves_name = simulation_name;
 full_saves_period = max(floor(max_iterations/1000),1);
 % full_saves_period = 1;

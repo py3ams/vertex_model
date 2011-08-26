@@ -6,16 +6,18 @@ FEM_logical = 0;
 refinement_level = 2;
 
 save_figs_logical = 1;
-initial_fig_logical = 1;
+initial_fig_logical = 0;
 
-folder_name = 'simulation_with_cell_proliferation';
-saved_iterations = [10000 100000];
+folder_name = 'proliferation_figs';
+saved_iterations = [29 30];
 
 % we set these outside function so both cell_fig and fem_fig have access to them
-temp_axis_values = 1.5*[-1 1 -1 1];
+% % temp_axis_values = 1.5*[-1 1 -1 1];
 % temp_axis_values = [-0.1 0.1 -0.07 0.13];
 % apoptosis_figs
 % temp_axis_values = [0.115 0.215 0.195 0.295];
+% proliferation_figs
+temp_axis_values = [-0.125 0.025 -0.015 0.115];
 
 if ~exist(['Figs/',folder_name],'dir')
     mkdir('Figs/',folder_name);
@@ -97,7 +99,7 @@ end
 % function more versatile
 function cell_fig(cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values)
 
-linewidth = 3.5;
+linewidth = 6;
 
 figure('position',[100 100 500 500],'color','white','PaperPositionMode','auto')
 axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
@@ -105,7 +107,7 @@ axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w
 
 hold on
 for current_cell = 1:length(cell_vertices)
-    patchAS(vertex_positions(cell_vertices{current_cell},:),'r',linewidth)
+    patchAS(vertex_positions(cell_vertices{current_cell},:),'w',linewidth)
 end
 
 axis(temp_axis_values)
