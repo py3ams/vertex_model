@@ -1,5 +1,9 @@
 function [FEM_elements,FEM_nodes,cell_elements] =...
-   create_FEM_mesh(cells,vertices,no_refinements)
+   create_FEM_mesh(cells,vertices,no_refinements,no_mitosis_flag)
+
+if nargin<4
+   no_mitosis_flag = false;
+end
 
 % there are two distincts cases here. we can't have no_refinements > 0 if any
 % rearrangements are going off. if no_refinements==0 and there are rearrangements
@@ -7,7 +11,7 @@ function [FEM_elements,FEM_nodes,cell_elements] =...
 % are created by default during mitosis. if no_refinements>0 these edge nodes are not
 % required, but extra nodes for the refinements obviously are.
 
-if no_refinements > 0
+if no_refinements > 0 || no_mitosis_flag
 
     % size of the vectors to set aside to store node positions of the nodes
     % associated with different levels of refinement. these values are multiplied by
