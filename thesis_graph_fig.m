@@ -2,8 +2,8 @@ function thesis_graph_fig()
 
 disp('busy');close all;
 
-folder_name = 'simulation_with_cell_proliferation';
-plot_name = 'cell_areas';
+folder_name = 'simulation_with_cell_death';
+plot_name = 'height_to_area_ratios';
 save_plot_logical = 1;
 
 linewidth = 2;

@@ -5,7 +5,7 @@ disp('busy');close all;
 FEM_logical = 0;
 refinement_level = 2;
 
-save_figs_logical = 0;
+save_figs_logical = 1;
 initial_fig_logical = 1;
 
 folder_name = 'simulation_with_cell_death';
@@ -19,7 +19,7 @@ temp_axis_values = 1.5*[-1 1 -1 1];
 
 % temp_axis_values = [0.05 0.55 -0.25 0.25];
 
-if ~exist(['Figs/',folder_name],'dir')
+if save_figs_logical && ~exist(['Figs/',folder_name],'dir')
     mkdir('Figs/',folder_name);
 end
 

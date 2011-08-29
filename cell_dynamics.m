@@ -58,7 +58,7 @@ initial_force_constant_magnitudes.elongation = 1e-3;
 initial_force_constant_magnitudes.perimeter = 5e-2;
 initial_force_constant_magnitudes.tension = 1e-1;
 
-boundary_force_constants.deformation = 1e-0;
+boundary_force_constants.deformation = 1e-1;
 boundary_force_constants.edge = 5e1;
 
 % For ~250 cells
@@ -227,16 +227,17 @@ linewidth_elements = 1;
 movie_name = simulation_name;
 movie_start = 0;
 no_frames_for_statistical_plots = 100;
-% update_period = max(floor(max_iterations/1000),1);
-update_period = 1;
+update_period = max(floor(max_iterations/1000),1);
+% update_period = 1;
 view_FEM_mesh = 0;
 view_FEM_concentration = 1;
-view_initial_config = 0;
 view_iteration_number = 0;
 view_number_cells = 1;
 
 if movie_logical
    view_initial_config = 0;
+else
+   view_initial_config = 1;
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -385,7 +386,7 @@ while true
 		
 		%         error('stop')
 		
-      test_cell_store(vertices.cells,cells.vertices,'before_T1_swaps',iteration);
+%       test_cell_store(vertices.cells,cells.vertices,'before_T1_swaps',iteration);
       
 		[cells.vertices,vertices.position,cells.FEM_elements,vertices.cells,vertices.no_cells,FEM_nodes.concentration,...
 			FEM_elements.nodes,no_T1_swaps_this_iteration,FEM_nodes.previous_position,...
@@ -396,7 +397,7 @@ while true
 			threshold_T1_swaps,time,vertices.time_created,FEM_nodes.edge);
       
       
-      test_cell_store(vertices.cells,cells.vertices,'T1_swaps',iteration);
+%       test_cell_store(vertices.cells,cells.vertices,'T1_swaps',iteration);
 		
 		%          error('stop')
 		
