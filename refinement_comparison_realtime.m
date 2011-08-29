@@ -4,10 +4,13 @@ disp('busy');close all;clear all;tic;%profile on
 % number of refinements will increase by one each time (equivalent to halving the
 % spatial step) and the number of iterations doubles, halving the time step
 iterations_in_first_test_solution = 500;
-no_test_solutions = 1;
+no_test_solutions = 5;
 
-iterations_in_true_solution = 1000;
-no_refinements_in_true_solution = 1;
+iterations_in_true_solution = 8000;
+no_refinements_in_true_solution = 4;
+
+load_initial_cells_from_file_logical = true;
+file_to_load = 'Saves/refinement_comparison_movie/initial_save.mat';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -18,18 +21,18 @@ simulation_name = ['true_iterations_',num2str(iterations_in_true_solution),...
 configuration_noise = 0.5;
 configuration_type = 'hexagonal';
 grid_size = [10,10];
-viscosity = 0.01;
+viscosity = 1;
 
 target_area_factor = 1.0;
 
-initial_force_constant_magnitudes.area = 1e0;
-initial_force_constant_magnitudes.deformation = 5e-4;
-initial_force_constant_magnitudes.elongation = 1e-5;
-initial_force_constant_magnitudes.perimeter = 1e-4;
-initial_force_constant_magnitudes.tension = 2e-4;
+initial_force_constant_magnitudes.area = 2000;
+initial_force_constant_magnitudes.deformation = 1e-1;
+initial_force_constant_magnitudes.elongation = 1e-3;
+initial_force_constant_magnitudes.perimeter = 5e-2;
+initial_force_constant_magnitudes.tension = 1e-1;
 
-boundary_force_constants.deformation = 5e-3;
-boundary_force_constants.edge = 1e-1;
+boundary_force_constants.deformation = 1e-1;
+boundary_force_constants.edge = 5e1;
 
 diffusion_speed = 0.1;
 initial_concentration_magnitude = 0.1;
@@ -61,8 +64,18 @@ full_saves_period = 8;
 max_no_cells = prod(grid_size);
 no_vertices = 4*max_no_cells;
 
-[cells.vertices,vertices.position] =...
-    initial_cell_mesh(no_vertices,configuration_noise,configuration_type,grid_size);
+if load_initial_cells_from_file_logical
+   
+   loaded_vars = load(file_to_load);
+   cells.vertices = loaded_vars.cells.vertices;
+   vertices.position = loaded_vars.vertices.position;
+   
+else
+
+   [cells.vertices,vertices.position] =...
+      initial_cell_mesh(no_vertices,configuration_noise,configuration_type,grid_size);
+
+end
 
 no_cells = length(cells.vertices);
 cells.original_logical = true(no_cells,1);

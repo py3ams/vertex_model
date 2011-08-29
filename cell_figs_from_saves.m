@@ -2,22 +2,22 @@ function cell_figs_from_saves()
 
 disp('busy');close all;
 
-FEM_logical = 0;
-refinement_level = 2;
+FEM_logical = 1;
+refinement_level = 1;
 
-save_figs_logical = 1;
-initial_fig_logical = 0;
+save_figs_logical = 0;
+initial_fig_logical = 1;
 
-folder_name = 'proliferation_figs';
-saved_iterations = [29 30];
+folder_name = 'refinement_comparison_movie';
+saved_iterations = [100 1000];
 
 % we set these outside function so both cell_fig and fem_fig have access to them
-% % temp_axis_values = 1.5*[-1 1 -1 1];
+temp_axis_values = 0.65*[-1 1 -1 1];
 % temp_axis_values = [-0.1 0.1 -0.07 0.13];
 % apoptosis_figs
 % temp_axis_values = [0.115 0.215 0.195 0.295];
 % proliferation_figs
-temp_axis_values = [-0.125 0.025 -0.015 0.115];
+% temp_axis_values = [-0.125 0.025 -0.015 0.115];
 
 % temp_axis_values = [0.05 0.55 -0.25 0.25];
 
@@ -109,7 +109,7 @@ axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w
 
 hold on
 for current_cell = 1:length(cell_vertices)
-    patchAS(vertex_positions(cell_vertices{current_cell},:),'w',linewidth)
+    patchAS(vertex_positions(cell_vertices{current_cell},:),'r',linewidth)
 end
 
 axis(temp_axis_values)
@@ -127,55 +127,48 @@ end
 function fem_fig(FEM_element_nodes,FEM_node_positions,FEM_node_concentrations,...
     cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values)
 
-cell_mesh_logical = true;
-FEM_figs_logical = true;
-Dpp_view = [0 90];
+cell_concentration_logical = true;
+Dpp_view = [0 60];
+linewidth = 1;
 temp_axis_values_FEM = [temp_axis_values 0 0.1];
 caxis_vals = [0 0.1];
 green1 = [50,180,50]/255;
-% green2 = [50,255,50]/255;
 white = [255,255,0]/255;
 colormap_val = [linspace(green1(1),white(1),300)' ...
     linspace(green1(2),white(2),300)' linspace(green1(3),white(3),300)'];
-% colormap_val = 'summer';
-% colormap_val = [0 150 256]/256;
 shading_style = 'faceted';
 
-if FEM_figs_logical
-    
-    figure('position',[100 100 500 500],'color','white','PaperPositionMode','auto')
-    axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
-        'zcolor','w','ticklength',[0 0],'xtick',[],'ytick',[])
-    
-    FEM_element_nodes = FEM_element_nodes(FEM_element_nodes(:,1)>0,:);
-    
-    if cell_mesh_logical
+figure('position',[100 100 500 500],'color','white','PaperPositionMode','auto')
+axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
+   'zcolor','w','ticklength',[0 0],'xtick',[],'ytick',[])
 
-        trisurf(FEM_element_nodes,FEM_node_positions(:,1),FEM_node_positions(:,2),...
-            zeros(length(FEM_node_positions(:,1)),1),'linewidth',1)
-        
-        grid off;axis off;shading(shading_style);axis(temp_axis_values);
-        caxis(caxis_vals);colormap(colormap_val);view(Dpp_view);
-        
-        hold on
-        cellfun(@(x)patch(vertex_positions(x,1),vertex_positions(x,2),'k','linewidth',3,'FaceAlpha',0),cell_vertices);
-       
-    else
-        
-        trisurf(FEM_element_nodes,FEM_node_positions(:,1),FEM_node_positions(:,2),...
-            FEM_node_concentrations,'linewidth',1)
-        
-        grid off;axis off;shading(shading_style);axis(temp_axis_values_FEM);
-        caxis(caxis_vals);colormap(colormap_val);view(Dpp_view);
-        
-    end
-    
-    if save_figs_logical
-        saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
-    end
-    % close;
-    
+FEM_element_nodes = FEM_element_nodes(FEM_element_nodes(:,1)>0,:);
+
+if ~cell_concentration_logical
+   
+   trisurf(FEM_element_nodes,FEM_node_positions(:,1),FEM_node_positions(:,2),...
+      zeros(length(FEM_node_positions(:,1)),1),'linewidth',linewidth)
+   
+   grid off;axis off;shading(shading_style);axis(temp_axis_values);
+   caxis(caxis_vals);colormap(colormap_val);view(Dpp_view);
+   
+   hold on
+   cellfun(@(x)patch(vertex_positions(x,1),vertex_positions(x,2),'k','linewidth',3,'FaceAlpha',0),cell_vertices);
+   
+else
+   
+   trisurf(FEM_element_nodes,FEM_node_positions(:,1),FEM_node_positions(:,2),...
+      FEM_node_concentrations,'linewidth',linewidth)
+   
+   grid off;axis off;shading(shading_style);axis(temp_axis_values_FEM);
+   caxis(caxis_vals);colormap(colormap_val);view(Dpp_view);
+   
 end
+
+if save_figs_logical
+   saveas(gcf,['Figs/',folder_name,fig_name,'.eps'],'psc2')
+end
+% close;
 
 end
 

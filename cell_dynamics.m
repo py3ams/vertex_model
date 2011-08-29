@@ -2,19 +2,19 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 1;
+total_time = 0.5;
 
-max_iterations = 1000;
-no_refinements = 0;
+max_iterations = 500;
+no_refinements = 1;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = '';
+simulation_name = 'refinement_comparison_movie';
 
 grid_size = [10,10];
-max_no_cells = 2000;
+max_no_cells = 100;
 
 delta_t = total_time/max_iterations;
 viscosity = 1;
@@ -24,7 +24,7 @@ viscosity = 1;
 anneal_initial_configuration_logical = false;
 
 compile_mex_functions_logical = false;
-configuration_noise = 0.1;
+configuration_noise = 0.65;
 % can be 'square', 'random', or 'hexagonal'
 configuration_type = 'hexagonal';
 
@@ -88,7 +88,7 @@ tension_anisotropy_factor = 0.0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex rearrangement parameters %%%%%%%%%%%%%%%%%%%%%%%%%
 
-T1_swaps_logical = true;
+T1_swaps_logical = false;
 T1_swaps_start = 0;
 T1_probability = 1.0;
 
@@ -99,10 +99,10 @@ protection_time = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Cell growth and mitosis parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
-cell_growth_logical = true;
+cell_growth_logical = false;
 cell_growth_start = 0;
 cell_growth_concentration_dependent = false;
-mitosis_logical = true;
+mitosis_logical = false;
 
 % solver_type 1 = numerical, 2 = analytic
 growth_solver_type = 2;
@@ -154,7 +154,7 @@ target_volume_factor = 1.1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cell death parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cell_death_logical = true;
+cell_death_logical = false;
 cell_death_start = 0;
 
 % sets the area threshold below which cells can die, as a fraction of the mean area.
@@ -178,7 +178,7 @@ apoptosis_period = 0.2;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FEM parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FEM_solve_logical = false;
+FEM_solve_logical = true;
 
 % mesh_refinement_threshold_factor = 1.2;
 mesh_refinement_threshold_factor = 10;
@@ -214,7 +214,7 @@ source_width = [0.15 0.1];
 
 movie_logical = 2;
 
-axis_values = 1.5*[-1 1 -1 1];
+axis_values = 0.65*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
 % axis_values = 'equal';
 % axis_values_FEM = [-1 1 -1 1 -0.5 1.5];
@@ -230,10 +230,10 @@ movie_start = 0;
 no_frames_for_statistical_plots = 100;
 update_period = max(floor(max_iterations/1000),1);
 % update_period = 1;
-view_FEM_mesh = 0;
+view_FEM_mesh = 1;
 view_FEM_concentration = 1;
 view_iteration_number = 0;
-view_number_cells = 1;
+view_number_cells = 0;
 
 if movie_logical
    view_initial_config = 0;
@@ -613,16 +613,16 @@ while true
 	
 	if movie_logical == 2 && iteration > movie_start && ~rem(iteration,update_period)
 		
-		M(frame_counter) = getframe(gcf);
+		F(frame_counter) = getframe(gcf);
 		frame_counter = frame_counter+1;
 		
 		if frame_counter > 10
-			mpgwrite(M,jet,[movie_location,'update.mpg']);
+			mpgwrite(F,jet,[movie_location,'update.mpg']);
 			system(['cat ',movie_location,movie_name,'.mpg ',movie_location,...
 				'update.mpg > ',movie_location,'temp.mpg']);
 			system(['mv ',movie_location,'temp.mpg ',movie_location,...
 				movie_name,'.mpg']);
-			clear M
+			clear F
 			frame_counter = 1;
 		end
 	end
@@ -678,8 +678,8 @@ visualiser(cells,vertices,FEM_elements,FEM_nodes,axis_values,...
     view_iteration_number,view_number_cells);
 
 if movie_logical == 2
-	M(frame_counter) = getframe(gcf);
-	mpgwrite(M,jet,[movie_location,'update.mpg']);
+	F(frame_counter) = getframe(gcf);
+	mpgwrite(F,jet,[movie_location,'update.mpg']);
 	system(['cat ',movie_location,movie_name,'.mpg ',movie_location,...
 		'update.mpg > ',movie_location,'temp.mpg']);
 	system(['mv ',movie_location,'temp.mpg ',movie_location,...
