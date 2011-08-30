@@ -42,6 +42,8 @@ gradient_type = 4;
 
 tension_anisotropy_factor = 0.0;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 movie_logical = false;
 chemical_to_view = 1;
 view_FEM_concentration = true;
@@ -86,8 +88,16 @@ cells.state = ones(no_cells,1);
 cells.area = CalculateCellAreas(cells.vertices,vertices.position);
 mean_volume = mean(sqrt(cells.area.^3));
 
-cells.volume = max(mean_volume*(1+0.5*randn(no_cells,1)),...
-    0.2*mean_volume*ones(no_cells,1));
+if load_initial_cells_from_file_logical
+   
+   cells.volume = loaded_vars.cells.volume;
+   
+else
+
+   cells.volume = max(mean_volume*(1+0.5*randn(no_cells,1)),...
+      0.2*mean_volume*ones(no_cells,1));
+   
+end
 
 cells.target_area = target_area_factor*mean(cells.area)*ones(no_cells,1);
 
@@ -101,8 +111,6 @@ cells.force_constants.perimeter =...
     initial_force_constant_magnitudes.perimeter*ones(no_cells,1);
 cells.force_constants.tension =...
     initial_force_constant_magnitudes.tension*ones(no_cells,1);
-
-no_cells = length(cells.vertices);
 
 full_saves_location = [root_directory,simulation_name];
 
