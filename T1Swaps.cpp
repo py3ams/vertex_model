@@ -8,10 +8,12 @@
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	
-	if (nrhs != 15) {
-		mexErrMsgTxt("15 input arguments required");
+	if (nrhs != 16) {
+		mexErrMsgTxt("16 input arguments required");
 	}
 	
+//    printf("hello \n");
+   
 	unsigned no_cells = mxGetM(prhs[0]);
 	unsigned array_sizes = mxGetM(prhs[1]);
 // don't delete again - no_cell_elements is not neccessarily the same as no_cells if FEM_solve_logical is false
@@ -35,10 +37,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	double* initial_previous_FEM_node_positions = mxGetPr(prhs[8]);
 	double protection_time = mxGetScalar(prhs[9]);
 	double T1_probability = mxGetScalar(prhs[10]);
-	double threshold_T1_swaps = mxGetScalar(prhs[11]);
-	double time = mxGetScalar(prhs[12]);
-	double* initial_time_vertices_created = mxGetPr(prhs[13]);
-	double* initial_FEM_nodes_edge = mxGetPr(prhs[14]);
+   bool* refine_edges_logical = mxGetLogicals(prhs[11]);
+	double threshold_T1_swaps = mxGetScalar(prhs[12]);
+	double time = mxGetScalar(prhs[13]);
+	double* initial_time_vertices_created = mxGetPr(prhs[14]);
+	double* initial_FEM_nodes_edge = mxGetPr(prhs[15]);
 	
 	plhs[0] = mxCreateCellMatrix(no_cells, 1);
 	plhs[1] = mxCreateDoubleMatrix(array_sizes, 2, mxREAL);
@@ -228,7 +231,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 						// update - i think it's probably fine if the stretch cells don't exist. there's no reason why it wouldn't work without them
 						
 						if(cell_with_same_edge_found){
-							
+
 							unsigned cell_with_same_edge_ci = cell_with_same_edge_mi-1;
 							
 							mxArray* mx_cell_vertices_cell_with_same_edge = mxGetCell(plhs[0], cell_with_same_edge_ci);
@@ -322,7 +325,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 								}
 								mxSetCell(plhs[0], current_cell_ci, mx_cell_vertices_edited);
 								
-// 								printf("edited cell_vertices \n");
+								// printf("edited cell_vertices \n");
 								
 								final_cells_per_vertex[new_vertex_1_ci] = 1;
 								final_vertex_cells[new_vertex_1_ci] = current_cell_mi;
@@ -348,7 +351,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 								}
 								mxSetCell(plhs[0], cell_with_same_edge_ci, mx_cell_vertices_cell_with_same_edge_edited);
 								
-// 								printf("edited cell_vertices_cell_with_same_edge \n");
+								// printf("edited cell_vertices_cell_with_same_edge \n");
 								
 								final_cells_per_vertex[new_vertex_2_ci] = 1;
 								final_vertex_cells[new_vertex_2_ci] = cell_with_same_edge_mi;
@@ -457,7 +460,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 											}
 											mxSetCell(plhs[0], stretch_cell_2_global_ci, mx_cell_vertices_stretch_cell_2_edited);
 											
-//                                             printf("Edited stretch cells \n");
+                                            // printf("Edited stretch cells \n");
 											
 											// add stretch cell 2 to cells_per_vertex and vertex_cells for new_vertex_1 and new_vertex_2
 											final_cells_per_vertex[new_vertex_1_ci]++;
@@ -492,6 +495,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 								// at this point the cells should be completely edited. we can now do all the FEM stuff
 								if(*FEM_solve_logical){
 									
+                           // printf("Doing FEM stuff \n");
+                           
 									unsigned new_node_1_ci = new_vertex_1_ci;
 									unsigned new_node_2_ci = new_vertex_2_ci;
 									
@@ -560,8 +565,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 												break;
 											}
 											
-											// if the element contains instead just one old node we need to replace it with the appropriate new node
-											
+											// if the element contains instead just one old node we need to replace it with the appropriate new node.
+											// ELEMENT 1
 											else if(temp_current_FEM_node_mi==current_vertex_global_mi &&
 													temp_clockwise_FEM_node_mi==(no_FEM_nodes-no_cells+current_cell_mi)){
 												
@@ -577,99 +582,106 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 													// the stretch cells do not exist, so it is important to do it here with the current_cell and cell_with_same_edge,
 													// which must both exist during a T1 swap.
 													
-													if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci]==current_vertex_global_mi){
-														
-														final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci] = new_vertex_1_mi;
-														
-														// refined_edge_matrix is sparse in Matlab, so refined_edge_matrix_edits is an Nx3 matrix with the
-													    // row and column index of the change then a 0 or 1.
-														no_refined_edge_matrix_edits++;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = current_vertex_global_mi;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
-																final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes];
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 0;
-														
-														no_refined_edge_matrix_edits++;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = new_vertex_1_mi;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
-																final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes];
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 1;
-														
-													}
-													
-													// this is the case where current_vertex_global happens to be in the second column of FEM_nodes_edge
-													// at the temp_anti_clockwise_FEM_node_ci.
-													
-													else if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes]==current_vertex_global_mi){
-														
-														final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes] = new_vertex_1_mi;
-														
-														no_refined_edge_matrix_edits++;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = current_vertex_global_mi;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
-																final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci];
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 0;
-														
-														no_refined_edge_matrix_edits++;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = new_vertex_1_mi;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
-																final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci];
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 1;
-														
-													}
-												}
+                                       if(*refine_edges_logical){
+                                       
+                                          if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci]==current_vertex_global_mi){
+                                             
+                                             final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci] = new_vertex_1_mi;
+                                             
+                                             // refined_edge_matrix is sparse in Matlab, so refined_edge_matrix_edits is an Nx3 matrix with the
+                                             // row and column index of the change then a 0 or 1.
+                                             no_refined_edge_matrix_edits++;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = current_vertex_global_mi;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
+                                                     final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes];
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 0;
+                                             
+                                             no_refined_edge_matrix_edits++;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = new_vertex_1_mi;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
+                                                     final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes];
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 1;
+                                             
+                                          }
+                                          
+                                          // this is the case where current_vertex_global happens to be in the second column of FEM_nodes_edge
+                                          // at the temp_anti_clockwise_FEM_node_ci.
+                                          
+                                          else if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes]==current_vertex_global_mi){
+                                             
+                                             final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes] = new_vertex_1_mi;
+                                             
+                                             no_refined_edge_matrix_edits++;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = current_vertex_global_mi;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
+                                                     final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci];
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 0;
+                                             
+                                             no_refined_edge_matrix_edits++;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = new_vertex_1_mi;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
+                                                     final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci];
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 1;
+                                             
+                                          }
+                                       }
+                                    }
 												
 												break;
 												
 											}
 											
+                                 // ELEMENT 2
 											else if(temp_current_FEM_node_mi==(no_FEM_nodes-no_cells+current_cell_mi) &&
 													temp_clockwise_FEM_node_mi==clockwise_vertex_global_mi){
 												
 												final_FEM_elements[current_element_ci+((j+1)%3)*no_FEM_elements] = new_node_1_mi;
 												
-												// check if the third node is an edge node
-												if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci]>0){
-													
-													// check whether clockwise_vertex_global is in the first column of the edge
-													if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci]==clockwise_vertex_global_mi){
-														
-														final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci] = new_vertex_1_mi;
-														
-														no_refined_edge_matrix_edits++;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = clockwise_vertex_global_mi;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
-																final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes];
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 0;
-														
-														no_refined_edge_matrix_edits++;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = new_vertex_1_mi;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
-																final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes];
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 1;
-														
-													}
-													
-													// alternatively check if clockwise_vertex_global is in the second column of the edge. again this line
-													// could be done away with, as if the node is not in the first column it should be in the second column.
-													// we have already checked that the node is an edge node.
-													else if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes]==clockwise_vertex_global_mi){
-														
-														final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes] = new_vertex_1_mi;
-														
-														no_refined_edge_matrix_edits++;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = clockwise_vertex_global_mi;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
-																final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci];
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 0;
-														
-														no_refined_edge_matrix_edits++;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = new_vertex_1_mi;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
-																final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci];
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 1;
-														
-													}
+                                    if(*refine_edges_logical){
+                                    
+                                       // check if the third node is an edge node
+                                       if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci]>0){
+                                          
+                                          // check whether clockwise_vertex_global is in the first column of the edge
+                                          if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci]==clockwise_vertex_global_mi){
+                                             
+                                             final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci] = new_vertex_1_mi;
+                                             
+                                             no_refined_edge_matrix_edits++;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = clockwise_vertex_global_mi;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
+                                                     final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes];
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 0;
+                                             
+                                             no_refined_edge_matrix_edits++;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = new_vertex_1_mi;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
+                                                     final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes];
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 1;
+                                             
+                                          }
+                                          
+                                          // alternatively check if clockwise_vertex_global is in the second column of the edge. again this line
+                                          // could be done away with, as if the node is not in the first column it should be in the second column.
+                                          // we have already checked that the node is an edge node.
+                                          else if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes]==clockwise_vertex_global_mi){
+                                             
+                                             final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes] = new_vertex_1_mi;
+                                             
+                                             no_refined_edge_matrix_edits++;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = clockwise_vertex_global_mi;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
+                                                     final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci];
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 0;
+                                             
+                                             no_refined_edge_matrix_edits++;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = new_vertex_1_mi;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
+                                                     final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci];
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 1;
+                                             
+                                          }
+                                       }
 												}
 											}
 										}
@@ -686,20 +698,26 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 									
 									mxSetCell(plhs[2], current_cell_ci, mx_current_cell_elements_edited);
 									
+                           // printf("edited elements current cell \n");
+                           
 									// now, let's do the same with cell_with_same_edge
 									
-									mxArray* mx_cell_with_same_remove_this_elements = mxGetCell(plhs[2], cell_with_same_edge_ci);
-									double* cell_with_same_remove_this_elements_mi = mxGetPr(mx_cell_with_same_remove_this_elements);
+									mxArray* mx_cell_with_same_edge_elements = mxGetCell(plhs[2], cell_with_same_edge_ci);
+									double* cell_with_same_edge_elements_mi = mxGetPr(mx_cell_with_same_edge_elements);
 									
-									unsigned no_elements_cell_with_same_edge = mxGetN(mx_cell_with_same_remove_this_elements);
-									
-									mxArray* mx_cell_with_same_remove_this_elements_edited = mxCreateDoubleMatrix(1, no_elements_cell_with_same_edge-1, mxREAL);
-									double* cell_with_same_remove_this_elements_edited = mxGetPr(mx_cell_with_same_remove_this_elements_edited);
-									
+                           // printf("hello1 \n");
+                           
+									unsigned no_elements_cell_with_same_edge = mxGetN(mx_cell_with_same_edge_elements);
+									// printf("hello2 \n");
+									mxArray* mx_cell_with_same_edge_elements_edited = mxCreateDoubleMatrix(1, no_elements_cell_with_same_edge-1, mxREAL);
+									// printf("hello3 \n");
+                           double* cell_with_same_edge_elements_edited = mxGetPr(mx_cell_with_same_edge_elements_edited);
+									// printf("hello4 \n");
 									temp_counter = -1;
+                           // printf("hello5 \n");
 									for(unsigned i=0;i<no_elements_cell_with_same_edge;i++){
-										
-										unsigned current_element_mi = (unsigned)cell_with_same_remove_this_elements_mi[i];
+// 										 printf("hello4 \n");
+										unsigned current_element_mi = (unsigned)cell_with_same_edge_elements_mi[i];
 										unsigned current_element_ci = current_element_mi-1;
 										
 										bool remove_this_element = false;
@@ -715,6 +733,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 													(unsigned)final_FEM_elements[current_element_ci+((j-1)%3)*no_FEM_elements];
 											unsigned temp_anti_clockwise_FEM_node_ci = temp_anti_clockwise_FEM_node_mi-1;
 											
+                                 // remove this element
 											if(temp_current_FEM_node_mi==clockwise_vertex_global_mi &&
 													temp_clockwise_FEM_node_mi == current_vertex_global_mi){
 												
@@ -729,115 +748,124 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 												break;
 											}
 											
-											// may need to play with FEM_nodes_edge and refined_edge_matrix here
+											// ELEMENT 1 to edit
 											
 											else if(temp_current_FEM_node_mi==clockwise_vertex_global_mi &&
 													temp_clockwise_FEM_node_mi==(no_FEM_nodes-no_cells+cell_with_same_edge_mi)){
 												
 												final_FEM_elements[current_element_ci+j*no_FEM_elements] = new_vertex_2_mi;
 												
-												// see above (comments in current_cell) for what is going on here
-												if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci]>0){
-													
-													if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci]==clockwise_vertex_global_mi){
-														
-														final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci] = new_vertex_2_mi;
-														
-														no_refined_edge_matrix_edits++;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = clockwise_vertex_global_mi;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
-																final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes];
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 0;
-														
-														no_refined_edge_matrix_edits++;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = new_vertex_2_mi;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
-																final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes];
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 1;
-														
-													}
-
-													else if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes]==clockwise_vertex_global_mi){
-														
-														final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes] = new_vertex_2_mi;
-														
-														no_refined_edge_matrix_edits++;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = clockwise_vertex_global_mi;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
-																final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci];
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 0;
-														
-														no_refined_edge_matrix_edits++;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = new_vertex_2_mi;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
-																final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci];
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 1;
-														
-													}
-												}
-												break;
+                                    if(*refine_edges_logical){
+                                    
+                                       // see above (comments in current_cell) for what is going on here
+                                       if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci]>0){
+                                          
+                                          if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci]==clockwise_vertex_global_mi){
+                                             
+                                             final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci] = new_vertex_2_mi;
+                                             
+                                             no_refined_edge_matrix_edits++;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = clockwise_vertex_global_mi;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
+                                                     final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes];
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 0;
+                                             
+                                             no_refined_edge_matrix_edits++;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = new_vertex_2_mi;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
+                                                     final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes];
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 1;
+                                             
+                                          }
+                                          
+                                          else if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes]==clockwise_vertex_global_mi){
+                                             
+                                             final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes] = new_vertex_2_mi;
+                                             
+                                             no_refined_edge_matrix_edits++;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = clockwise_vertex_global_mi;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
+                                                     final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci];
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 0;
+                                             
+                                             no_refined_edge_matrix_edits++;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = new_vertex_2_mi;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
+                                                     final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci];
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 1;
+                                             
+                                          }
+                                       }
+                                    }
+                                    break;
 												
 											}
 											
+                                 // ELEMENT 2 to edit
 											else if(temp_current_FEM_node_mi==(no_FEM_nodes-no_cells+cell_with_same_edge_mi) &&
 													temp_clockwise_FEM_node_mi==current_vertex_global_mi){
 												
 												final_FEM_elements[current_element_ci+((j+1)%3)*no_FEM_elements] = new_vertex_2_mi;
 												
-												if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci]>0){
-													
-													if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci]==current_vertex_global_mi){
-														
-														final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci] = new_vertex_2_mi;
-														
-														no_refined_edge_matrix_edits++;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = current_vertex_global_mi;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
-																final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes];
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 0;
-														
-														no_refined_edge_matrix_edits++;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = new_vertex_2_mi;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
-																final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes];
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 1;
-														
-													}
-													
-													// see comments above about what is going on here. this is the case where current_vertex_global happens
-													// to be in the second column of FEM_nodes_edge at the temp_anti_clockwise_FEM_node_ci.
-													else if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes]==current_vertex_global_mi){
-														
-														final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes] = new_vertex_2_mi;
-														
-														no_refined_edge_matrix_edits++;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = current_vertex_global_mi;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
-																final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci];
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 0;
-														
-														no_refined_edge_matrix_edits++;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = new_vertex_2_mi;
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
-																final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci];
-														refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 1;
-														
-													}
-												}
-											}
-										}
+												if(*refine_edges_logical){
+                                       
+                                       if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci]>0){
+                                          
+                                          if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci]==current_vertex_global_mi){
+                                             
+                                             final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci] = new_vertex_2_mi;
+                                             
+                                             no_refined_edge_matrix_edits++;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = current_vertex_global_mi;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
+                                                     final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes];
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 0;
+                                             
+                                             no_refined_edge_matrix_edits++;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = new_vertex_2_mi;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
+                                                     final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes];
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 1;
+                                             
+                                          }
+                                          
+                                          // see comments above about what is going on here. this is the case where current_vertex_global happens
+                                          // to be in the second column of FEM_nodes_edge at the temp_anti_clockwise_FEM_node_ci.
+                                          else if(final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes]==current_vertex_global_mi){
+                                             
+                                             final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci+no_FEM_nodes] = new_vertex_2_mi;
+                                             
+                                             no_refined_edge_matrix_edits++;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = current_vertex_global_mi;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
+                                                     final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci];
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 0;
+                                             
+                                             no_refined_edge_matrix_edits++;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1] = new_vertex_2_mi;
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+max_no_refined_edge_matrix_edits] =
+                                                     final_FEM_nodes_edge[temp_anti_clockwise_FEM_node_ci];
+                                             refined_edge_matrix_edits[no_refined_edge_matrix_edits-1+2*max_no_refined_edge_matrix_edits] = 1;
+                                             
+                                          }
+                                       }
+                                    }
+                                 }
+                              }
 										
 										if(!remove_this_element){
-											
+// 											 printf("hello \n");
 											temp_counter++;
-											cell_with_same_remove_this_elements_edited[temp_counter] = current_element_mi;
-											
+											cell_with_same_edge_elements_edited[temp_counter] = current_element_mi;
+// 											 printf("hello \n");
 										}
 										
 									}
 									
-									mxSetCell(plhs[2], cell_with_same_edge_ci, mx_cell_with_same_remove_this_elements_edited);
+									mxSetCell(plhs[2], cell_with_same_edge_ci, mx_cell_with_same_edge_elements_edited);
 									
+//                            printf("edited elements cell with same edge \n");
+                           
 									if(stretch_cell_1_exists){
 										
 										mxArray* mx_stretch_cell_1_elements = mxGetCell(plhs[2], stretch_cell_1_global_ci);

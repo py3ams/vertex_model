@@ -461,7 +461,7 @@ ylabel('Total concentration in system')
 %     axis_values = axis;
 %     axis([axis_values(1) time axis_values(3) axis_values(4)])
 % end
-axis(a)
+% axis(a)
 
 % concentration_released_per_iteration = stats.chemical_source(1:statistics_counter,2);
 % subplot(2,3,3)

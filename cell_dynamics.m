@@ -2,7 +2,7 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 100;
+total_time = 1000;
 
 max_iterations = 100000;
 no_refinements = 0;
@@ -11,10 +11,10 @@ no_refinements = 0;
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'radial_Dpp_gradient';
+simulation_name = 'radial_gradient_test_4';
 
 grid_size = [10,10];
-max_no_cells = 1100;
+max_no_cells = 1000;
 
 delta_t = total_time/max_iterations;
 viscosity = 1;
@@ -29,8 +29,8 @@ configuration_noise = 0.65;
 configuration_type = 'hexagonal';
 
 load_from_file_logical = false;
-load_FEM_from_file_logical = false;
-file_to_load = 'Saves/new_ode_comparison/true_solution/initial_save';
+load_FEM_from_file_logical = true;
+file_to_load = 'Saves/radial_Dpp_gradient_test2/iteration_7';
 
 % to set the colour of the original cells to be different in figures and
 % movies, need to edit figure_loop.m. otherwise would have to pass a variable
@@ -101,7 +101,7 @@ protection_time = 0;
 
 cell_growth_logical = true;
 cell_growth_start = 0;
-cell_growth_concentration_dependent = true;
+cell_growth_concentration_dependent = false;
 mitosis_logical = true;
 
 % solver_type 1 = numerical, 2 = analytic. this only makes a difference if
@@ -109,14 +109,14 @@ mitosis_logical = true;
 growth_solver_type = 2;
 
 % growth speeds of medial (1) and lateral cells (2)
-average_cell_growth_speed(1) = 1;
+average_cell_growth_speed(1) = 0.01;
 average_cell_growth_speed(2) = 2*average_cell_growth_speed(1);
 
 % n.b. this parameter is multiplied by the total internal chemical in each
 % cell, i.e. cells.internal_chemical*cells.area. need to make sure the
 % orders of magnitude are right
 % lambda = 5000;
-lambda = 0;
+lambda = 20;
 
 % no_growth_time = 5000;
 no_growth_time = 0;
@@ -147,7 +147,7 @@ mitosis_random_logical = 1;
 % fraction of the target parameter. it should be set to a number less than
 % 1 if growth is logistic and mitosis is volume-dependent as a cell will
 % never actually reach its target volume.
-mitosis_threshold = 0.99;
+mitosis_threshold = 0.75;
 
 % determines the fraction of the initial maximum cell volume that the
 % target volume is set to. if less than one a load of divisions will likely
@@ -180,12 +180,13 @@ apoptosis_period = 0.2;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FEM parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FEM_solve_logical = true;
+FEM_solve_logical = false;
 
 % mesh_refinement_threshold_factor = 1.2;
 mesh_refinement_threshold_factor = 10;
 no_chemicals = 1;
 chemical_to_view = 1;
+refine_edges_logical = false;
 
 degradation_constant = [0.00000 0.00002];
 degradation_constant(1) = 0.01;
@@ -215,7 +216,7 @@ source_width = [0.15 0.1];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 0;
+movie_logical = 1;
 
 axis_values = 1*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
@@ -397,7 +398,7 @@ while true
 			vertices.time_created,FEM_nodes.edge,refined_edge_matrix_edits] =...
 			T1Swaps(cells.vertices,vertices.position,cells.FEM_elements,...
 			vertices.cells,vertices.no_cells,FEM_nodes.concentration,FEM_elements.nodes,FEM_solve_logical,...
-			FEM_nodes.previous_position,protection_time,T1_probability,...
+			FEM_nodes.previous_position,protection_time,refine_edges_logical,T1_probability,...
 			threshold_T1_swaps,time,vertices.time_created,FEM_nodes.edge);
       
       

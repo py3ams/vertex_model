@@ -2,21 +2,21 @@ function cell_figs_from_saves()
 
 disp('busy');close all;
 
-cell_figs_logical = 1;
-FEM_figs_logical = 0;
+cell_figs_logical = 0;
+FEM_figs_logical = 1;
 % refinement_level = 1;
 
-save_figs_logical = 1;
-initial_fig_logical = 1;
+save_figs_logical = 0;
+initial_fig_logical = 0;
 
-folder_name = 'apoptosis_figs';
-saved_iterations = [700 820 835];
+folder_name = 'test_mitosis_with_edge_nodes';
+saved_iterations = [9 10];
 
 % we set these outside function so both cell_fig and fem_fig have access to them
-% temp_axis_values = 0.55*[-1 1 -1 1];
+temp_axis_values = 0.55*[-1 1 -1 1];
 % temp_axis_values = [-0.1 0.1 -0.07 0.13];
 % apoptosis_figs
-temp_axis_values = [0.115 0.215 0.195 0.295];
+% temp_axis_values = [0.115 0.215 0.195 0.295];
 % proliferation_figs
 % temp_axis_values = [-0.125 0.025 -0.015 0.115];
 % mesh figs (from realtime_refinement_comparison/true_iterations_8000_refinements_4)
@@ -167,7 +167,7 @@ if ~cell_concentration_logical
     
     axis(temp_axis_values);
     
-%     cellfun(@(x)patch(vertex_positions(x,1),vertex_positions(x,2),'w','linewidth',linewidth_cells,'FaceAlpha',0),cell_vertices);
+    cellfun(@(x)patch(vertex_positions(x,1),vertex_positions(x,2),'w','linewidth',linewidth_cells,'FaceAlpha',0),cell_vertices);
     
 else
     
