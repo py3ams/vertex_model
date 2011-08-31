@@ -314,62 +314,72 @@ xlabel('Time')
 ylabel('Number of cells experiencing mitosis')
 axis([0 time 0 max(no_mitosis)+2])
 	
-% mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
-% no_bars = 10;
-% subplot(2,3,2)
-% % [hist_data,bin_centres] = hist(mitosis_locations(:,1),no_bars);
-% [hist_data,bin_centres] =...
-%     hist(sqrt(mitosis_locations(:,1).^2+mitosis_locations(:,2).^2),no_bars);
-% hist_data = hist_data/length(mitosis_locations)*100;
-% bar(bin_centres,hist_data);
-% xlabel('Mitosis location')
-
-% mitosis_radii = sqrt(mitosis_locations(:,1).^2+mitosis_locations(:,2).^2);
-% mitosis_radii_within_original_radius = mitosis_radii(mitosis_radii<0.5);
-% no_bars = 10;
-% subplot(2,3,3)
-% [hist_data,bin_centres] =...
-% 	hist(mitosis_radii_within_original_radius,no_bars);
-% hist_data = hist_data./bin_centres;
-% hist_data = hist_data./sum(hist_data)*100;
-% % hist_data = hist_data/length(mitosis_locations)*100;
-% % radii_bin_centres = linspace(0,0.5,11);
-% bar(bin_centres,hist_data);
-% xlabel('Normalised mitosis locations')
-% axis([0 0.5 0 20])
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Non radial gradient %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
 % no_bars = 10;
 % subplot(2,3,2)
 % [hist_data,bin_centres] = hist(mitosis_locations(:,1),no_bars);
-% hist_data = hist_data/length(mitosis_locations)*100;
+% hist_data = hist_data/sum(hist_data)*100;
 % bar(bin_centres,hist_data);
-% xlabel('Mitosis location')
+% xlabel('Non-corrected mitosis location')
+% ylabel('Frequency (%)')
 % % axis([-0.5 0.5 0 20])
+
+% mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
+% mitosis_locations = mitosis_locations(abs(mitosis_locations(:,1)<0.5),:);
+% no_bars = 10;
+% subplot(2,3,3)
+% [hist_data,bin_centres] = hist(mitosis_locations(:,1),no_bars);
+%     hist_data = hist_data./(2*sqrt(0.5^2 - bin_centres.^2));
+% hist_data = hist_data/sum(hist_data)*100;
+% bar(bin_centres,hist_data);
+% xlabel('Corrected mitosis location')
+% ylabel('Frequency (%)')
+% % axis([-0.5 0.5 0 20])
+
+%%%%%%%%%%%%%%%%%%%%%%%%%% Radial gradient %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
 mitosis_radii = sqrt(mitosis_locations(:,1).^2+mitosis_locations(:,2).^2);
-mitosis_within_original_radius = mitosis_locations(mitosis_radii<0.5,1);
 subplot(2,3,2)
+if length(mitosis_radii)>1
+    no_bars = 10;
+    [hist_data,bin_centres] =...
+        hist(mitosis_radii,no_bars);
+    hist_data = hist_data./sum(hist_data)*100;
+    bar(bin_centres,hist_data);
+%     axis([-0.5 0.5 0 20])
+end
+xlabel('Non-corrected radial mitosis location')
+ylabel('Frequency (%)')
+
+mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
+mitosis_radii = sqrt(mitosis_locations(:,1).^2+mitosis_locations(:,2).^2);
+mitosis_within_original_radius = mitosis_radii(mitosis_radii<0.5);
+subplot(2,3,3)
 if length(mitosis_within_original_radius)>1
     no_bars = 10;
     [hist_data,bin_centres] =...
         hist(mitosis_within_original_radius,no_bars);
-    hist_data = hist_data./(2*sqrt(0.5^2 - bin_centres.^2));
+    % we divide by the radius at the centre of the bin. the radius is proportional to
+    % the circumference and therefore the number of cells that can fit at that radius
+    hist_data = hist_data./bin_centres;
     hist_data = hist_data./sum(hist_data)*100;
-    % hist_data = hist_data/length(mitosis_locations)*100;
-    % radii_bin_centres = linspace(0,0.5,11);
     bar(bin_centres,hist_data);
 %     axis([-0.5 0.5 0 20])
 end
-xlabel('Normalised radial mitosis locations')
+xlabel('Corrected radial mitosis location')
+ylabel('Frequency (%)')
 
-no_deaths = stats.no_deaths(1:statistics_counter,:);
-subplot(2,3,3)
-stairs(time_range,no_deaths)
-xlabel('Time')
-ylabel('Number of cell deaths')
-axis([0 time 0 max(no_deaths)+2])
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% no_deaths = stats.no_deaths(1:statistics_counter,:);
+% subplot(2,3,3)
+% stairs(time_range,no_deaths)
+% xlabel('Time')
+% ylabel('Number of cell deaths')
+% axis([0 time 0 max(no_deaths)+2])
 
 no_T1_swaps = stats.no_T1_swaps(1:statistics_counter,:);
 subplot(2,3,4)

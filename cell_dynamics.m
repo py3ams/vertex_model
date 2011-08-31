@@ -2,9 +2,9 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 10;
+total_time = 100;
 
-max_iterations = 10000;
+max_iterations = 100000;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
@@ -14,7 +14,7 @@ no_refinements = 0;
 simulation_name = 'radial_Dpp_gradient';
 
 grid_size = [10,10];
-max_no_cells = 300;
+max_no_cells = 1100;
 
 delta_t = total_time/max_iterations;
 viscosity = 1;
@@ -116,7 +116,7 @@ average_cell_growth_speed(2) = 2*average_cell_growth_speed(1);
 % cell, i.e. cells.internal_chemical*cells.area. need to make sure the
 % orders of magnitude are right
 % lambda = 5000;
-lambda = 100;
+lambda = 0;
 
 % no_growth_time = 5000;
 no_growth_time = 0;
@@ -188,7 +188,7 @@ no_chemicals = 1;
 chemical_to_view = 1;
 
 degradation_constant = [0.00000 0.00002];
-degradation_constant(1) = 0.0005;
+degradation_constant(1) = 0.01;
 
 diffusion_speed = [0.1 0.00002];
 % diffusion_speed(1) = 0;
