@@ -7,12 +7,14 @@ disp('busy');clear all; close all;
 red1 = 'w';
 green1 = 'w';
 
-linewidth_cells = 5;
-linewidth_elements = 2;
+fontsize = 30;
+
+linewidth_cells = 10;
+linewidth_elements = 4;
 
 save_figs_logical = 1;
 
-axis_values = [-0.2 2.15 -0.25 2.0];
+axis_values = [-0.2 2.15 -0.35 2.0];
 
 figure('outerposition',[100 100 500 500],'PaperPositionMode','auto','color','white')
 axes('position',[0.01 0.01 0.98 0.98])
@@ -78,7 +80,7 @@ end
 original_centre = mean(vertex_positions);
 FEM_vertex_positions = [vertex_positions;original_centre];
 
-patchAS(vertex_positions,red1,linewidth_cells)
+patchAS(vertex_positions,red1,10)
 % axis equal
 axis(axis_values)
 % axis tight
@@ -86,7 +88,7 @@ axis off
 
 hold on
 
-plot(cell_to_divide_centroid(1),cell_to_divide_centroid(2),'kx','linewidth',4,'markersize',20)
+% plot(cell_to_divide_centroid(1),cell_to_divide_centroid(2),'kx','linewidth',4,'markersize',20)
 
 if save_figs_logical
    addpath('~/Documents/export_fig/')
@@ -117,7 +119,7 @@ FEM_elements = [1 2 7; 2 3 7; 3 4 7; 4 5 7; 5 6 7; 6 1 7];
 figure('outerposition',[100 100 500 500],'PaperPositionMode','auto','color','white')
 axes('position',[0.01 0.01 0.98 0.98])
 
-patch(vertex_positions(:,1),vertex_positions(:,2),red1,'linewidth',linewidth_cells,'FaceAlpha',0)
+% patch(vertex_positions(:,1),vertex_positions(:,2),red1,'linewidth',linewidth_cells,'FaceAlpha',0)
 hold on
 
 for i = 1:length(FEM_elements)
@@ -128,19 +130,19 @@ axis(axis_values)
 axis off
 
 text(FEM_vertex_positions(1,1)-0.125,FEM_vertex_positions(1,2),'1','FontName',...
-    'FixedWidth','FontSize',20)
+    'FixedWidth','FontSize',fontsize)
 text(FEM_vertex_positions(2,1)-0.025,FEM_vertex_positions(2,2)+0.1,'2','FontName',...
-    'FixedWidth','FontSize',20)
+    'FixedWidth','FontSize',fontsize)
 text(FEM_vertex_positions(3,1)-0.025,FEM_vertex_positions(3,2)+0.1,'3','FontName',...
-    'FixedWidth','FontSize',20)
+    'FixedWidth','FontSize',fontsize)
 text(FEM_vertex_positions(4,1)+0.05,FEM_vertex_positions(4,2),'4','FontName',...
-    'FixedWidth','FontSize',20)
+    'FixedWidth','FontSize',fontsize)
 text(FEM_vertex_positions(5,1)-0.035,FEM_vertex_positions(5,2)-0.125,'5','FontName',...
-    'FixedWidth','FontSize',20)
+    'FixedWidth','FontSize',fontsize)
 text(FEM_vertex_positions(6,1)-0.035,FEM_vertex_positions(6,2)-0.125,'6','FontName',...
-    'FixedWidth','FontSize',20)
-text(FEM_vertex_positions(7,1)-0.0375,FEM_vertex_positions(7,2)-0.175,'7','FontName',...
-    'FixedWidth','FontSize',20)
+    'FixedWidth','FontSize',fontsize)
+text(FEM_vertex_positions(7,1)-0.045,FEM_vertex_positions(7,2)-0.175,'7','FontName',...
+    'FixedWidth','FontSize',fontsize)
     
 if save_figs_logical
    export_fig(['Figs/pre_mitosis_mesh.eps'],'-nocrop');
@@ -153,8 +155,8 @@ cells = {[1 2 3 8 7],[8 4 5 6 7]};
 
 figure('outerposition',[100 100 500 500],'PaperPositionMode','auto','color','white')
 axes('position',[0.01 0.01 0.98 0.98])
-patchAS(vertex_positions(cells{1},:),red1,5)
-patchAS(vertex_positions(cells{2},:),red1,5)
+patchAS(vertex_positions(cells{1},:),red1,10)
+patchAS(vertex_positions(cells{2},:),red1,10)
 
 axis(axis_values)
 axis off
@@ -172,8 +174,8 @@ figure('outerposition',[100 100 500 500],'PaperPositionMode','auto','color','whi
 axes('position',[0.01 0.01 0.98 0.98])
 
 hold on
-patch(vertex_positions(cells{1},1),vertex_positions(cells{1},2),red1,'linewidth',linewidth_cells,'FaceAlpha',0)
-patch(vertex_positions(cells{2},1),vertex_positions(cells{2},2),red1,'linewidth',linewidth_cells,'FaceAlpha',0)
+% patch(vertex_positions(cells{1},1),vertex_positions(cells{1},2),red1,'linewidth',linewidth_cells,'FaceAlpha',0)
+% patch(vertex_positions(cells{2},1),vertex_positions(cells{2},2),red1,'linewidth',linewidth_cells,'FaceAlpha',0)
 
 for i = 1:length(FEM_elements)
     patchAS(FEM_vertex_positions(FEM_elements(i,:),:),green1,linewidth_elements)
@@ -182,25 +184,25 @@ axis(axis_values)
 axis off
 
 text(FEM_vertex_positions(1,1)-0.125,FEM_vertex_positions(1,2),'1','FontName',...
-    'FixedWidth','FontSize',20)
+    'FixedWidth','FontSize',fontsize)
 text(FEM_vertex_positions(2,1)-0.025,FEM_vertex_positions(2,2)+0.1,'2','FontName',...
-    'FixedWidth','FontSize',20)
+    'FixedWidth','FontSize',fontsize)
 text(FEM_vertex_positions(3,1),FEM_vertex_positions(3,2)+0.1,'3','FontName',...
-    'FixedWidth','FontSize',20)
+    'FixedWidth','FontSize',fontsize)
 text(FEM_vertex_positions(4,1)+0.05,FEM_vertex_positions(4,2),'4','FontName',...
-    'FixedWidth','FontSize',20)
+    'FixedWidth','FontSize',fontsize)
 text(FEM_vertex_positions(5,1),FEM_vertex_positions(5,2)-0.11,'5','FontName',...
-    'FixedWidth','FontSize',20)
+    'FixedWidth','FontSize',fontsize)
 text(FEM_vertex_positions(6,1)-0.0225,FEM_vertex_positions(6,2)-0.125,'6','FontName',...
-    'FixedWidth','FontSize',20)
-text(FEM_vertex_positions(7,1)-0.1,FEM_vertex_positions(7,2)-0.075,'8','FontName',...
-    'FixedWidth','FontSize',20)
+    'FixedWidth','FontSize',fontsize)
+text(FEM_vertex_positions(7,1)-0.15,FEM_vertex_positions(7,2)-0.075,'8','FontName',...
+    'FixedWidth','FontSize',fontsize)
 text(FEM_vertex_positions(8,1)+0.05,FEM_vertex_positions(8,2)+0.05,'9','FontName',...
-    'FixedWidth','FontSize',20)
+    'FixedWidth','FontSize',fontsize)
 text(FEM_vertex_positions(9,1),FEM_vertex_positions(9,2)-0.1,'10','FontName',...
-    'FixedWidth','FontSize',20)
+    'FixedWidth','FontSize',fontsize)
 text(FEM_vertex_positions(10,1)+0.1,FEM_vertex_positions(10,2)-0.038,'11','FontName',...
-    'FixedWidth','FontSize',20)
+    'FixedWidth','FontSize',fontsize)
 
 if save_figs_logical
    export_fig(['Figs/post_mitosis_mesh.eps'],'-nocrop');
@@ -215,8 +217,8 @@ FEM_elements2 = [8 4 11; 4 5 11; 5 6 11; 6 7 11];
 figure('outerposition',[100 100 500 500],'PaperPositionMode','auto','color','white')
 axes('position',[0.01 0.01 0.98 0.98])
 hold on
-patch(vertex_positions(cells{1},1),vertex_positions(cells{1},2),red1,'linewidth',linewidth_cells,'FaceAlpha',0)
-patch(vertex_positions(cells{2},1),vertex_positions(cells{2},2),red1,'linewidth',linewidth_cells,'FaceAlpha',0)
+% patch(vertex_positions(cells{1},1),vertex_positions(cells{1},2),red1,'linewidth',linewidth_cells,'FaceAlpha',0)
+% patch(vertex_positions(cells{2},1),vertex_positions(cells{2},2),red1,'linewidth',linewidth_cells,'FaceAlpha',0)
 for i = 1:length(FEM_elements1)
     patchAS(FEM_vertex_positions(FEM_elements1(i,:),:),green1,linewidth_elements)
 end

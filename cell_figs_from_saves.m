@@ -2,24 +2,27 @@ function cell_figs_from_saves()
 
 disp('busy');close all;
 
-FEM_logical = 1;
-refinement_level = 1;
+cell_figs_logical = 1;
+FEM_figs_logical = 0;
+% refinement_level = 1;
 
-save_figs_logical = 0;
+save_figs_logical = 1;
 initial_fig_logical = 1;
 
-folder_name = 'realtime_refinement_comparison/true_iterations_8000_refinements_4';
-saved_iterations = [1000];
+folder_name = 'apoptosis_figs';
+saved_iterations = [700 820 835];
 
 % we set these outside function so both cell_fig and fem_fig have access to them
-temp_axis_values = 0.55*[-1 1 -1 1];
+% temp_axis_values = 0.55*[-1 1 -1 1];
 % temp_axis_values = [-0.1 0.1 -0.07 0.13];
 % apoptosis_figs
-% temp_axis_values = [0.115 0.215 0.195 0.295];
+temp_axis_values = [0.115 0.215 0.195 0.295];
 % proliferation_figs
 % temp_axis_values = [-0.125 0.025 -0.015 0.115];
 % mesh figs (from realtime_refinement_comparison/true_iterations_8000_refinements_4)
 % temp_axis_values = [-0.55 0.55 -0.52 0.58];
+% T1 swaps
+% temp_axis_values = [-0.3 -0.1 -0.4 -0.2];
 
 % temp_axis_values = [0.05 0.55 -0.25 0.25];
 
@@ -32,15 +35,19 @@ if initial_fig_logical
     % Cell fig
     
     load(['Saves/',folder_name,'/initial_save.mat'])
-    
-    fig_name = ['cells_0'];
     cell_vertices = cells.vertices;
     vertex_positions = vertices.position;
-    cell_fig(cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values)
+    
+    if cell_figs_logical
+        
+        fig_name = ['cells_0'];
+        cell_fig(cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values)
+        
+    end
     
     % Dpp fig
     
-    if FEM_logical
+    if FEM_figs_logical
     
 %        FEM_element_nodes = FEM_elements{refinement_level}.nodes;
 %        FEM_node_positions = FEM_nodes{refinement_level}.position;
@@ -68,18 +75,18 @@ for unused_variable = 1:length(saved_iterations)
     end
     
     load(['Saves/',folder_name,'/iteration_',num2str(saved_iterations(unused_variable)),'.mat']);
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
     cell_vertices = cells.vertices;
     vertex_positions = vertices.position;
-    fig_name = ['cells_',num2str(saved_iterations(unused_variable))];
-    cell_fig(cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values);
     
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    if cell_figs_logical
+    
+      
+        fig_name = ['cells_',num2str(saved_iterations(unused_variable))];
+        cell_fig(cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values);
+    
+    end
         
-    if FEM_logical
+    if FEM_figs_logical
     
 %            FEM_element_nodes = FEM_elements{refinement_level}.nodes;
 %            FEM_node_positions = FEM_nodes{refinement_level}.position;
@@ -111,7 +118,7 @@ axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w
 
 hold on
 for current_cell = 1:length(cell_vertices)
-    patchAS(vertex_positions(cell_vertices{current_cell},:),'r',linewidth)
+    patchAS(vertex_positions(cell_vertices{current_cell},:),'w',linewidth)
 end
 
 axis(temp_axis_values)
@@ -156,11 +163,11 @@ if ~cell_concentration_logical
     trisurf(FEM_element_nodes,FEM_node_positions(:,1),FEM_node_positions(:,2),...
         zeros(length(FEM_node_positions(:,1)),1),'linewidth',linewidth_elements)
     
-    grid off;axis off;shading(shading_style);caxis(caxis_vals); view(Dpp_view);colormap(colormap_val)
+    grid off;axis off;shading(shading_style);caxis(caxis_vals); view(Dpp_view);colormap(white)
     
     axis(temp_axis_values);
     
-    cellfun(@(x)patch(vertex_positions(x,1),vertex_positions(x,2),'w','linewidth',linewidth_cells,'FaceAlpha',0),cell_vertices);
+%     cellfun(@(x)patch(vertex_positions(x,1),vertex_positions(x,2),'w','linewidth',linewidth_cells,'FaceAlpha',0),cell_vertices);
     
 else
     
