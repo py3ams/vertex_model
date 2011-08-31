@@ -82,9 +82,9 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-figure('outerposition',figure_position);
+% figure('outerposition',figure_position);
 
-axis_distribution_gradients = [0 time -0.2 0.2];
+% axis_distribution_gradients = [0 time -0.2 0.2];
 
 % min_gradient_value = min([min(stats.normalised_volume_distribution_x(:,1)) ...
 %     min(stats.normalised_volume_distribution_y(:,1)) min(stats.normalised_area_distribution_x(:,1)) ...
@@ -142,10 +142,10 @@ axis_distribution_gradients = [0 time -0.2 0.2];
 % a = axis;
 % axis([a(1) time a(3) a(4)]) 
 
-if movie_logical == 2
-	M(frame_counter:frame_counter+no_frames_for_statistical_plots) = getframe(gcf);
-	frame_counter = frame_counter+no_frames_for_statistical_plots+1;
-end
+% if movie_logical == 2
+% 	M(frame_counter:frame_counter+no_frames_for_statistical_plots) = getframe(gcf);
+% 	frame_counter = frame_counter+no_frames_for_statistical_plots+1;
+% end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -338,30 +338,31 @@ axis([0 time 0 max(no_mitosis)+2])
 % xlabel('Normalised mitosis locations')
 % axis([0 0.5 0 20])
 
-mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
-no_bars = 10;
-subplot(2,3,2)
-[hist_data,bin_centres] = hist(mitosis_locations(:,1),no_bars);
-hist_data = hist_data/length(mitosis_locations)*100;
-bar(bin_centres,hist_data);
-xlabel('Mitosis location')
-% axis([-0.5 0.5 0 20])
+% mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
+% no_bars = 10;
+% subplot(2,3,2)
+% [hist_data,bin_centres] = hist(mitosis_locations(:,1),no_bars);
+% hist_data = hist_data/length(mitosis_locations)*100;
+% bar(bin_centres,hist_data);
+% xlabel('Mitosis location')
+% % axis([-0.5 0.5 0 20])
 
-% mitosis_radii = sqrt(mitosis_locations(:,1).^2+mitosis_locations(:,2).^2);
-% mitosis_within_original_radius = mitosis_locations(mitosis_radii<0.5,1);
-% if sum(mitosis_within_original_radius)>1
-%     no_bars = 10;
-%     subplot(2,3,3)
-%     [hist_data,bin_centres] =...
-%         hist(mitosis_within_original_radius,no_bars);
-%     hist_data = hist_data./(2*sqrt(0.5^2 - bin_centres.^2));
-%     hist_data = hist_data./sum(hist_data)*100;
-%     % hist_data = hist_data/length(mitosis_locations)*100;
-%     % radii_bin_centres = linspace(0,0.5,11);
-%     bar(bin_centres,hist_data);
-%     xlabel('Normalised mitosis locations')
+mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
+mitosis_radii = sqrt(mitosis_locations(:,1).^2+mitosis_locations(:,2).^2);
+mitosis_within_original_radius = mitosis_locations(mitosis_radii<0.5,1);
+subplot(2,3,2)
+if length(mitosis_within_original_radius)>1
+    no_bars = 10;
+    [hist_data,bin_centres] =...
+        hist(mitosis_within_original_radius,no_bars);
+    hist_data = hist_data./(2*sqrt(0.5^2 - bin_centres.^2));
+    hist_data = hist_data./sum(hist_data)*100;
+    % hist_data = hist_data/length(mitosis_locations)*100;
+    % radii_bin_centres = linspace(0,0.5,11);
+    bar(bin_centres,hist_data);
 %     axis([-0.5 0.5 0 20])
-% end
+end
+xlabel('Normalised radial mitosis locations')
 
 no_deaths = stats.no_deaths(1:statistics_counter,:);
 subplot(2,3,3)

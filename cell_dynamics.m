@@ -2,19 +2,19 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 0.5;
+total_time = 10;
 
-max_iterations = 500;
-no_refinements = 1;
+max_iterations = 10000;
+no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'refinement_comparison_movie';
+simulation_name = 'radial_Dpp_gradient';
 
 grid_size = [10,10];
-max_no_cells = 100;
+max_no_cells = 300;
 
 delta_t = total_time/max_iterations;
 viscosity = 1;
@@ -88,7 +88,7 @@ tension_anisotropy_factor = 0.0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% Vertex rearrangement parameters %%%%%%%%%%%%%%%%%%%%%%%%%
 
-T1_swaps_logical = false;
+T1_swaps_logical = true;
 T1_swaps_start = 0;
 T1_probability = 1.0;
 
@@ -99,12 +99,13 @@ protection_time = 0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Cell growth and mitosis parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
-cell_growth_logical = false;
+cell_growth_logical = true;
 cell_growth_start = 0;
-cell_growth_concentration_dependent = false;
-mitosis_logical = false;
+cell_growth_concentration_dependent = true;
+mitosis_logical = true;
 
-% solver_type 1 = numerical, 2 = analytic
+% solver_type 1 = numerical, 2 = analytic. this only makes a difference if
+% cell_growth_concentration_dependent is set to false.
 growth_solver_type = 2;
 
 % growth speeds of medial (1) and lateral cells (2)
@@ -114,7 +115,8 @@ average_cell_growth_speed(2) = 2*average_cell_growth_speed(1);
 % n.b. this parameter is multiplied by the total internal chemical in each
 % cell, i.e. cells.internal_chemical*cells.area. need to make sure the
 % orders of magnitude are right
-lambda = 5000;
+% lambda = 5000;
+lambda = 100;
 
 % no_growth_time = 5000;
 no_growth_time = 0;
@@ -131,9 +133,9 @@ mitosis_angles_type = 'uniform';
 % mitosis_angles_type = [0 0];
 
 % mitosis_dependence can currently be either 'volume' or 'area'
-mitosis_dependence = 'none';
+mitosis_dependence = 'volume';
 % this is only used if mitosos_dependence is set to 'none';
-mitosis_period = 0.001;
+mitosis_period = 0.1;
 
 % determines whether mitosis takes place at a set volume (a certain
 % fraction of the target volume) or stochastically. couldn't we just have a
@@ -185,19 +187,20 @@ mesh_refinement_threshold_factor = 10;
 no_chemicals = 1;
 chemical_to_view = 1;
 
-% degradation_constant(1) = 0.0005;
 degradation_constant = [0.00000 0.00002];
+degradation_constant(1) = 0.0005;
+
 diffusion_speed = [0.1 0.00002];
 % diffusion_speed(1) = 0;
 
 % gradient type can be either 1 - in the x direction (with peak at x = 0), 2 -
 % in the y direction with peak at y = 0, 3 - radial, or 4 - from the left-hand edge.
-gradient_type = [4 3];
+gradient_type = [3 3];
 
 % the initial concentration will be set to this value inside the source
 % width. the exact nature depends on gradient_type above.
 initial_concentration_magnitude = [0.0 0.1];
-initial_concentration_magnitude(1) = 0.1;
+% initial_concentration_magnitude(1) = 0.1;
 
 maximum_source_to_release = [0.1 0.1];
 maximum_source_to_release(1) = 100;
@@ -206,15 +209,15 @@ maximum_source_to_release(1) = 100;
 % set up at the moment requires concentration values to be of the order 1
 % for them to have a suitable effect on growth. the trade-offs between
 % source magnitude and degradation etc are therefore important.
-source_magnitude = [0.001 0.002];
-source_magnitude(1) = 0;
+source_magnitude = [0.01 0.002];
+% source_magnitude(1) = 0;
 source_width = [0.15 0.1];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 2;
+movie_logical = 0;
 
-axis_values = 0.65*[-1 1 -1 1];
+axis_values = 1*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
 % axis_values = 'equal';
 % axis_values_FEM = [-1 1 -1 1 -0.5 1.5];
@@ -233,7 +236,7 @@ update_period = max(floor(max_iterations/1000),1);
 view_FEM_mesh = 1;
 view_FEM_concentration = 1;
 view_iteration_number = 0;
-view_number_cells = 0;
+view_number_cells = 1;
 
 if movie_logical
    view_initial_config = 0;
@@ -246,7 +249,7 @@ end
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = true;
+full_saves_logical = false;
 full_saves_name = simulation_name;
 full_saves_period = max(floor(max_iterations/1000),1);
 % full_saves_period = 1;
