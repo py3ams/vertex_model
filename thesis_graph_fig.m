@@ -2,8 +2,8 @@ function thesis_graph_fig()
 
 disp('busy');close all;
 
-folder_name = 'simulation_with_cell_death';
-plot_name = 'height_to_area_ratios';
+folder_name = 'simulation_of_all_forces_with_growth';
+plot_name = 'forces';
 save_plot_logical = 1;
 
 linewidth = 2;
@@ -99,7 +99,7 @@ ylabel('Angle deviation')
 axis([0 1 0 0.4])
 
 set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
-set(gca,'YTickLabel',sprintf('%0.1f|',str2num(get(gca,'YTickLabel'))))
+% set(gca,'YTickLabel',sprintf('%0.1f|',str2num(get(gca,'YTickLabel'))))
 
 end
 
@@ -169,7 +169,7 @@ set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
 
 end
 
-function plot_name = force_plot(linewidth,stats,statistics_counter,time_range)
+function plot_name = forces_plot(linewidth,stats,statistics_counter,time_range)
 
 plot_name = 'forces_per_vertex';
 
@@ -190,10 +190,10 @@ xlabel('Time')
 ylabel('Mean force per vertex')
 legend('C_A','C_D','C_H','C_P','C_L','location','best')
 
-axis([0 1 0 0.04])
+axis([0 50 0 0.03])
 
-set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
-set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
+% set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
+set(gca,'YTickLabel',sprintf('%0.3f|',str2num(get(gca,'YTickLabel'))))
 
 end
 

@@ -2,19 +2,19 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 1000;
+total_time = 100;
 
-max_iterations = 100000;
+max_iterations = 1000000;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'radial_gradient_test_4';
+simulation_name = '';
 
 grid_size = [10,10];
-max_no_cells = 1000;
+max_no_cells = 2000;
 
 delta_t = total_time/max_iterations;
 viscosity = 1;
@@ -29,7 +29,7 @@ configuration_noise = 0.65;
 configuration_type = 'hexagonal';
 
 load_from_file_logical = false;
-load_FEM_from_file_logical = true;
+load_FEM_from_file_logical = false;
 file_to_load = 'Saves/radial_Dpp_gradient_test2/iteration_7';
 
 % to set the colour of the original cells to be different in figures and
@@ -101,7 +101,7 @@ protection_time = 0;
 
 cell_growth_logical = true;
 cell_growth_start = 0;
-cell_growth_concentration_dependent = false;
+cell_growth_concentration_dependent = true;
 mitosis_logical = true;
 
 % solver_type 1 = numerical, 2 = analytic. this only makes a difference if
@@ -109,7 +109,7 @@ mitosis_logical = true;
 growth_solver_type = 2;
 
 % growth speeds of medial (1) and lateral cells (2)
-average_cell_growth_speed(1) = 0.01;
+average_cell_growth_speed(1) = 0.05;
 average_cell_growth_speed(2) = 2*average_cell_growth_speed(1);
 
 % n.b. this parameter is multiplied by the total internal chemical in each
@@ -180,7 +180,7 @@ apoptosis_period = 0.2;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FEM parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FEM_solve_logical = false;
+FEM_solve_logical = true;
 
 % mesh_refinement_threshold_factor = 1.2;
 mesh_refinement_threshold_factor = 10;
@@ -216,9 +216,9 @@ source_width = [0.15 0.1];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 1;
+movie_logical = 0;
 
-axis_values = 1*[-1 1 -1 1];
+axis_values = 1.5*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
 % axis_values = 'equal';
 % axis_values_FEM = [-1 1 -1 1 -0.5 1.5];
@@ -349,6 +349,10 @@ while true
 	
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
+   if ~rem(iteration,100000)
+      disp(['Iteration ',num2str(iteration)])
+   end
+   
 	time = time + delta_t;
 	iteration = iteration + 1;
 	
