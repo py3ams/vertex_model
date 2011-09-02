@@ -11,7 +11,7 @@ else
 end
 shading_style = 'faceted';
 
-caxis_vals = [0 0.1];
+caxis_vals = [0 0.05];
 green1 = [50,180,50]/255;
 white = [255,255,0]/255;
 colormap_val = [linspace(green1(1),white(1),300)' ...

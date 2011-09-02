@@ -4,14 +4,14 @@ disp('busy');close all;clear all;tic;%profile on
 
 total_time = 100;
 
-max_iterations = 1000000;
+max_iterations = 100000;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = '';
+simulation_name = 'radial_gradient';
 
 grid_size = [10,10];
 max_no_cells = 2000;
@@ -116,7 +116,7 @@ average_cell_growth_speed(2) = 2*average_cell_growth_speed(1);
 % cell, i.e. cells.internal_chemical*cells.area. need to make sure the
 % orders of magnitude are right
 % lambda = 5000;
-lambda = 20;
+lambda = 50;
 
 % no_growth_time = 5000;
 no_growth_time = 0;
@@ -189,7 +189,7 @@ chemical_to_view = 1;
 refine_edges_logical = false;
 
 degradation_constant = [0.00000 0.00002];
-degradation_constant(1) = 0.01;
+degradation_constant(1) = 0.5;
 
 diffusion_speed = [0.1 0.00002];
 % diffusion_speed(1) = 0;
@@ -204,25 +204,27 @@ initial_concentration_magnitude = [0.0 0.1];
 % initial_concentration_magnitude(1) = 0.1;
 
 maximum_source_to_release = [0.1 0.1];
-maximum_source_to_release(1) = 100;
+maximum_source_to_release(1) = 1000;
 
 % need to be careful with these numbers. the way that cell volume growth is
 % set up at the moment requires concentration values to be of the order 1
 % for them to have a suitable effect on growth. the trade-offs between
 % source magnitude and degradation etc are therefore important.
-source_magnitude = [0.01 0.002];
+source_magnitude = [1 0.002];
 % source_magnitude(1) = 0;
-source_width = [0.15 0.1];
+source_width = [0.1 0.1];
+% 1 - basis function-based, 2 - cell-based
+source_type = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 0;
+movie_logical = 2;
 
 axis_values = 1.5*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
 % axis_values = 'equal';
 % axis_values_FEM = [-1 1 -1 1 -0.5 1.5];
-axis_values_FEM = [axis_values -0.05 0.15];
+axis_values_FEM = [axis_values -0.01 0.05];
 % axis_values_FEM = 'equal';
 extra_pause = 0.0;
 % extra_pause = 0.1;
@@ -250,7 +252,7 @@ end
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = false;
+full_saves_logical = true;
 full_saves_name = simulation_name;
 full_saves_period = max(floor(max_iterations/1000),1);
 % full_saves_period = 1;
@@ -349,9 +351,9 @@ while true
 	
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
-   if ~rem(iteration,100000)
-      disp(['Iteration ',num2str(iteration)])
-   end
+%    if ~rem(iteration,100000)
+%       disp(['Iteration ',num2str(iteration)])
+%    end
    
 	time = time + delta_t;
 	iteration = iteration + 1;
@@ -579,13 +581,13 @@ while true
 		FEM_nodes.position = UpdateFEMNodePositions(cells.vertices,...
 			vertices.position,cells.area,FEM_nodes.edge);
 		
-        cells = set_source_and_ingestion_rates(cells,FEM_nodes,gradient_type,...
-            no_chemicals,source_magnitude,source_width);
+%         cells = set_source_and_ingestion_rates(cells,FEM_nodes,gradient_type,...
+%             no_chemicals,source_magnitude,source_width);
         
 		[cells,FEM_nodes,M,source_magnitude,stats,total_ingestion,total_source_released] = ...
 			FEM_solver(cells,degradation_constant,delta_t,diffusion_speed,FEM_elements,...
 			FEM_nodes,gradient_type,maximum_source_to_release,no_chemicals,source_magnitude,...
-			source_width,refined_edge_matrix,stats,total_ingestion,total_source_released);
+			source_type,source_width,refined_edge_matrix,stats,total_ingestion,total_source_released);
 		
 		FEM_nodes.previous_position = FEM_nodes.position;
 		        

@@ -473,6 +473,9 @@ if no_cells_to_divide > 0
 				cells.internal_chemical_value(new_cell_2)*cell_area_new_cells(2);
 			
 			cells.maximum_internal_chemical_quantity(new_cell_2) = cells.maximum_internal_chemical_quantity(cell_to_divide);
+         
+         cells.source_rate([new_cell_1 new_cell_2]) = 0;
+         cells.ingestion_rate([new_cell_1 new_cell_2]) = 0;
 			
 			%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 			

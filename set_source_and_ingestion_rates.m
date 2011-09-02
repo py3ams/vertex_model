@@ -26,6 +26,8 @@ for current_chemical = 1:no_chemicals
 			cell_centre_positions(:,2).^2))<(0.5*source_width(current_chemical))&...
             cells_logical;
 		
+         find(source_producing_logical)
+         
 	elseif gradient_type(current_chemical) == 4
 		
 		min_x_position = min(cell_centre_positions(:,1));
