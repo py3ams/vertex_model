@@ -2,16 +2,16 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 10;
+total_time = 100;
 
-max_iterations = 1000;
+max_iterations = 100000;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = '';
+simulation_name = 'simulation_with_cell_growth_fast';
 
 grid_size = [10,10];
 max_no_cells = 2000;
@@ -30,7 +30,7 @@ configuration_type = 'hexagonal';
 
 load_from_file_logical = false;
 load_FEM_from_file_logical = false;
-file_to_load = 'Saves/radial_Dpp_gradient_test2/iteration_7';
+file_to_load = '';
 
 % to set the colour of the original cells to be different in figures and
 % movies, need to edit figure_loop.m. otherwise would have to pass a variable
@@ -102,7 +102,7 @@ protection_time = 0;
 cell_growth_logical = true;
 cell_growth_start = 0;
 cell_growth_concentration_dependent = false;
-mitosis_logical = true;
+mitosis_logical = false;
 target_area_growth_period = 1;
 
 % solver_type 1 = numerical, 2 = analytic. this only makes a difference if
@@ -110,8 +110,16 @@ target_area_growth_period = 1;
 growth_solver_type = 2;
 
 % growth speeds of medial (1) and lateral cells (2)
-average_cell_growth_speed(1) = 0.05;
+average_cell_growth_speed(1) = 1;
 average_cell_growth_speed(2) = 2*average_cell_growth_speed(1);
+
+% 1-all cells the same growth speed 2 - cell growth speeds are drawn from a
+% distribution centred around the average cell growth speed
+growth_speed_distribution_type = 1;
+
+% 1- all cells have same initial volume 2 - cell volumes are drawn from a
+% distribution centred around the mean volume (which is calculated from cell areas)
+cell_volume_distribution_type = 2;
 
 % n.b. this parameter is multiplied by the total internal chemical in each
 % cell, i.e. cells.internal_chemical*cells.area. need to make sure the
@@ -219,7 +227,7 @@ source_type = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 1;
+movie_logical = 0;
 
 axis_values = 1.5*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
@@ -253,7 +261,7 @@ end
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = false;
+full_saves_logical = true;
 full_saves_name = simulation_name;
 full_saves_period = max(floor(max_iterations/1000),1);
 % full_saves_period = 1;
@@ -270,8 +278,8 @@ compile_mex_functions(compile_mex_functions_logical);
 
 [cell_growth_speeds_matrix,cells,FEM_elements,FEM_nodes,...
 	refined_edge_matrix,vertices] = initial_configuration(anneal_initial_configuration_logical,...
-	average_cell_growth_speed,boundary_force_constants,configuration_noise,configuration_type,...
-	gradient_type,grid_size,FEM_solve_logical,file_to_load,initial_concentration_magnitude,...
+	average_cell_growth_speed,boundary_force_constants,cell_volume_distribution_type,configuration_noise,configuration_type,...
+	FEM_solve_logical,file_to_load,gradient_type,grid_size,growth_speed_distribution_type,initial_concentration_magnitude,...
 	initial_force_constant_magnitudes,load_FEM_from_file_logical,load_from_file_logical,...
 	max_no_cells,medial_lateral_threshold_factor,no_chemicals,no_refinements,source_width);
 
