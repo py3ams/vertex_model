@@ -3,7 +3,8 @@ function [cells,vertices,cell_growth_speeds_matrix,FEM_elements,FEM_nodes,...
 	cell_growth_speeds_matrix,delta_t,FEM_elements,FEM_nodes,...
 	FEM_solve_logical,medial_lateral_threshold,mitosis_angles_type,...
 	mitosis_counter,mitosis_dependence,mitosis_period,mitosis_random_logical,...
-	mitosis_threshold,refined_edge_matrix,stats,time)
+	mitosis_threshold,refined_edge_matrix,stats,target_area_growth_period,...
+   target_cell_area,time)
 
 mitosis_location = 0;
 create_edge_node_during_mitosis = false;
@@ -265,6 +266,11 @@ if no_cells_to_divide > 0
 		cells.target_area(new_cell_1) = cell_area_new_cells(1);
 		cells.target_area(new_cell_2) = cell_area_new_cells(2);
 		
+      cells.target_area_growth_speed(new_cell_1) =...
+         (target_cell_area-cell_area_new_cells(1))/target_area_growth_period;
+      cells.target_area_growth_speed(new_cell_2) =...
+         (target_cell_area-cell_area_new_cells(2))/target_area_growth_period;
+      
 		cell_area_cell_to_divide = sum(cell_area_new_cells);
 		cell_volume_cell_to_divide = cells.volume(cell_to_divide);
 		
@@ -277,6 +283,8 @@ if no_cells_to_divide > 0
       
       cells.initial_volume(new_cell_1) = cells.volume(new_cell_1);
       cells.initial_volume(new_cell_2) = cells.volume(new_cell_2);
+      
+      
 		
 		cells.force_constants.area(new_cell_2) = cells.force_constants.area(new_cell_1);
 		cells.force_constants.deformation(new_cell_2) = cells.force_constants.deformation(new_cell_1);

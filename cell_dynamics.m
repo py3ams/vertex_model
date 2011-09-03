@@ -2,16 +2,16 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 100;
+total_time = 10;
 
-max_iterations = 100000;
+max_iterations = 1000;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'radial_gradient';
+simulation_name = '';
 
 grid_size = [10,10];
 max_no_cells = 2000;
@@ -101,8 +101,9 @@ protection_time = 0;
 
 cell_growth_logical = true;
 cell_growth_start = 0;
-cell_growth_concentration_dependent = true;
+cell_growth_concentration_dependent = false;
 mitosis_logical = true;
+target_area_growth_period = 1;
 
 % solver_type 1 = numerical, 2 = analytic. this only makes a difference if
 % cell_growth_concentration_dependent is set to false.
@@ -133,9 +134,9 @@ mitosis_angles_type = 'uniform';
 % mitosis_angles_type = [0 0];
 
 % mitosis_dependence can currently be either 'volume' or 'area'
-mitosis_dependence = 'volume';
+mitosis_dependence = 'none';
 % this is only used if mitosos_dependence is set to 'none';
-mitosis_period = 0.1;
+mitosis_period = 0.05;
 
 % determines whether mitosis takes place at a set volume (a certain
 % fraction of the target volume) or stochastically. couldn't we just have a
@@ -180,7 +181,7 @@ apoptosis_period = 0.2;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FEM parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FEM_solve_logical = true;
+FEM_solve_logical = false;
 
 % mesh_refinement_threshold_factor = 1.2;
 mesh_refinement_threshold_factor = 10;
@@ -218,7 +219,7 @@ source_type = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 2;
+movie_logical = 1;
 
 axis_values = 1.5*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
@@ -236,7 +237,7 @@ movie_start = 0;
 no_frames_for_statistical_plots = 100;
 update_period = max(floor(max_iterations/1000),1);
 % update_period = 1;
-view_FEM_mesh = 1;
+view_FEM_mesh = 0;
 view_FEM_concentration = 1;
 view_iteration_number = 0;
 view_number_cells = 1;
@@ -252,7 +253,7 @@ end
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = true;
+full_saves_logical = false;
 full_saves_name = simulation_name;
 full_saves_period = max(floor(max_iterations/1000),1);
 % full_saves_period = 1;
@@ -289,6 +290,8 @@ array_sizes = size(vertices.position,1);
 	cells,fig_saves_logical,fig_saves_name,full_saves_logical,full_saves_name,...
 	max_iterations,movie_logical,movie_name,statistics_period,target_area_factor,...
 	max_no_cells,target_volume_factor,vertices);
+
+target_cell_area = mean_cell_area;
 
 mesh_refinement_threshold = mesh_refinement_threshold_factor*mean_edge_length;
 
@@ -381,7 +384,8 @@ while true
 			cell_growth_speeds_matrix,delta_t,FEM_elements,FEM_nodes,...
 			FEM_solve_logical,medial_lateral_threshold,mitosis_angles_type,...
 			mitosis_counter,mitosis_dependence,mitosis_period,mitosis_random_logical,...
-			mitosis_threshold,refined_edge_matrix,stats,time);
+			mitosis_threshold,refined_edge_matrix,stats,target_area_growth_period,...
+         target_cell_area,time);
 		
 		%             save mitosis_test_save
 		
@@ -499,9 +503,9 @@ while true
 		% cell properties are edited directly within functions such as
 		% mitosis/T1 swaps. we could make sure these are edited to so this
 		% line would not be necessary.
-		[cells.area,cells.perimeter,cells.edge_lengths] =...
+		[cells.area,cells.perimeter,cells.edge_lengths,current_cell_area_stats] =...
 			CalculateCellAreas(cells.vertices,vertices.position);
-		
+      
 		boundary_element =...
 			CreateBoundaryElement(vertices.cells,cells.vertices,vertices.no_cells);
 		
@@ -530,26 +534,23 @@ while true
 	
 	mean_cell_area = current_cell_area_stats(1);
 	mean_edge_length = current_edge_length_stats(1);
-	
-	mesh_refinement_threshold = mesh_refinement_threshold_factor*mean_edge_length;
-	
-	long_edges = long_edges(long_edges(:,1)>0,:);
-	
+
 % 	% check if target areas of baby cells have reached the mean cell area. don't be
 % 	% tempted to change this to checking the absolute difference between
 % 	% cells.target_area and mean_cell_area as it is possible for the target
 % 	% area to go slightly above the mean cell area by more than 1e-9 which
 % 	% then won't be caught by the logical statement
-% 	cells.state(cells.state==2&cells.target_area-mean_cell_area>-1e-9) = 1;
-    cells.state(cells.state==2&abs(time-cells.time_of_last_division)>0.1) = 1;
-
-% 	
-% 	cells.target_area(cells.state==2) =...
-% 		cells.target_area(cells.state==2) + 1/1000*mean_cell_area;
+   cells_state_from_2_to_1 = cells.state==2&cells.target_area>target_cell_area;
+   cells.state(cells_state_from_2_to_1) = 1;
+   cells.target_area(cells_state_from_2_to_1) = target_cell_area;
+   cells.target_area_growth_speed(cells_state_from_2_to_1) = 0;
+%     cells.state(cells.state==2&abs(time-cells.time_of_last_division)>0.1) = 1;
+	
+	cells.target_area(cells.state==2) = cells.target_area(cells.state==2) +...
+		 delta_t*cells.target_area_growth_speed(cells.state==2);
 	
 %     cells.target_area =...
 %         mean_cell_area*(1+2*cells.internal_chemical_quantity/max(cells.internal_chemical_quantity));
-
 %     cells.target_area = 100*cells.internal_chemical_quantity;
 
 	if stats.this_iteration_logical
@@ -559,21 +560,24 @@ while true
 		stats.shape_index(stats.counter,:) = current_shape_index_stats;
 		stats.edge_length(stats.counter,:) = current_edge_length_stats;
 		
-	end
-	
-	% this seems to be the most logical place for this to go
-	if FEM_solve_logical
-		
-% 		[cells,FEM_elements,FEM_nodes,refined_edge_matrix] = remove_FEM_nodes_from_short_edges(cells,...
-% 			FEM_elements,FEM_nodes,vertices,mesh_refinement_threshold,refined_edge_matrix);
-		
-		% 		test_refined_edge_matrix
-		
-% 		[cells,FEM_elements,FEM_nodes,refined_edge_matrix] = add_FEM_nodes_to_long_edges(...
-% 			cells,FEM_elements,FEM_nodes,long_edges,refined_edge_matrix,vertices);
-		
-	end
-	
+   end
+   
+   % this seems to be the most logical place for this to go
+   if FEM_solve_logical && refine_edges_logical
+      
+      mesh_refinement_threshold = mesh_refinement_threshold_factor*mean_edge_length;
+      long_edges = long_edges(long_edges(:,1)>0,:);
+      
+      [cells,FEM_elements,FEM_nodes,refined_edge_matrix] = remove_FEM_nodes_from_short_edges(cells,...
+         FEM_elements,FEM_nodes,vertices,mesh_refinement_threshold,refined_edge_matrix);
+      
+      test_refined_edge_matrix
+      
+      [cells,FEM_elements,FEM_nodes,refined_edge_matrix] = add_FEM_nodes_to_long_edges(...
+         cells,FEM_elements,FEM_nodes,long_edges,refined_edge_matrix,vertices);
+      
+   end
+   
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FEM Solve %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
 	if FEM_solve_logical

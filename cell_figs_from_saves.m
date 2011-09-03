@@ -2,18 +2,20 @@ function cell_figs_from_saves()
 
 disp('busy');close all;
 
-cell_figs_logical = 1;
+cell_figs_logical = 0;
 FEM_figs_logical = 1;
-refinement_level = 2;
+
+multiple_refinement_levels_logical = false;
+refinement_level = 0;
 
 save_figs_logical = 1;
 initial_fig_logical = 1;
 
-folder_name = 'refinement_comparison_realtime/true_iterations_8000_refinements_4';
-saved_iterations = [800 8000];
+folder_name = 'radial_gradient';
+saved_iterations = [10000 100000];
 
 % we set these outside function so both cell_fig and fem_fig have access to them
-temp_axis_values = 0.55*[-1 1 -1 1];
+temp_axis_values = 1.5*[-1 1 -1 1];
 % temp_axis_values = [-0.1 0.1 -0.07 0.13];
 % apoptosis_figs
 % temp_axis_values = [0.115 0.215 0.195 0.295];
@@ -51,13 +53,19 @@ if initial_fig_logical
     
     if FEM_figs_logical
     
-       FEM_element_nodes = FEM_elements{refinement_level}.nodes;
-       FEM_node_positions = FEM_nodes{refinement_level}.position;
-       FEM_node_concentrations = FEM_nodes{refinement_level}.concentration;
+       if multiple_refinement_levels_logical
        
-%        FEM_element_nodes = FEM_elements.nodes;
-%        FEM_node_positions = FEM_nodes.position;
-%        FEM_node_concentrations = FEM_nodes.concentration;
+          FEM_element_nodes = FEM_elements{refinement_level}.nodes;
+          FEM_node_positions = FEM_nodes{refinement_level}.position;
+          FEM_node_concentrations = FEM_nodes{refinement_level}.concentration;
+          
+       else
+       
+          FEM_element_nodes = FEM_elements.nodes;
+          FEM_node_positions = FEM_nodes.position;
+          FEM_node_concentrations = FEM_nodes.concentration;
+          
+       end
        
        fig_name = ['FEM_0'];
        fem_fig(FEM_element_nodes,FEM_node_positions,FEM_node_concentrations,...
@@ -91,13 +99,19 @@ for unused_variable = 1:length(saved_iterations)
         
     if FEM_figs_logical
     
-           FEM_element_nodes = FEM_elements{refinement_level}.nodes;
-           FEM_node_positions = FEM_nodes{refinement_level}.position;
-           FEM_node_concentrations = FEM_nodes{refinement_level}.concentration;
+       if multiple_refinement_levels_logical
        
-%        FEM_element_nodes = FEM_elements.nodes;
-%        FEM_node_positions = FEM_nodes.position;
-%        FEM_node_concentrations = FEM_nodes.concentration;
+          FEM_element_nodes = FEM_elements{refinement_level}.nodes;
+          FEM_node_positions = FEM_nodes{refinement_level}.position;
+          FEM_node_concentrations = FEM_nodes{refinement_level}.concentration;
+       
+       else
+          
+          FEM_element_nodes = FEM_elements.nodes;
+          FEM_node_positions = FEM_nodes.position;
+          FEM_node_concentrations = FEM_nodes.concentration;
+          
+       end
        
        fig_name = ['FEM_',num2str(saved_iterations(unused_variable))];
        fem_fig(FEM_element_nodes,FEM_node_positions,FEM_node_concentrations,...
@@ -113,7 +127,7 @@ end
 % function more versatile
 function cell_fig(cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values,cell_state)
 
-linewidth = 5;
+linewidth = 3;
 
 figure('position',[100 100 500 500],'color','white','PaperPositionMode','auto')
 axes('position',[0.01 0.01 0.98 0.98],'linewidth',2,'xcolor','white','ycolor','w',...
@@ -157,7 +171,7 @@ else
 end
 linewidth_cells = 5;
 linewidth_elements = 1;
-temp_axis_values_FEM = [temp_axis_values 0 0.1];
+temp_axis_values_FEM = [temp_axis_values 0 0.05];
 caxis_vals = [0 0.1];
 green1 = [50,180,50]/255;
 white1 = [255,255,0]/255;

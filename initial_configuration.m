@@ -117,6 +117,8 @@ else
    
    cells.mitosis_flag = zeros(no_cells,1);
    
+   cells.target_area_growth_speed = zeros(no_cells,1);
+   
    % these are set for real in set_source_and_ingestion.m
    cells.source_rate = zeros(no_cells,no_chemicals);
    cells.ingestion_rate = zeros(no_cells,no_chemicals);
