@@ -4,14 +4,14 @@ disp('busy');close all;clear all;tic;%profile on
 
 total_time = 100;
 
-max_iterations = 100000;
+max_iterations = 10000;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'simulation_with_cell_growth_fast';
+simulation_name = 'simulation_with_cell_proliferation';
 
 grid_size = [10,10];
 max_no_cells = 2000;
@@ -102,7 +102,7 @@ protection_time = 0;
 cell_growth_logical = true;
 cell_growth_start = 0;
 cell_growth_concentration_dependent = false;
-mitosis_logical = false;
+mitosis_logical = true;
 target_area_growth_period = 1;
 
 % solver_type 1 = numerical, 2 = analytic. this only makes a difference if
@@ -110,16 +110,16 @@ target_area_growth_period = 1;
 growth_solver_type = 2;
 
 % growth speeds of medial (1) and lateral cells (2)
-average_cell_growth_speed(1) = 1;
+average_cell_growth_speed(1) = 0.1;
 average_cell_growth_speed(2) = 2*average_cell_growth_speed(1);
 
 % 1-all cells the same growth speed 2 - cell growth speeds are drawn from a
 % distribution centred around the average cell growth speed
-growth_speed_distribution_type = 1;
+growth_speed_distribution_type = 2;
 
 % 1- all cells have same initial volume 2 - cell volumes are drawn from a
 % distribution centred around the mean volume (which is calculated from cell areas)
-cell_volume_distribution_type = 2;
+cell_volume_distribution_type = 1;
 
 % n.b. this parameter is multiplied by the total internal chemical in each
 % cell, i.e. cells.internal_chemical*cells.area. need to make sure the
@@ -144,7 +144,7 @@ mitosis_angles_type = 'uniform';
 % mitosis_dependence can currently be either 'volume' or 'area'
 mitosis_dependence = 'none';
 % this is only used if mitosos_dependence is set to 'none';
-mitosis_period = 0.05;
+mitosis_period = 1;
 
 % determines whether mitosis takes place at a set volume (a certain
 % fraction of the target volume) or stochastically. couldn't we just have a
@@ -161,7 +161,7 @@ mitosis_threshold = 0.75;
 % determines the fraction of the initial maximum cell volume that the
 % target volume is set to. if less than one a load of divisions will likely
 % occur at the start of a simulation.
-target_volume_factor = 1.1;
+target_volume_factor = 1.0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cell death parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -227,7 +227,7 @@ source_type = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 0;
+movie_logical = 1;
 
 axis_values = 1.5*[-1 1 -1 1];
 % axis_values = [-1 2 -1.5 1.5];
@@ -261,7 +261,7 @@ end
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = true;
+full_saves_logical = false;
 full_saves_name = simulation_name;
 full_saves_period = max(floor(max_iterations/1000),1);
 % full_saves_period = 1;

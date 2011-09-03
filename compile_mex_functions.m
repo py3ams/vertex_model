@@ -18,7 +18,7 @@ if compile_mex_functions_logical
 	mex UpdatePos.cpp
 	mex MeanMaxMinStdTotal.cpp
 	mex T1Swaps.cpp
-        mex UpdatePosFarhadifar.cpp
+   mex UpdatePosFarhadifar.cpp
 	mex FindConcentrationProjectionEdgeNodes.cpp
 
 end

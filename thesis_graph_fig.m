@@ -2,8 +2,8 @@ function thesis_graph_fig()
 
 disp('busy');close all;
 
-folder_name = 'simulation_of_all_forces_with_growth';
-plot_name = 'forces';
+folder_name = 'simulation_with_cell_growth_slow';
+plot_name = 'height_to_area_ratios';
 save_plot_logical = 1;
 
 linewidth = 2;
@@ -47,25 +47,25 @@ set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Time')
 ylabel('Cell volume')
 
-axis([0 50 0 0.003])
+axis([0 100 0 0.003])
 
 % set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 
 set(gca,'YTick',[0 0.001 0.002 0.003])
 set(gca,'YTickLabel',sprintf('%0.3f|',str2num(get(gca,'YTickLabel'))*0.001))
 
-axes('position',[0.47 0.25 0.4 0.4])
-plot(time_range,cell_volume(:,1))
-hold on
-% plot(time_range,cell_volume(:,2),'r')
-% plot(time_range,cell_volume(:,3),'r')
-plot(time_range,cell_volume(:,1)+2*cell_volume(:,4),'r')
-plot(time_range,cell_volume(:,1)-2*cell_volume(:,4),'r')
-set(gca,'FontName','arial','fontweight','bold','fontsize',12);
-
-axis([0 10 0 0.003])
-
-set(gca,'YTick',[])
+% axes('position',[0.47 0.25 0.4 0.4])
+% plot(time_range,cell_volume(:,1))
+% hold on
+% % plot(time_range,cell_volume(:,2),'r')
+% % plot(time_range,cell_volume(:,3),'r')
+% plot(time_range,cell_volume(:,1)+2*cell_volume(:,4),'r')
+% plot(time_range,cell_volume(:,1)-2*cell_volume(:,4),'r')
+% set(gca,'FontName','arial','fontweight','bold','fontsize',12);
+% 
+% axis([0 10 0 0.003])
+% 
+% set(gca,'YTick',[])
 
 end
 
@@ -81,7 +81,7 @@ set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Time')
 ylabel('Height-to-area ratio')
 
-axis([0 100 0 85])
+axis([0 100 0 25])
 % 
 % set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 % set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
@@ -179,21 +179,27 @@ total_elongation_force = stats.total_elongation_force(1:statistics_counter,:);
 total_perimeter_force = stats.total_perimeter_force(1:statistics_counter,:);
 total_tension_force = stats.total_tension_force(1:statistics_counter,:);
 total_no_vertices = stats.total_no_vertices(1:statistics_counter,:);
-plot(time_range,total_area_force./total_no_vertices)
+a(1) = plot(time_range,total_area_force./total_no_vertices);
 hold all
-plot(time_range,total_deformation_force./total_no_vertices)
-plot(time_range,total_elongation_force./total_no_vertices)
-plot(time_range,total_perimeter_force./total_no_vertices)
-plot(time_range,total_tension_force./total_no_vertices)
+a(2) = plot(time_range,total_deformation_force./total_no_vertices);
+a(3) = plot(time_range,total_elongation_force./total_no_vertices);
+a(4) = plot(time_range,total_perimeter_force./total_no_vertices);
+a(5) = plot(time_range,total_tension_force./total_no_vertices);
 set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Time')
 ylabel('Mean force per vertex')
-legend('C_A','C_D','C_H','C_P','C_L','location','best')
 
-axis([0 50 0 0.03])
+axis([0 100 0 0.02])
 
 % set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 set(gca,'YTickLabel',sprintf('%0.3f|',str2num(get(gca,'YTickLabel'))))
+
+legend(gca,a(1:3),'C_A','C_D','C_H','location','north')
+legend boxoff
+ah=axes('position',get(gca,'position'),'visible','off');
+legend(ah,a(4:5),'C_P','C_L','location','northeast')
+legend boxoff
+set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 
 end
 
