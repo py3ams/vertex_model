@@ -136,7 +136,7 @@ else
    
    if anneal_initial_configuration_logical
       
-      delta_t = 1;
+      delta_t = 1/1000;
       viscosity = 1;
       tension_anisotropy_factor = 0.0;
       
@@ -149,8 +149,10 @@ else
             edge_length_stats] = CalculateCellAreas(cells.vertices,vertices.position);
          
          mean_edge_length = edge_length_stats(1);
-         cells.target_area = cell_area_stats(1)*ones(no_cells,1);
          
+         if iter==1
+            cells.target_area = cell_area_stats(1)*ones(no_cells,1);
+         end
          %             figure
          %             for i =1:no_cells
          %                 hold on

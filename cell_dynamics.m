@@ -11,7 +11,7 @@ no_refinements = 0;
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'simulation_with_cell_proliferation';
+simulation_name = '';
 
 grid_size = [10,10];
 max_no_cells = 2000;
@@ -21,7 +21,7 @@ viscosity = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Initial configuration parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-anneal_initial_configuration_logical = false;
+anneal_initial_configuration_logical = true;
 
 compile_mex_functions_logical = false;
 configuration_noise = 0.65;
@@ -30,7 +30,7 @@ configuration_type = 'hexagonal';
 
 load_from_file_logical = false;
 load_FEM_from_file_logical = false;
-file_to_load = '';
+file_to_load = 'final_save';
 
 % to set the colour of the original cells to be different in figures and
 % movies, need to edit figure_loop.m. otherwise would have to pass a variable
@@ -100,10 +100,15 @@ protection_time = 0;
 %%%%%%%%%%%%%%%%%%%%%%%%% Cell growth and mitosis parameters %%%%%%%%%%%%%%%%%%%%%%%%
 
 cell_growth_logical = true;
-cell_growth_start = 0;
-cell_growth_concentration_dependent = false;
 mitosis_logical = true;
-target_area_growth_period = 1;
+cell_growth_concentration_dependent = false;
+
+cell_growth_start = 0;
+mitosis_start = 0;
+
+target_area_growth_period = 10;
+no_growth_time = 0;
+% no_growth_time = 5000;
 
 % solver_type 1 = numerical, 2 = analytic. this only makes a difference if
 % cell_growth_concentration_dependent is set to false.
@@ -127,14 +132,10 @@ cell_volume_distribution_type = 1;
 % lambda = 5000;
 lambda = 50;
 
-% no_growth_time = 5000;
-no_growth_time = 0;
 % average_cell_growth_speeds = [5e-7 1e-6];
 % medial_lateral_threshold_factor = 0.5;
 medial_lateral_threshold_factor = 100;
 % medial_lateral_threshold_factor = 0.0;
-
-mitosis_start = 0;
 
 % mitosis_angles_type can either be 'uniform', or a 1x2 vector specifying
 % the mean and variance of a normal distribution
@@ -144,7 +145,7 @@ mitosis_angles_type = 'uniform';
 % mitosis_dependence can currently be either 'volume' or 'area'
 mitosis_dependence = 'none';
 % this is only used if mitosos_dependence is set to 'none';
-mitosis_period = 1;
+mitosis_period = 0.1;
 
 % determines whether mitosis takes place at a set volume (a certain
 % fraction of the target volume) or stochastically. couldn't we just have a
@@ -227,10 +228,10 @@ source_type = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 1;
+movie_logical = 0;
 
 axis_values = 1.5*[-1 1 -1 1];
-% axis_values = [-1 2 -1.5 1.5];
+% axis_values = [0 0.05 -0.33 -0.32];
 % axis_values = 'equal';
 % axis_values_FEM = [-1 1 -1 1 -0.5 1.5];
 axis_values_FEM = [axis_values -0.01 0.05];

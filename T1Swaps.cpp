@@ -36,8 +36,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	bool* FEM_solve_logical = mxGetLogicals(prhs[7]);
 	double* initial_previous_FEM_node_positions = mxGetPr(prhs[8]);
 	double protection_time = mxGetScalar(prhs[9]);
-	double T1_probability = mxGetScalar(prhs[10]);
-   bool* refine_edges_logical = mxGetLogicals(prhs[11]);
+   bool* refine_edges_logical = mxGetLogicals(prhs[10]);
+	double T1_probability = mxGetScalar(prhs[11]);
 	double threshold_T1_swaps = mxGetScalar(prhs[12]);
 	double time = mxGetScalar(prhs[13]);
 	double* initial_time_vertices_created = mxGetPr(prhs[14]);
@@ -161,15 +161,23 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 		
 		// only proceed if there are more than 3 cell nodes
 		if(no_cell_vertices > 3){
+         
+//          printf("hello \n");
 			
 			// loop over the nodes of the current cell
 			for(unsigned current_vertex_local=0; current_vertex_local<no_cell_vertices; current_vertex_local++) {
 				
+//             printf("hello \n");
+            
 				double rand_number = rand()/((double)RAND_MAX);
 				
+//             printf("%f %f \n",rand_number,T1_probability);
+            
 				// only proceed with p(T1_probability)
 				if(rand_number < T1_probability){
 					
+//                printf("hello \n");
+               
 					// find current node and clockwise node in matlab and c indicies
 					unsigned current_vertex_global_mi = (unsigned)cell_vertices[current_vertex_local];
 					unsigned current_vertex_global_ci = current_vertex_global_mi-1;
@@ -191,13 +199,22 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 					// find the current edge length
 					double current_edge_length = findStraightLineDistanceBetweenTwoNodes(current_vertex_position,
 							clockwise_vertex_position);
+               
+//                printf("%f \n",threshold_T1_swaps);
 					
+//                if(current_edge_length < threshold_T1_swaps){
+//                   
+//                   printf("hello \n");
+//                   
+//                }
+                  
+                  
 					// only proceed if edge length is less than threshold, and nodes have not been created very
 					// recently
 					if(current_edge_length < threshold_T1_swaps &&
 							(time-final_time_vertices_created[current_vertex_global_ci])>protection_time &&
 							(time-final_time_vertices_created[clockwise_vertex_global_ci])>protection_time){
-						
+
 						// look for a cell that shares the edge - we need this for a T1 swap
 						bool cell_with_same_edge_found = false;
 						int cell_with_same_edge_mi = -1;
