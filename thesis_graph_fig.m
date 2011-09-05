@@ -2,8 +2,8 @@ function thesis_graph_fig()
 
 disp('busy');close all;
 
-folder_name = 'simulation_with_cell_growth_slow';
-plot_name = 'height_to_area_ratios';
+folder_name = 'simulation_with_cell_proliferation';
+plot_name = 'forces';
 save_plot_logical = 1;
 
 linewidth = 2;
@@ -47,7 +47,7 @@ set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Time')
 ylabel('Cell volume')
 
-axis([0 100 0 0.003])
+axis([0 100 0 0.002])
 
 % set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 
@@ -81,7 +81,7 @@ set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Time')
 ylabel('Height-to-area ratio')
 
-axis([0 100 0 25])
+axis([0 100 0 40])
 % 
 % set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 % set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
@@ -189,7 +189,7 @@ set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Time')
 ylabel('Mean force per vertex')
 
-axis([0 100 0 0.02])
+axis([0 100 0 0.025])
 
 % set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 set(gca,'YTickLabel',sprintf('%0.3f|',str2num(get(gca,'YTickLabel'))))

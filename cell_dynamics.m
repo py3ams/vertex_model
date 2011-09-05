@@ -4,14 +4,14 @@ disp('busy');close all;clear all;tic;%profile on
 
 total_time = 100;
 
-max_iterations = 10000;
+max_iterations = 100000;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = '';
+simulation_name = 'simulation_with_cell_proliferation';
 
 grid_size = [10,10];
 max_no_cells = 2000;
@@ -106,7 +106,7 @@ cell_growth_concentration_dependent = false;
 cell_growth_start = 0;
 mitosis_start = 0;
 
-target_area_growth_period = 0;
+target_area_growth_period = 1;
 no_growth_time = 0;
 % no_growth_time = 5000;
 
@@ -120,7 +120,7 @@ average_cell_growth_speed(2) = 2*average_cell_growth_speed(1);
 
 % 1-all cells the same growth speed 2 - cell growth speeds are drawn from a
 % distribution centred around the average cell growth speed
-growth_speed_distribution_type = 2;
+growth_speed_distribution_type = 1;
 
 % 1- all cells have same initial volume 2 - cell volumes are drawn from a
 % distribution centred around the mean volume (which is calculated from cell areas)
@@ -145,7 +145,7 @@ mitosis_angles_type = 'uniform';
 % mitosis_dependence can currently be either 'volume' or 'area'
 mitosis_dependence = 'none';
 % this is only used if mitosos_dependence is set to 'none';
-mitosis_period = 1;
+mitosis_period = 0.1;
 
 % determines whether mitosis takes place at a set volume (a certain
 % fraction of the target volume) or stochastically. couldn't we just have a
@@ -228,7 +228,7 @@ source_type = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 0;
+movie_logical = 2;
 
 axis_values = 1.5*[-1 1 -1 1];
 % axis_values = [0 0.05 -0.33 -0.32];
@@ -262,7 +262,7 @@ end
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = false;
+full_saves_logical = true;
 full_saves_name = simulation_name;
 full_saves_period = max(floor(max_iterations/1000),1);
 % full_saves_period = 1;

@@ -2,8 +2,8 @@ function cell_figs_from_saves()
 
 disp('busy');close all;
 
-cell_figs_logical = 0;
-FEM_figs_logical = 1;
+cell_figs_logical = 1;
+FEM_figs_logical = 0;
 
 multiple_refinement_levels_logical = false;
 refinement_level = 0;
@@ -11,7 +11,7 @@ refinement_level = 0;
 save_figs_logical = 1;
 initial_fig_logical = 1;
 
-folder_name = 'radial_gradient';
+folder_name = 'simulation_with_cell_proliferation';
 saved_iterations = [10000 100000];
 
 % we set these outside function so both cell_fig and fem_fig have access to them
@@ -143,6 +143,17 @@ for current_cell = 1:length(cell_vertices)
 end
 
 axis(temp_axis_values)
+
+xmin = 0.95;
+xmax = 1.45;
+ypos = -1.4;
+
+plot([xmin xmax],[ypos ypos],'k','linewidth',4)
+plot([xmin xmin],[ypos-0.05 ypos+0.05],'k','linewidth',4)
+plot([xmax xmax],[ypos-0.05 ypos+0.05],'k','linewidth',4)
+text(xmin+(xmax-xmin)/2,ypos+0.1,[num2str(xmax-xmin),' a.u.'],'FontSize',16,...
+	'HorizontalAlignment','center','fontweight','bold','fontname','arial')
+
 % box on
 
 % if save_figs_logical
