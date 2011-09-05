@@ -21,7 +21,7 @@ viscosity = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%% Initial configuration parameters %%%%%%%%%%%%%%%%%%%%%%%%%%
 
-anneal_initial_configuration_logical = true;
+anneal_initial_configuration_logical = false;
 
 compile_mex_functions_logical = false;
 configuration_noise = 0.65;
@@ -106,7 +106,7 @@ cell_growth_concentration_dependent = false;
 cell_growth_start = 0;
 mitosis_start = 0;
 
-target_area_growth_period = 10;
+target_area_growth_period = 0;
 no_growth_time = 0;
 % no_growth_time = 5000;
 
@@ -145,7 +145,7 @@ mitosis_angles_type = 'uniform';
 % mitosis_dependence can currently be either 'volume' or 'area'
 mitosis_dependence = 'none';
 % this is only used if mitosos_dependence is set to 'none';
-mitosis_period = 0.1;
+mitosis_period = 1;
 
 % determines whether mitosis takes place at a set volume (a certain
 % fraction of the target volume) or stochastically. couldn't we just have a
