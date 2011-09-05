@@ -2,8 +2,8 @@ function thesis_graph_fig()
 
 disp('busy');close all;
 
-folder_name = 'simulation_with_cell_proliferation';
-plot_name = 'forces';
+folder_name = 'simulation_with_cell_death';
+plot_name = 'height_to_area_ratios';
 save_plot_logical = 1;
 
 linewidth = 2;
@@ -189,7 +189,7 @@ set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Time')
 ylabel('Mean force per vertex')
 
-axis([0 100 0 0.025])
+axis([0 100 0 0.03])
 
 % set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 set(gca,'YTickLabel',sprintf('%0.3f|',str2num(get(gca,'YTickLabel'))))

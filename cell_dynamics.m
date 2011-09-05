@@ -11,7 +11,7 @@ no_refinements = 0;
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'simulation_with_cell_proliferation';
+simulation_name = 'simulation_with_cell_death_extra_boundary_force';
 
 grid_size = [10,10];
 max_no_cells = 2000;
@@ -30,7 +30,7 @@ configuration_type = 'hexagonal';
 
 load_from_file_logical = false;
 load_FEM_from_file_logical = false;
-file_to_load = 'final_save';
+file_to_load = 'Saves/simulation_with_cell_death_old/initial_save';
 
 % to set the colour of the original cells to be different in figures and
 % movies, need to edit figure_loop.m. otherwise would have to pass a variable
@@ -59,7 +59,7 @@ initial_force_constant_magnitudes.elongation = 1e-3;
 initial_force_constant_magnitudes.perimeter = 5e-2;
 initial_force_constant_magnitudes.tension = 1e-1;
 
-boundary_force_constants.deformation = 1e-1;
+boundary_force_constants.deformation = 1e0;
 boundary_force_constants.edge = 5e1;
 
 % For ~250 cells
@@ -166,7 +166,7 @@ target_volume_factor = 1.0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cell death parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cell_death_logical = false;
+cell_death_logical = true;
 cell_death_start = 0;
 
 % sets the area threshold below which cells can die, as a fraction of the mean area.

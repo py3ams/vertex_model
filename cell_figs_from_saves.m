@@ -11,7 +11,7 @@ refinement_level = 0;
 save_figs_logical = 1;
 initial_fig_logical = 1;
 
-folder_name = 'simulation_with_cell_proliferation';
+folder_name = 'simulation_with_cell_death';
 saved_iterations = [10000 100000];
 
 % we set these outside function so both cell_fig and fem_fig have access to them
