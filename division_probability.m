@@ -1,9 +1,9 @@
 function p = division_probability(cell_parameter,cell_vertices,delta_t,...
-	mitosis_random_logical,mitosis_threshold,target_parameter)
+	division_period,mitosis_random_logical,mitosis_threshold,target_parameter)
 
 if mitosis_random_logical
 
-	p = ((cell_parameter./target_parameter).^2)*delta_t;
+	p = (cell_parameter./target_parameter)*delta_t/division_period;
 	
 	% cells smaller than the threshold are unable to divide.
 	p(cell_parameter < mitosis_threshold*target_parameter) = 0;

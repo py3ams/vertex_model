@@ -11,7 +11,7 @@ no_refinements = 0;
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'simulation_with_cell_death_extra_boundary_force';
+simulation_name = 'radial_Dpp_gradient';
 
 grid_size = [10,10];
 max_no_cells = 2000;
@@ -59,7 +59,7 @@ initial_force_constant_magnitudes.elongation = 1e-3;
 initial_force_constant_magnitudes.perimeter = 5e-2;
 initial_force_constant_magnitudes.tension = 1e-1;
 
-boundary_force_constants.deformation = 1e0;
+boundary_force_constants.deformation = 1e-1;
 boundary_force_constants.edge = 5e1;
 
 % For ~250 cells
@@ -101,7 +101,7 @@ protection_time = 0;
 
 cell_growth_logical = true;
 mitosis_logical = true;
-cell_growth_concentration_dependent = false;
+cell_growth_concentration_dependent = true;
 
 cell_growth_start = 0;
 mitosis_start = 0;
@@ -130,7 +130,7 @@ cell_volume_distribution_type = 1;
 % cell, i.e. cells.internal_chemical*cells.area. need to make sure the
 % orders of magnitude are right
 % lambda = 5000;
-lambda = 50;
+lambda = 100;
 
 % average_cell_growth_speeds = [5e-7 1e-6];
 % medial_lateral_threshold_factor = 0.5;
@@ -142,10 +142,14 @@ medial_lateral_threshold_factor = 100;
 mitosis_angles_type = 'uniform';
 % mitosis_angles_type = [0 0];
 
-% mitosis_dependence can currently be either 'volume' or 'area'
-mitosis_dependence = 'none';
+% mitosis_dependence can currently be either 'volume', 'area', or 'none'
+mitosis_dependence = 'volume';
 % this is only used if mitosos_dependence is set to 'none';
 mitosis_period = 0.1;
+% this is very different from mitosis period. it is the time, on average,
+% that a cell at the target volume will take to divide. this is only used
+% if mitosis dependence is set to volume or area
+division_period = 15;
 
 % determines whether mitosis takes place at a set volume (a certain
 % fraction of the target volume) or stochastically. couldn't we just have a
@@ -157,7 +161,7 @@ mitosis_random_logical = 1;
 % fraction of the target parameter. it should be set to a number less than
 % 1 if growth is logistic and mitosis is volume-dependent as a cell will
 % never actually reach its target volume.
-mitosis_threshold = 0.75;
+mitosis_threshold = 0.85;
 
 % determines the fraction of the initial maximum cell volume that the
 % target volume is set to. if less than one a load of divisions will likely
@@ -166,7 +170,7 @@ target_volume_factor = 1.0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cell death parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cell_death_logical = true;
+cell_death_logical = false;
 cell_death_start = 0;
 
 % sets the area threshold below which cells can die, as a fraction of the mean area.
@@ -190,7 +194,7 @@ apoptosis_period = 0.2;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FEM parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FEM_solve_logical = false;
+FEM_solve_logical = true;
 
 % mesh_refinement_threshold_factor = 1.2;
 mesh_refinement_threshold_factor = 10;
@@ -198,10 +202,10 @@ no_chemicals = 1;
 chemical_to_view = 1;
 refine_edges_logical = false;
 
-degradation_constant = [0.00000 0.00002];
-degradation_constant(1) = 0.5;
+degradation_rate = [0.00000 0.00002];
+degradation_rate(1) = 1;
 
-diffusion_speed = [0.1 0.00002];
+diffusion_speed = [0.01 0.00002];
 % diffusion_speed(1) = 0;
 
 % gradient type can be either 1 - in the x direction (with peak at x = 0), 2 -
@@ -220,9 +224,9 @@ maximum_source_to_release(1) = 1000;
 % set up at the moment requires concentration values to be of the order 1
 % for them to have a suitable effect on growth. the trade-offs between
 % source magnitude and degradation etc are therefore important.
-source_magnitude = [1 0.002];
+source_magnitude = [0.1 0.002];
 % source_magnitude(1) = 0;
-source_width = [0.1 0.1];
+source_width = [0.2 0.1];
 % 1 - basis function-based, 2 - cell-based
 source_type = 1;
 
@@ -246,7 +250,7 @@ movie_start = 0;
 no_frames_for_statistical_plots = 100;
 update_period = max(floor(max_iterations/1000),1);
 % update_period = 1;
-view_FEM_mesh = 0;
+view_FEM_mesh = 1;
 view_FEM_concentration = 1;
 view_iteration_number = 0;
 view_number_cells = 1;
@@ -390,7 +394,7 @@ while true
 		
 		[cells,vertices,cell_growth_speeds_matrix,FEM_elements,FEM_nodes,...
 			mitosis_counter,refined_edge_matrix,stats] = mitosis(cells,vertices,...
-			cell_growth_speeds_matrix,delta_t,FEM_elements,FEM_nodes,...
+			cell_growth_speeds_matrix,delta_t,division_period,FEM_elements,FEM_nodes,...
 			FEM_solve_logical,medial_lateral_threshold,mitosis_angles_type,...
 			mitosis_counter,mitosis_dependence,mitosis_period,mitosis_random_logical,...
 			mitosis_threshold,refined_edge_matrix,stats,target_area_growth_period,...
@@ -598,7 +602,7 @@ while true
 %             no_chemicals,source_magnitude,source_width);
         
 		[cells,FEM_nodes,M,source_magnitude,stats,total_ingestion,total_source_released] = ...
-			FEM_solver(cells,degradation_constant,delta_t,diffusion_speed,FEM_elements,...
+			FEM_solver(cells,degradation_rate,delta_t,diffusion_speed,FEM_elements,...
 			FEM_nodes,gradient_type,maximum_source_to_release,no_chemicals,source_magnitude,...
 			source_type,source_width,refined_edge_matrix,stats,total_ingestion,total_source_released);
 		
