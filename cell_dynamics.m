@@ -2,16 +2,16 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 100;
+total_time = 10000;
 
-max_iterations = 100000;
+max_iterations = 1000000;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'radial_Dpp_gradient';
+simulation_name = 'ultra_slow_growth';
 
 grid_size = [10,10];
 max_no_cells = 2000;
@@ -101,12 +101,12 @@ protection_time = 0;
 
 cell_growth_logical = true;
 mitosis_logical = true;
-cell_growth_concentration_dependent = true;
+cell_growth_concentration_dependent = false;
 
 cell_growth_start = 0;
 mitosis_start = 0;
 
-target_area_growth_period = 1;
+target_area_growth_period = 10;
 no_growth_time = 0;
 % no_growth_time = 5000;
 
@@ -143,9 +143,9 @@ mitosis_angles_type = 'uniform';
 % mitosis_angles_type = [0 0];
 
 % mitosis_dependence can currently be either 'volume', 'area', or 'none'
-mitosis_dependence = 'volume';
+mitosis_dependence = 'none';
 % this is only used if mitosos_dependence is set to 'none';
-mitosis_period = 0.1;
+mitosis_period = 10;
 % this is very different from mitosis period. it is the time, on average,
 % that a cell at the target volume will take to divide. this is only used
 % if mitosis dependence is set to volume or area
@@ -194,7 +194,7 @@ apoptosis_period = 0.2;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FEM parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FEM_solve_logical = true;
+FEM_solve_logical = false;
 
 % mesh_refinement_threshold_factor = 1.2;
 mesh_refinement_threshold_factor = 10;
@@ -232,7 +232,7 @@ source_type = 1;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 2;
+movie_logical = 0;
 
 axis_values = 1.5*[-1 1 -1 1];
 % axis_values = [0 0.05 -0.33 -0.32];
