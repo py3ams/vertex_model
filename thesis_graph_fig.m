@@ -2,8 +2,8 @@ function thesis_graph_fig()
 
 disp('busy');close all;
 
-folder_name = 'simulation_with_cell_growth_slow';
-plot_name = 'height_to_area_ratios';
+folder_name = 'radial_gradient';
+plot_name = 'mitosis_locations';
 save_plot_logical = 1;
 
 linewidth = 2;
@@ -30,6 +30,44 @@ if save_plot_logical
 %    saveas(gcf,['Figs/',folder_name,'/',folder_name,'_',plot_name,'.eps'],'psc2')
    export_fig(['Figs/',folder_name,'/',folder_name,'_',plot_name,'.eps'],'-nocrop');
 end
+
+end
+
+function mitosis_locations_plot(linewidth,stats,statistics_counter,time_range)
+
+mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
+mitosis_radii = sqrt(mitosis_locations(:,1).^2+mitosis_locations(:,2).^2);
+if length(mitosis_radii)>1
+    no_bars = 10;
+    [hist_data,bin_centres] =...
+        hist(mitosis_radii,no_bars);
+    hist_data = hist_data./sum(hist_data)*100;
+    bar(bin_centres,hist_data);
+    axis([0 1.5 0 20])
+end
+xlabel('Mitosis radius')
+ylabel('Frequency (%)')
+
+end
+
+function mitosis_locations_corrected_plot(linewidth,stats,statistics_counter,time_range)
+
+mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
+mitosis_radii = sqrt(mitosis_locations(:,1).^2+mitosis_locations(:,2).^2);
+mitosis_within_original_radius = mitosis_radii(mitosis_radii<0.5);
+if length(mitosis_within_original_radius)>1
+    no_bars = 10;
+    [hist_data,bin_centres] =...
+        hist(mitosis_within_original_radius,no_bars);
+    % we divide by the radius at the centre of the bin. the radius is proportional to
+    % the circumference and therefore the number of cells that can fit at that radius
+    hist_data = hist_data./bin_centres;
+    hist_data = hist_data./sum(hist_data)*100;
+    bar(bin_centres,hist_data);
+    axis([0 0.5 0 20])
+end
+xlabel('Mitosis radius')
+ylabel('Corrected frequency (%)')
 
 end
 
@@ -81,7 +119,7 @@ set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Time')
 ylabel('Height-to-area ratio')
 
-axis([0 100 0 25])
+axis([0 100 0 40])
 % 
 % set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 % set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
@@ -189,7 +227,7 @@ set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Time')
 ylabel('Mean force per vertex')
 
-axis([0 100 0 0.02])
+axis([0 100 0 0.03])
 
 % set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 set(gca,'YTickLabel',sprintf('%0.3f|',str2num(get(gca,'YTickLabel'))))
