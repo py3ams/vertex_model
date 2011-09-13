@@ -2,8 +2,8 @@ function thesis_graph_fig()
 
 disp('busy');close all;
 
-folder_name = 'radial_gradient';
-plot_name = 'mitosis_locations';
+folder_name = 'simulation_of_all_forces';
+plot_name = 'boundary_forces';
 save_plot_logical = 1;
 
 linewidth = 2;
@@ -163,9 +163,7 @@ set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
 
 end
 
-function plot_name = cell_perimeter_plot(linewidth,stats,statistics_counter,time_range)
-
-plot_name = 'cell_perimeters';
+function cell_perimeter_plot(linewidth,stats,statistics_counter,time_range)
 
 cell_perimeter = stats.cell_perimeter(1:statistics_counter,:);
 plot(time_range,cell_perimeter(:,1))
@@ -183,9 +181,7 @@ set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
 
 end
 
-function plot_name = boundary_force_plot(linewidth,stats,statistics_counter,time_range)
-
-plot_name = 'boundary_forces_per_vertex';
+function boundary_forces_plot(linewidth,stats,statistics_counter,time_range)
 
 total_boundary_deformation_force =...
 	stats.total_boundary_deformation_force(1:statistics_counter,:);
@@ -199,17 +195,16 @@ set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Time')
 ylabel('Mean force per vertex')
 legend('C_{B1}','C_{B2}','location','best')
+legend boxoff
 
-axis([0 1 0 0.151])
+axis([0 1 0 0.1])
 
 set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
 
 end
 
-function plot_name = forces_plot(linewidth,stats,statistics_counter,time_range)
-
-plot_name = 'forces_per_vertex';
+function forces_plot(linewidth,stats,statistics_counter,time_range)
 
 total_area_force = stats.total_area_force(1:statistics_counter,:);
 total_deformation_force = stats.total_deformation_force(1:statistics_counter,:);
@@ -227,9 +222,9 @@ set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Time')
 ylabel('Mean force per vertex')
 
-axis([0 100 0 0.03])
+axis([0 1 0 0.03])
 
-% set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
+set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 set(gca,'YTickLabel',sprintf('%0.3f|',str2num(get(gca,'YTickLabel'))))
 
 legend(gca,a(1:3),'C_A','C_D','C_H','location','north')
