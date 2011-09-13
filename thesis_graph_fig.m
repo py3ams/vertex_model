@@ -89,8 +89,8 @@ axis([0 100 0 0.003])
 
 % set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 
-set(gca,'YTick',[0 0.001 0.002 0.003])
-set(gca,'YTickLabel',sprintf('%0.3f|',str2num(get(gca,'YTickLabel'))*0.001))
+% set(gca,'YTick',[0 0.001 0.002 0.003])
+% set(gca,'YTickLabel',sprintf('%0.3f|',str2num(get(gca,'YTickLabel'))*0.001))
 
 % axes('position',[0.47 0.25 0.4 0.4])
 % plot(time_range,cell_volume(:,1))
