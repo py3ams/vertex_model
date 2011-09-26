@@ -2,16 +2,16 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 10000;
+total_time = 10;
 
-max_iterations = 1000000;
+max_iterations = 10000;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'ultra_slow_growth';
+simulation_name = 'cellular_production_and_ingestion_with_rearrangements';
 
 grid_size = [10,10];
 max_no_cells = 2000;
@@ -101,12 +101,14 @@ protection_time = 0;
 
 cell_growth_logical = true;
 mitosis_logical = true;
-cell_growth_concentration_dependent = false;
+cell_growth_concentration_dependent = true;
+% 1 - concentration at centre of cell. 2 - internal quantity.
+concentration_dependence_type = 2;
 
 cell_growth_start = 0;
 mitosis_start = 0;
 
-target_area_growth_period = 10;
+target_area_growth_period = 1;
 no_growth_time = 0;
 % no_growth_time = 5000;
 
@@ -130,7 +132,7 @@ cell_volume_distribution_type = 1;
 % cell, i.e. cells.internal_chemical*cells.area. need to make sure the
 % orders of magnitude are right
 % lambda = 5000;
-lambda = 100;
+lambda = 10;
 
 % average_cell_growth_speeds = [5e-7 1e-6];
 % medial_lateral_threshold_factor = 0.5;
@@ -143,7 +145,7 @@ mitosis_angles_type = 'uniform';
 % mitosis_angles_type = [0 0];
 
 % mitosis_dependence can currently be either 'volume', 'area', or 'none'
-mitosis_dependence = 'none';
+mitosis_dependence = 'volume';
 % this is only used if mitosos_dependence is set to 'none';
 mitosis_period = 10;
 % this is very different from mitosis period. it is the time, on average,
@@ -170,18 +172,18 @@ target_volume_factor = 1.0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cell death parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cell_death_logical = false;
+cell_death_logical = true;
 cell_death_start = 0;
 
 % sets the area threshold below which cells can die, as a fraction of the mean area.
 % cells must be 3-sided for this to occur. most 3-sided cells will be well below
 % this threshold anyway.
 cell_death_area_threshold_factor = 0.2;
-apoptosis_concentration_dependent = 0;
-apoptosis_concentration_threshold = 0.00025;
+% set to half maximum_internal_chemical? (below)
+apoptosis_concentration_threshold = 0.1;
 % apoptosis_concentration_threshold = 1e6;
 % apoptosis_no_put_pc = apoptosis no per unit time per cell 
-apoptosis_no_put_pc_below_threshold = 0.2;
+apoptosis_no_put_pc_below_threshold = 0.05;
 apoptosis_no_put_pc_above_threshold = 1e-3;
 % apoptosis_baseline_prob_per_unit_time is for each cell, so the number of
 % apoptotic cells will be this number multiplied by the number of cells.
@@ -189,12 +191,14 @@ apoptosis_no_put_pc_above_threshold = 1e-3;
 % even if FEM_solve_logical is false
 apoptosis_baseline_prob_per_unit_time = 0.025;
 
+apoptosis_concentration_dependent = 1;
+% only if apoptosis_concentration_dependent = 0
 apoptosis_type = 'regular';
 apoptosis_period = 0.2;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FEM parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FEM_solve_logical = false;
+FEM_solve_logical = true;
 
 % mesh_refinement_threshold_factor = 1.2;
 mesh_refinement_threshold_factor = 10;
@@ -202,23 +206,26 @@ no_chemicals = 1;
 chemical_to_view = 1;
 refine_edges_logical = false;
 
-degradation_rate = [0.00000 0.00002];
-degradation_rate(1) = 1;
-
 diffusion_speed = [0.01 0.00002];
 % diffusion_speed(1) = 0;
 
 % gradient type can be either 1 - in the x direction (with peak at x = 0), 2 -
 % in the y direction with peak at y = 0, 3 - radial, or 4 - from the left-hand edge.
-gradient_type = [3 3];
+gradient_type = [4 3];
 
 % the initial concentration will be set to this value inside the source
 % width. the exact nature depends on gradient_type above.
 initial_concentration_magnitude = [0.0 0.1];
 % initial_concentration_magnitude(1) = 0.1;
 
-maximum_source_to_release = [0.1 0.1];
-maximum_source_to_release(1) = 1000;
+% determines the source type and the degradation type. % 1 - basis function-based, 2 - cell-based
+source_type = 2;
+% 1- linear 2 - logistic
+internal_chemical_uptake_type = 2;
+% only applies if internal_chemical_uptake_type = 2
+maximum_internal_chemical_quantity = 0.2;
+% same for all cells (edit set_source_and_ingestion_functions for more complex examples)
+ingestion_rate = 1;
 
 % need to be careful with these numbers. the way that cell volume growth is
 % set up at the moment requires concentration values to be of the order 1
@@ -227,18 +234,23 @@ maximum_source_to_release(1) = 1000;
 source_magnitude = [0.1 0.002];
 % source_magnitude(1) = 0;
 source_width = [0.2 0.1];
-% 1 - basis function-based, 2 - cell-based
-source_type = 1;
+
+% only applies if source_type=1.
+degradation_rate = [0.00000 0.00002];
+% degradation_rate(1) = 1;
+
+maximum_source_to_release = [1 0.1];
+maximum_source_to_release(1) = 1000;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 movie_logical = 0;
 
-axis_values = 1.5*[-1 1 -1 1];
+axis_values = 0.7*[-1 1 -1 1];
 % axis_values = [0 0.05 -0.33 -0.32];
 % axis_values = 'equal';
 % axis_values_FEM = [-1 1 -1 1 -0.5 1.5];
-axis_values_FEM = [axis_values -0.01 0.05];
+axis_values_FEM = [axis_values -0.01 5];
 % axis_values_FEM = 'equal';
 extra_pause = 0.0;
 % extra_pause = 0.1;
@@ -261,12 +273,16 @@ else
    view_initial_config = 1;
 end
 
+if ~FEM_solve_logical
+   view_FEM_mesh = 0;
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = true;
+full_saves_logical = false;
 full_saves_name = simulation_name;
 full_saves_period = max(floor(max_iterations/1000),1);
 % full_saves_period = 1;
@@ -286,7 +302,7 @@ compile_mex_functions(compile_mex_functions_logical);
 	average_cell_growth_speed,boundary_force_constants,cell_volume_distribution_type,configuration_noise,configuration_type,...
 	FEM_solve_logical,file_to_load,gradient_type,grid_size,growth_speed_distribution_type,initial_concentration_magnitude,...
 	initial_force_constant_magnitudes,load_FEM_from_file_logical,load_from_file_logical,...
-	max_no_cells,medial_lateral_threshold_factor,no_chemicals,no_refinements,source_width);
+	max_no_cells,maximum_internal_chemical_quantity,medial_lateral_threshold_factor,no_chemicals,no_refinements,source_width);
 
 % cells.vertices{54}
 
@@ -496,7 +512,7 @@ while true
 		% 	concentration_before = FEM_nodes.concentration;
 		
         [cells,FEM_elements,FEM_nodes,stats,vertices] = cell_volume_growth(...
-            cell_growth_concentration_dependent,cells,delta_t,FEM_elements,...
+            cell_growth_concentration_dependent,cells,concentration_dependence_type,delta_t,FEM_elements,...
             FEM_nodes,growth_solver_type,lambda,no_growth_time,stats,time,vertices);
 		
 		% 	concentration_after = FEM_nodes.concentration;
@@ -598,12 +614,12 @@ while true
 		FEM_nodes.position = UpdateFEMNodePositions(cells.vertices,...
 			vertices.position,cells.area,FEM_nodes.edge);
 		
-%         cells = set_source_and_ingestion_rates(cells,FEM_nodes,gradient_type,...
-%             no_chemicals,source_magnitude,source_width);
+      cells = set_source_and_ingestion_rates(cells,FEM_nodes,gradient_type,...
+         ingestion_rate,no_chemicals,source_magnitude,source_width);
         
 		[cells,FEM_nodes,M,source_magnitude,stats,total_ingestion,total_source_released] = ...
 			FEM_solver(cells,degradation_rate,delta_t,diffusion_speed,FEM_elements,...
-			FEM_nodes,gradient_type,maximum_source_to_release,no_chemicals,source_magnitude,...
+			FEM_nodes,gradient_type,internal_chemical_uptake_type,maximum_source_to_release,no_chemicals,source_magnitude,...
 			source_type,source_width,refined_edge_matrix,stats,total_ingestion,total_source_released);
 		
 		FEM_nodes.previous_position = FEM_nodes.position;

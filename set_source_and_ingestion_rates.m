@@ -1,5 +1,5 @@
 function cells = set_source_and_ingestion_rates(cells,FEM_nodes,gradient_type,...
-	no_chemicals,source_magnitude,source_width)
+	ingestion_rate,no_chemicals,source_magnitude,source_width)
 
 no_cells = length(cells.vertices);
 cells.source_rate = zeros(no_cells,no_chemicals);
@@ -45,10 +45,12 @@ for current_chemical = 1:no_chemicals
 	cells.source_rate(source_producing_logical,current_chemical) =...
 		source_magnitude(current_chemical);
     
-    cells.ingestion_rate(cells_logical,current_chemical) = 0;
+%     cells.ingestion_rate(cells_logical,current_chemical) = 0;
 
-%     cells.ingestion_rate(~source_producing_logical,current_chemical) = 1;
+    cells.ingestion_rate(:,current_chemical) = ingestion_rate;
 	
+    
+    % make ingestion rate dependent on position
 %     no_FEM_nodes = size(FEM_nodes.position(:,1),1);
 %     
 %     cell_centre_positions = FEM_nodes.previous_position(no_FEM_nodes-no_cells+1:end,:);

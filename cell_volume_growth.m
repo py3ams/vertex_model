@@ -1,5 +1,5 @@
 function [cells,FEM_elements,FEM_nodes,stats,vertices] = cell_volume_growth(...
-   cell_growth_concentration_dependent,cells,delta_t,FEM_elements,...
+   cell_growth_concentration_dependent,cells,concentration_dependence_type,delta_t,FEM_elements,...
    FEM_nodes,growth_solver_type,lambda,no_growth_time,stats,time,vertices)
 
 % find cells that are not apoptotic or dead and have had sufficient time since
@@ -10,9 +10,6 @@ cells.growing_logical =...
    cells.state~=4;
 
 if cell_growth_concentration_dependent
-   
-   % 1 - concentration at centre of cell. 2 - internal quantity.
-   concentration_dependence_type = 1;
    
    if numel(FEM_nodes.concentration)==1
       

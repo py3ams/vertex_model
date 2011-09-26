@@ -3,7 +3,7 @@ function [cell_growth_speeds_matrix,cells,FEM_elements,FEM_nodes,refined_edge_ma
    average_cell_growth_speeds,boundary_force_constants,cell_volume_distribution_type,configuration_noise,configuration_type,...
    FEM_solve_logical,file_to_load,gradient_type,grid_size,growth_speed_distribution_type,initial_concentration_magnitude,...
    initial_force_constant_magnitudes,load_FEM_from_file_logical,load_from_file_logical,...
-   max_no_cells,medial_lateral_threshold_factor,no_chemicals,no_refinements,source_width)
+   max_no_cells,maximum_internal_chemical_quantity,medial_lateral_threshold_factor,no_chemicals,no_refinements,source_width)
 
 if load_from_file_logical
    
@@ -201,7 +201,7 @@ if FEM_solve_logical && ~load_FEM_from_file_logical
    
    cells.internal_chemical_value = zeros(no_cells,no_chemicals);
    cells.internal_chemical_quantity = zeros(no_cells,no_chemicals);
-   cells.maximum_internal_chemical_quantity = 5e-4*ones(no_cells,no_chemicals);
+   cells.maximum_internal_chemical_quantity = maximum_internal_chemical_quantity*ones(no_cells,no_chemicals);
    
 end
 

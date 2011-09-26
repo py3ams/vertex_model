@@ -316,61 +316,60 @@ axis([0 time 0 max(no_mitosis)+2])
 	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Non radial gradient %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
-% no_bars = 10;
-% subplot(2,3,2)
-% [hist_data,bin_centres] = hist(mitosis_locations(:,1),no_bars);
-% hist_data = hist_data/sum(hist_data)*100;
-% bar(bin_centres,hist_data);
-% xlabel('Non-corrected mitosis location')
-% ylabel('Frequency (%)')
-% % axis([-0.5 0.5 0 20])
+mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
+no_bars = 10;
+subplot(2,3,2)
+[hist_data,bin_centres] = hist(mitosis_locations(:,1),no_bars);
+hist_data = hist_data/sum(hist_data)*100;
+bar(bin_centres,hist_data);
+xlabel('Non-corrected mitosis location')
+ylabel('Frequency (%)')
+% axis([-0.5 0.5 0 20])
 
-% mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
-% mitosis_locations = mitosis_locations(abs(mitosis_locations(:,1)<0.5),:);
-% no_bars = 10;
-% subplot(2,3,3)
-% [hist_data,bin_centres] = hist(mitosis_locations(:,1),no_bars);
-%     hist_data = hist_data./(2*sqrt(0.5^2 - bin_centres.^2));
-% hist_data = hist_data/sum(hist_data)*100;
-% bar(bin_centres,hist_data);
-% xlabel('Corrected mitosis location')
-% ylabel('Frequency (%)')
-% % axis([-0.5 0.5 0 20])
+mitosis_locations = mitosis_locations(abs(mitosis_locations(:,1))<0.5,:);
+no_bars = 10;
+subplot(2,3,3)
+[hist_data,bin_centres] = hist(mitosis_locations(:,1),no_bars);
+hist_data = hist_data./(2*sqrt(0.5^2 - bin_centres.^2));
+hist_data = hist_data/sum(hist_data)*100;
+bar(bin_centres,hist_data);
+xlabel('Corrected mitosis location')
+ylabel('Frequency (%)')
+% axis([-0.5 0.5 0 20])
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% Radial gradient %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
-mitosis_radii = sqrt(mitosis_locations(:,1).^2+mitosis_locations(:,2).^2);
-subplot(2,3,2)
-if length(mitosis_radii)>1
-    no_bars = 10;
-    [hist_data,bin_centres] =...
-        hist(mitosis_radii,no_bars);
-    hist_data = hist_data./sum(hist_data)*100;
-    bar(bin_centres,hist_data);
-%     axis([-0.5 0.5 0 20])
-end
-xlabel('Non-corrected radial mitosis location')
-ylabel('Frequency (%)')
-
-mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
-mitosis_radii = sqrt(mitosis_locations(:,1).^2+mitosis_locations(:,2).^2);
-mitosis_within_original_radius = mitosis_radii(mitosis_radii<0.5);
-subplot(2,3,3)
-if length(mitosis_within_original_radius)>1
-    no_bars = 10;
-    [hist_data,bin_centres] =...
-        hist(mitosis_within_original_radius,no_bars);
-    % we divide by the radius at the centre of the bin. the radius is proportional to
-    % the circumference and therefore the number of cells that can fit at that radius
-    hist_data = hist_data./bin_centres;
-    hist_data = hist_data./sum(hist_data)*100;
-    bar(bin_centres,hist_data);
-%     axis([-0.5 0.5 0 20])
-end
-xlabel('Corrected radial mitosis location')
-ylabel('Frequency (%)')
+% mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
+% mitosis_radii = sqrt(mitosis_locations(:,1).^2+mitosis_locations(:,2).^2);
+% subplot(2,3,2)
+% if length(mitosis_radii)>1
+%     no_bars = 10;
+%     [hist_data,bin_centres] =...
+%         hist(mitosis_radii,no_bars);
+%     hist_data = hist_data./sum(hist_data)*100;
+%     bar(bin_centres,hist_data);
+% %     axis([-0.5 0.5 0 20])
+% end
+% xlabel('Non-corrected radial mitosis location')
+% ylabel('Frequency (%)')
+% 
+% mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
+% mitosis_radii = sqrt(mitosis_locations(:,1).^2+mitosis_locations(:,2).^2);
+% mitosis_within_original_radius = mitosis_radii(mitosis_radii<0.5);
+% subplot(2,3,3)
+% if length(mitosis_within_original_radius)>1
+%     no_bars = 10;
+%     [hist_data,bin_centres] =...
+%         hist(mitosis_within_original_radius,no_bars);
+%     % we divide by the radius at the centre of the bin. the radius is proportional to
+%     % the circumference and therefore the number of cells that can fit at that radius
+%     hist_data = hist_data./bin_centres;
+%     hist_data = hist_data./sum(hist_data)*100;
+%     bar(bin_centres,hist_data);
+% %     axis([-0.5 0.5 0 20])
+% end
+% xlabel('Corrected radial mitosis location')
+% ylabel('Frequency (%)')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -443,25 +442,14 @@ plot(time_range,net_chemical)
 xlabel('Time')
 ylabel('Net chemical released')
 legend('Source','Internal','Dead','Net','Location','Northwest')
-% if max(net_chemical)>0
-%     axis([0 time 0.9*min(net_chemical) 1.1*max(net_chemical)])
-% else
-    axis_values = axis;
-    axis([axis_values(1) time axis_values(3) axis_values(4)])
-% end
+xlim([0 time])
 a = axis;
 
 subplot(2,3,2)
 plot(time_range,total_concentration)
 xlabel('Time')
 ylabel('Total concentration in system')
-% if max(total_concentration)>0
-%     axis([0 time 0.9*min(total_concentration) 1.1*max(total_concentration)])
-% else
-%     axis_values = axis;
-%     axis([axis_values(1) time axis_values(3) axis_values(4)])
-% end
-% axis(a)
+axis(a)
 
 % concentration_released_per_iteration = stats.chemical_source(1:statistics_counter,2);
 % subplot(2,3,3)

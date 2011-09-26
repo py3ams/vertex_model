@@ -2,8 +2,8 @@ function thesis_graph_fig()
 
 disp('busy');close all;
 
-folder_name = 'simulation_of_all_forces';
-plot_name = 'boundary_forces';
+folder_name = 'cellular_production_and_ingestion';
+plot_name = 'internal_chemical';
 save_plot_logical = 1;
 
 linewidth = 2;
@@ -18,7 +18,7 @@ axes('position',[0.23 0.15 0.72 0.8])
 statistics_counter = stats.counter;
 time_range = linspace(0,total_time,stats.counter);
 
-eval([plot_name,'_plot(linewidth,stats,statistics_counter,time_range);'])
+eval([plot_name,'_plot(linewidth,stats,statistics_counter,time_range,cells,vertices);'])
 
 % cell_area_plot(linewidth,stats,statistics_counter,time_range);
 
@@ -33,7 +33,94 @@ end
 
 end
 
-function mitosis_locations_plot(linewidth,stats,statistics_counter,time_range)
+function internal_chemical_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
+
+mean_internal_chemical_quantity = stats.internal_chemical_quantity(1:statistics_counter,1);
+max_internal_chemical_quantity = stats.internal_chemical_quantity(1:statistics_counter,2);
+min_internal_chemical_quantity = stats.internal_chemical_quantity(1:statistics_counter,3);
+
+plot(time_range,mean_internal_chemical_quantity)
+hold on
+plot(time_range,max_internal_chemical_quantity,'r')
+% plot(time_range,min_internal_chemical_quantity,'r')
+set(gca,'FontName','arial','fontweight','bold','fontsize',13);
+xlabel('Time')
+ylabel('Internal chemical')
+
+ylim([0 0.04])
+
+set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
+set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
+
+end
+
+function internal_chemical_v_xpos_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
+
+cell_mean_x_positions = cellfun(@(x)mean(vertices.position(x,1)),cells.vertices);
+
+plot(cell_mean_x_positions,cells.internal_chemical_quantity,'o')
+set(gca,'FontName','arial','fontweight','bold','fontsize',13);
+
+xlabel('x-position')
+ylabel('Internal chemical')
+
+ylim([0 0.04])
+
+set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
+set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
+
+end
+
+function net_chemical_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
+
+total_concentration = stats.total_concentration(1:statistics_counter,:);
+total_chemical_released = stats.chemical_source(1:statistics_counter,1);
+total_internal_chemical = stats.internal_chemical_quantity(1:statistics_counter,5);
+total_dead_chemical = stats.dead_chemical(1:statistics_counter);
+
+initial_concentration_in_system = total_concentration(1);
+initial_internal_chemical = stats.internal_chemical_quantity(1,5);
+
+chemical_internalised = total_internal_chemical-initial_internal_chemical;
+
+% dead chemical starts at 0 for a new simulation so don't need to subtract
+% initial value
+net_chemical = initial_concentration_in_system + total_chemical_released -...
+	chemical_internalised - total_dead_chemical;
+
+plot(time_range,total_chemical_released)
+hold all
+plot(time_range,total_internal_chemical)
+% plot(time_range,total_dead_chemical)
+plot(time_range,net_chemical)
+set(gca,'FontName','arial','fontweight','bold','fontsize',13);
+xlabel('Time')
+ylabel('Quantity of chemical')
+% legend('Source','Internal','Dead','Net','Location','Northwest')
+legend('Source','Internal','Net','Location','Northwest')
+legend boxoff
+axis([0 1 0 1.201])
+
+set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
+set(gca,'YTickLabel',sprintf('%0.1f|',str2num(get(gca,'YTickLabel'))))
+
+end
+
+function total_concentration_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
+
+total_concentration = stats.total_concentration(1:statistics_counter,:);
+plot(time_range,total_concentration)
+set(gca,'FontName','arial','fontweight','bold','fontsize',13);
+xlabel('Time')
+ylabel('Quantity of chemical')
+axis([0 1 0 1.201])
+
+set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
+set(gca,'YTickLabel',sprintf('%0.1f|',str2num(get(gca,'YTickLabel'))))
+
+end
+
+function mitosis_locations_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
 
 mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
 mitosis_radii = sqrt(mitosis_locations(:,1).^2+mitosis_locations(:,2).^2);
@@ -50,7 +137,7 @@ ylabel('Frequency (%)')
 
 end
 
-function mitosis_locations_corrected_plot(linewidth,stats,statistics_counter,time_range)
+function mitosis_locations_corrected_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
 
 mitosis_locations = stats.mitosis_locations(stats.mitosis_locations(:,1)~=0,:);
 mitosis_radii = sqrt(mitosis_locations(:,1).^2+mitosis_locations(:,2).^2);
@@ -71,7 +158,7 @@ ylabel('Corrected frequency (%)')
 
 end
 
-function cell_volumes_plot(linewidth,stats,statistics_counter,time_range)
+function cell_volumes_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
 
 cell_volume = stats.cell_volume(1:statistics_counter,:);
 plot(time_range,cell_volume(:,1))
@@ -107,7 +194,7 @@ axis([0 100 0 0.003])
 
 end
 
-function height_to_area_ratios_plot(linewidth,stats,statistics_counter,time_range)
+function height_to_area_ratios_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
 
 cell_height_to_area = stats.cell_height_to_area(1:statistics_counter,:);
 plot(time_range,cell_height_to_area(:,1))
@@ -126,7 +213,7 @@ axis([0 100 0 40])
 
 end
 
-function angle_deviations_plot(linewidth,stats,statistics_counter,time_range)
+function angle_deviations_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
 
 angle_deviation = stats.angle_deviation(1:statistics_counter,:);
 plot(time_range,angle_deviation(:,1))
@@ -141,7 +228,7 @@ set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 
 end
 
-function edge_lengths_plot(linewidth,stats,statistics_counter,time_range)
+function edge_lengths_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
 
 edge_length = stats.edge_length(1:statistics_counter,:);
 size(stats.edge_length)
@@ -163,7 +250,7 @@ set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
 
 end
 
-function cell_perimeter_plot(linewidth,stats,statistics_counter,time_range)
+function cell_perimeter_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
 
 cell_perimeter = stats.cell_perimeter(1:statistics_counter,:);
 plot(time_range,cell_perimeter(:,1))
@@ -181,7 +268,7 @@ set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
 
 end
 
-function boundary_forces_plot(linewidth,stats,statistics_counter,time_range)
+function boundary_forces_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
 
 total_boundary_deformation_force =...
 	stats.total_boundary_deformation_force(1:statistics_counter,:);
@@ -204,7 +291,7 @@ set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
 
 end
 
-function forces_plot(linewidth,stats,statistics_counter,time_range)
+function forces_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
 
 total_area_force = stats.total_area_force(1:statistics_counter,:);
 total_deformation_force = stats.total_deformation_force(1:statistics_counter,:);
@@ -236,7 +323,7 @@ set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 
 end
 
-function cell_areas_plot(linewidth,stats,statistics_counter,time_range)
+function cell_areas_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
 
 cell_area = stats.cell_area(1:statistics_counter,:);
 

@@ -1,6 +1,6 @@
 function [cells,FEM_nodes,M,source_magnitude,stats,total_ingestion,total_source_released] = ...
    FEM_solver(cells,degradation_constant,delta_t,diffusion_speed,FEM_elements,...
-   FEM_nodes,gradient_type,maximum_source_to_release,no_chemicals,source_magnitude,...
+   FEM_nodes,gradient_type,internal_chemical_uptake_type,maximum_source_to_release,no_chemicals,source_magnitude,...
    source_type,source_width,refined_edge_matrix,stats,total_ingestion,total_source_released)
 
 % find the nodes that are actually currrently in use.
@@ -56,18 +56,7 @@ for current_chemical = 1:no_chemicals
    COEFF_MAT = M+delta_t*(diffusion_speed(current_chemical)*A+W);
    % COEFF_MAT = M+delta_t*(diffusion_speed(current_chemical)*A);
    
-   cell_internal_chemical_to_maximum_ratios = cells.internal_chemical_quantity(:,...
-      current_chemical)./cells.maximum_internal_chemical_quantity(:,current_chemical);
-   
-   % we are saving this variable to use in calculate_ingestion_term
-   cell_ingestion_functions(:,current_chemical) = cells.ingestion_rate(:,current_chemical).*...
-      (1-cell_internal_chemical_to_maximum_ratios);
-   
-   ingestion_term = CalculateIngestionTerm(cells.FEM_elements,cell_ingestion_functions(:,current_chemical),...
-      FEM_elements.nodes,FEM_nodes.concentration(:,current_chemical),FEM_nodes.previous_position,...
-      FEM_nodes_index_in_real_nodes,no_real_nodes);
-   %     ingestion_term = calculate_ingestion_term(cells,current_chemical,FEM_elements,...
-   %         FEM_nodes,FEM_nodes_index_in_real_nodes,no_real_nodes);
+
    
    if source_type == 1
       
@@ -84,7 +73,6 @@ for current_chemical = 1:no_chemicals
       elseif gradient_type(current_chemical) == 3
          
          source_functions(sqrt((real_node_positions(:,1).^2)+(real_node_positions(:,2).^2))<(0.5*source_width(current_chemical))) = source_magnitude(current_chemical);
-         no_activated_source_functions = sum(source_functions>0);
          
       elseif gradient_type(current_chemical) == 4
          
@@ -96,37 +84,6 @@ for current_chemical = 1:no_chemicals
       rhs = M_prev*FEM_nodes.concentration(real_nodes_logical,current_chemical)*...
          (1-delta_t*degradation_constant(current_chemical)) + delta_t*M*source_functions;
       
-      
-      
-   elseif source_type == 2
-      
-      source_term = CalculateSourceTerm(cells.FEM_elements,cells.source_rate(:,current_chemical),...
-         cells.area,FEM_elements.nodes,FEM_nodes.previous_position,...
-         FEM_nodes_index_in_real_nodes,no_real_nodes);
-      % 	source_term = calculate_source_term(cells,current_chemical,FEM_elements,...
-      % 		FEM_nodes,FEM_nodes_index_in_real_nodes,no_real_nodes);
-      
-      source_this_iteration(current_chemical) = delta_t*sum(cells.source_rate(:,current_chemical));
-      
-      rhs = M_prev*FEM_nodes.concentration(real_nodes_logical,current_chemical)*...
-         (1-delta_t*degradation_constant(current_chemical)) + delta_t*source_term -...
-         delta_t*ingestion_term;
-      
-   end
-   
-   
-   
-   % rhs = M_prev*concentration(real_nodes_logical);
-   % rhs = M*concentration(real_nodes_logical);
-   
-   FEM_nodes.concentration(real_nodes_logical,current_chemical) = COEFF_MAT\rhs;
-   
-   total_concentration(current_chemical) = CalculateTotalDpp(...
-      FEM_nodes.concentration(:,current_chemical),FEM_elements_stripped,...
-      FEM_nodes.position);
-   
-   if source_type == 1
-      
       % to find the total source released during this iteration, we must
       % intergrate over space and time. CalculateTotalDpp does the spatial
       % integration, then we approximate the time integration by multiplying by
@@ -136,17 +93,42 @@ for current_chemical = 1:no_chemicals
       % currently.
       source_this_iteration(current_chemical) =...
          delta_t*CalculateTotalDpp(source_functions,FEM_elements_real_node_indices,real_node_positions);
+
+      no_activated_source_functions = sum(source_functions>0);
+      
+   elseif source_type == 2
+      
+      source_term = CalculateSourceTerm(cells.FEM_elements,cells.source_rate(:,...
+         current_chemical),cells.area,FEM_elements.nodes,FEM_nodes.previous_position,...
+         FEM_nodes_index_in_real_nodes,no_real_nodes);
+      
+      source_this_iteration(current_chemical) = delta_t*sum(cells.source_rate(:,current_chemical));
+      
+      cell_internal_chemical_to_maximum_ratios = cells.internal_chemical_quantity(:,...
+         current_chemical)./cells.maximum_internal_chemical_quantity(:,current_chemical);
+      
+      if internal_chemical_uptake_type==1
+         cell_ingestion_functions(:,current_chemical) = cells.ingestion_rate(:,current_chemical);
+      elseif internal_chemical_uptake_type==2
+         cell_ingestion_functions(:,current_chemical) = cells.ingestion_rate(:,current_chemical).*...
+            (1-cell_internal_chemical_to_maximum_ratios);
+      end
+      
+      ingestion_term = CalculateIngestionTerm(cells.FEM_elements,cell_ingestion_functions(:,current_chemical),...
+         FEM_elements.nodes,FEM_nodes.concentration(:,current_chemical),FEM_nodes.previous_position,...
+         FEM_nodes_index_in_real_nodes,no_real_nodes);
+      
+      rhs = M_prev*FEM_nodes.concentration(real_nodes_logical,current_chemical)...
+         + delta_t*source_term - delta_t*ingestion_term;
+      
+      no_activated_source_functions = sum(cells.source_rate(:,current_chemical)>0);
       
    end
    
+   FEM_nodes.concentration(real_nodes_logical,current_chemical) = COEFF_MAT\rhs;
+   
    total_source_released(current_chemical) =...
       total_source_released(current_chemical)+source_this_iteration(current_chemical);
-   
-   %     % similarly, to find the total amount ingested this iteration, we integrate over
-   %     % space and time. this time we use CalculateTotalDppConst for the spatial
-   %     % integration, as piecewise constant basis functions were used for ingestion.
-   %     ingestion_this_iteration(current_chemical) =...
-   %         delta_t*CalculateTotalDpp(ingestion_term,FEM_elements_real_node_indices,real_node_positions);
    
    if total_source_released(current_chemical) > maximum_source_to_release(current_chemical)
       
@@ -167,8 +149,10 @@ if stats.this_iteration_logical
    stats.concentration_node_values(stats.counter,:) =...
       [mean(real_FEM_concentrations) max(real_FEM_concentrations) ...
       min(real_FEM_concentrations) std(real_FEM_concentrations)];
-   stats.total_concentration(stats.counter,:) = total_concentration(1);
    
+   stats.total_concentration(stats.counter,:) = CalculateTotalDpp(...
+      FEM_nodes.concentration(:,1),FEM_elements_stripped,FEM_nodes.position);
+      
    stats.chemical_source(stats.counter,:) = [total_source_released(1) source_this_iteration(1)];
    
    real_cells_logical = cells.state~=3&cells.state~=4;
