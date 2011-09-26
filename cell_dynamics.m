@@ -101,7 +101,7 @@ protection_time = 0;
 
 cell_growth_logical = true;
 mitosis_logical = true;
-cell_growth_concentration_dependent = true;
+cell_growth_concentration_dependent = false;
 % 1 - concentration at centre of cell. 2 - internal quantity.
 concentration_dependence_type = 2;
 
@@ -145,9 +145,9 @@ mitosis_angles_type = 'uniform';
 % mitosis_angles_type = [0 0];
 
 % mitosis_dependence can currently be either 'volume', 'area', or 'none'
-mitosis_dependence = 'volume';
+mitosis_dependence = 'none';
 % this is only used if mitosos_dependence is set to 'none';
-mitosis_period = 10;
+mitosis_period = 0.1;
 % this is very different from mitosis period. it is the time, on average,
 % that a cell at the target volume will take to divide. this is only used
 % if mitosis dependence is set to volume or area
@@ -191,7 +191,7 @@ apoptosis_no_put_pc_above_threshold = 1e-3;
 % even if FEM_solve_logical is false
 apoptosis_baseline_prob_per_unit_time = 0.025;
 
-apoptosis_concentration_dependent = 1;
+apoptosis_concentration_dependent = 0;
 % only if apoptosis_concentration_dependent = 0
 apoptosis_type = 'regular';
 apoptosis_period = 0.2;
