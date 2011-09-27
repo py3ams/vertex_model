@@ -4,7 +4,7 @@ disp('busy');close all;clear all;tic;%profile on
 
 total_time = 10;
 
-max_iterations = 10000;
+max_iterations = 1000;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
@@ -227,6 +227,8 @@ maximum_internal_chemical_quantity = 0.2;
 % same for all cells (edit set_source_and_ingestion_functions for more complex examples)
 ingestion_rate = 1;
 
+ingestion_start_time = 0;
+
 % need to be careful with these numbers. the way that cell volume growth is
 % set up at the moment requires concentration values to be of the order 1
 % for them to have a suitable effect on growth. the trade-offs between
@@ -431,7 +433,7 @@ while true
 		%         error('stop')
 		
 %       test_cell_store(vertices.cells,cells.vertices,'before_T1_swaps',iteration);
-      
+
 		[cells.vertices,vertices.position,cells.FEM_elements,vertices.cells,vertices.no_cells,FEM_nodes.concentration,...
 			FEM_elements.nodes,no_T1_swaps_this_iteration,FEM_nodes.previous_position,...
 			vertices.time_created,FEM_nodes.edge,refined_edge_matrix_edits] =...
@@ -439,6 +441,16 @@ while true
 			vertices.cells,vertices.no_cells,FEM_nodes.concentration,FEM_elements.nodes,FEM_solve_logical,...
 			FEM_nodes.previous_position,protection_time,refine_edges_logical,T1_probability,...
 			threshold_T1_swaps,time,vertices.time_created,FEM_nodes.edge);
+       
+      if FEM_solve_logical && no_T1_swaps_this_iteration > 0
+         
+         % internal chemical quantity should not change during a T1 swap, so we just
+         % need to figure out the new internal chemical value by dividing by the cell
+         % area. this saves us needing to know the area before the T1 swap.
+         cells.internal_chemical_value = cells.internal_chemical_quantity./...
+            CalculateCellAreas(cells.vertices,vertices.position);
+         
+      end
       
       
 %       test_cell_store(vertices.cells,cells.vertices,'T1_swaps',iteration);
@@ -488,14 +500,14 @@ while true
 			apoptosis_baseline_prob_per_unit_time,apoptosis_concentration_dependent,...
 			apoptosis_concentration_threshold,apoptosis_period,apoptosis_no_put_pc_above_threshold,...
 			apoptosis_no_put_pc_below_threshold,apoptosis_type,dead_chemical,delta_t,...
-			FEM_solve_logical,stats,time);
+			FEM_solve_logical,stats,time,vertices);
 		
 		cell_death_area_threshold = cell_death_area_threshold_factor*mean_cell_area;
 		
-        [cells,death_counter,FEM_elements,FEM_nodes,no_deaths_this_iteration,...
-            refined_edge_matrix,stats,vertices] = cell_death(cells,death_counter,...
-            FEM_elements,FEM_nodes,FEM_solve_logical,protection_time,refined_edge_matrix,...
-            stats,cell_death_area_threshold,time,vertices);		
+      [cells,death_counter,FEM_elements,FEM_nodes,no_deaths_this_iteration,...
+         refined_edge_matrix,stats,vertices] = cell_death(cells,death_counter,...
+         FEM_elements,FEM_nodes,FEM_solve_logical,protection_time,refined_edge_matrix,...
+         stats,cell_death_area_threshold,time,vertices);
 		
 		%     if no_deaths_this_iteration > 0
 		%         disp(['cell death at iteration ',num2str(iteration)])
@@ -545,7 +557,9 @@ while true
 		
 		if test_for_nans(FEM_nodes.concentration,vertices.position,iteration,regular_tests_logical)
 			break;
-		end
+      end
+      
+      
 
 	end
 	
@@ -615,7 +629,7 @@ while true
 			vertices.position,cells.area,FEM_nodes.edge);
 		
       cells = set_source_and_ingestion_rates(cells,FEM_nodes,gradient_type,...
-         ingestion_rate,no_chemicals,source_magnitude,source_width);
+         ingestion_start_time,ingestion_rate,no_chemicals,source_magnitude,source_width,time);
         
 		[cells,FEM_nodes,M,source_magnitude,stats,total_ingestion,total_source_released] = ...
 			FEM_solver(cells,degradation_rate,delta_t,diffusion_speed,FEM_elements,...

@@ -179,10 +179,12 @@ for current_cell_local = 1:length(potential_death_cells)
       
       if FEM_solve_logical
          
-         cells.ingestion_rate(current_cell) = 0;
-         
-         cells.internal_chemical_value(current_cell) = 0;
-         cells.internal_chemical_quantity(current_cell) = 0;
+         % theses already get set to 0 when the cell becomes apoptotic. dead chemical
+         % is calculated in set_apoptotic_cells too.
+%          cells.ingestion_rate(current_cell) = 0;
+%          
+%          cells.internal_chemical_value(current_cell) = 0;
+%          cells.internal_chemical_quantity(current_cell) = 0;
          
          new_node = new_vertex;
          

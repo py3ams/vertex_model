@@ -447,6 +447,8 @@ a = axis;
 
 subplot(2,3,2)
 plot(time_range,total_concentration)
+hold all
+plot(time_range,net_chemical)
 xlabel('Time')
 ylabel('Total concentration in system')
 axis(a)

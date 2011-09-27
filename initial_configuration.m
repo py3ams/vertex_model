@@ -199,8 +199,11 @@ if FEM_solve_logical && ~load_FEM_from_file_logical
    
    no_cells = length(cells.vertices);
    
+%    cells.internal_chemical_value = 10*rand(no_cells,no_chemicals);
+   cells.area = CalculateCellAreas(cells.vertices,vertices.position);
+   
    cells.internal_chemical_value = zeros(no_cells,no_chemicals);
-   cells.internal_chemical_quantity = zeros(no_cells,no_chemicals);
+   cells.internal_chemical_quantity = cells.internal_chemical_value.*cells.area;
    cells.maximum_internal_chemical_quantity = maximum_internal_chemical_quantity*ones(no_cells,no_chemicals);
    
 end

@@ -1,7 +1,7 @@
 function [cells,dead_chemical,stats] = set_apoptotic_cells(cells,...
 	apoptosis_baseline_prob_per_unit_time,apoptosis_concentration_dependent,...
 	apoptosis_concentration_threshold,apoptosis_period,apoptosis_prob_above_threshold,...
-	apoptosis_prob_below_threshold,apoptosis_type,dead_chemical,delta_t,FEM_solve_logical,stats,time)
+	apoptosis_prob_below_threshold,apoptosis_type,dead_chemical,delta_t,FEM_solve_logical,stats,time,vertices)
 	
 length_cells = length(cells.vertices);
 
@@ -18,15 +18,15 @@ if apoptosis_concentration_dependent
 	probability_apoptosis(cells.internal_chemical_quantity<=apoptosis_concentration_threshold,1) = apoptosis_prob_below_threshold*delta_t;
 	probability_apoptosis(cells.internal_chemical_quantity>apoptosis_concentration_threshold,1) = apoptosis_prob_above_threshold*delta_t;
 	
-	new_apoptotic_cells = rand(length_cells,1)<probability_apoptosis&~cells.boundary_logical&cells.state==1;
+	new_apoptotic_cells = find(rand(length_cells,1)<probability_apoptosis&~cells.boundary_logical&cells.state==1);
 	
 	
 else
    
    if strcmp(apoptosis_type,'random')
 	
-      new_apoptotic_cells = rand(length_cells,1)<(apoptosis_baseline_prob_per_unit_time*delta_t)&...
-         ~cells.boundary_logical&cells.state~=3;
+      new_apoptotic_cells = find(rand(length_cells,1)<(apoptosis_baseline_prob_per_unit_time*delta_t)&...
+         ~cells.boundary_logical&cells.state~=3);
       
    elseif strcmp(apoptosis_type,'regular')
       
@@ -46,51 +46,40 @@ else
 	
 end
 
-cells.state(new_apoptotic_cells) = 3;
-cells.volume(new_apoptotic_cells) = 0;
-
-if FEM_solve_logical
-	
-	cells.ingestion_rate(new_apoptotic_cells) = 0;
-	
-	dead_chemical = dead_chemical + sum(cells.internal_chemical_quantity(...
-		new_apoptotic_cells));
-	
-	cells.internal_chemical_value(new_apoptotic_cells) = 0;
-	cells.internal_chemical_quantity(new_apoptotic_cells) = 0;
-	
-	if stats.this_iteration_logical
-		
-		stats.dead_chemical(stats.counter) = dead_chemical;
-		
-	end
-	
-end
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	
-apoptotic_cells = cells.state==3;
-
 % if FEM_solve_logical
 cells.state(new_apoptotic_cells) = 3;
 cells.volume(new_apoptotic_cells) = 0;
 
 if FEM_solve_logical
-	
-	cells.ingestion_rate(new_apoptotic_cells) = 0;
-	
-	dead_chemical = dead_chemical + sum(cells.internal_chemical_quantity(...
-		new_apoptotic_cells));
-	
-	cells.internal_chemical_value(new_apoptotic_cells) = 0;
-	cells.internal_chemical_quantity(new_apoptotic_cells) = 0;
-	
-	if stats.this_iteration_logical
-		
-		stats.dead_chemical(stats.counter) = dead_chemical;
-		
-	end
-	
+   
+   if ~isempty(new_apoptotic_cells)
+      
+      cells.ingestion_rate(new_apoptotic_cells) = 0;
+      
+%       cell_area_new_apoptotic_cells = CalculateCellAreas(cells.vertices(new_apoptotic_cells),vertices.position);
+      
+      %    size(cell_area_new_apoptotic_cells)
+      %    size(cells.internal_chemical_value(new_apoptotic_cells))
+      
+%       dead_chemical = dead_chemical + sum(cells.internal_chemical_value(...
+%          new_apoptotic_cells).*cell_area_new_apoptotic_cells);
+      
+      	dead_chemical = dead_chemical + sum(cells.internal_chemical_quantity(...
+      		new_apoptotic_cells));
+      
+      cells.internal_chemical_value(new_apoptotic_cells) = 0;
+      cells.internal_chemical_quantity(new_apoptotic_cells) = 0;
+      
+   end
+   
+   if stats.this_iteration_logical
+      
+      stats.dead_chemical(stats.counter) = dead_chemical;
+      
+   end
+   
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
