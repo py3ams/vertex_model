@@ -2,16 +2,16 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 10;
+total_time = 100;
 
-max_iterations = 1000;
+max_iterations = 10000;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'cellular_production_and_ingestion_with_rearrangements';
+simulation_name = 'cellular_production_and_ingestion_with_regular_proliferation_and_death';
 
 grid_size = [10,10];
 max_no_cells = 2000;
@@ -248,7 +248,7 @@ maximum_source_to_release(1) = 1000;
 
 movie_logical = 0;
 
-axis_values = 0.7*[-1 1 -1 1];
+axis_values = 1.5*[-1 1 -1 1];
 % axis_values = [0 0.05 -0.33 -0.32];
 % axis_values = 'equal';
 % axis_values_FEM = [-1 1 -1 1 -0.5 1.5];

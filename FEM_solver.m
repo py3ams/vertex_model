@@ -44,7 +44,6 @@ A = sparse(I,J,AV);
 M = sparse(I,J,MV);
 W = sparse(I,J,WV);
 
-total_concentration = zeros(no_chemicals,1);
 source_this_iteration = zeros(no_chemicals,1);
 
 previous_concentration = FEM_nodes.concentration;
@@ -55,8 +54,6 @@ for current_chemical = 1:no_chemicals
    
    COEFF_MAT = M+delta_t*(diffusion_speed(current_chemical)*A+W);
    % COEFF_MAT = M+delta_t*(diffusion_speed(current_chemical)*A);
-   
-
    
    if source_type == 1
       
