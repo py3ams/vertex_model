@@ -2,10 +2,13 @@ disp('busy'); clear all; close all;
 
 saved_iterations = [1 200:200:1000];
 
+folder_name = 'drosophila_epidermis_unlimited_spi';
+quantity_to_plot = 'internal_chemical_quantity';
+
 for i = 1:length(saved_iterations)
    
    current_saved_iteration = saved_iterations(i);
-   load(['Saves/drosophila_epidermis/iteration_',num2str(current_saved_iteration)]);
+   load(['Saves/',folder_name,'/iteration_',num2str(current_saved_iteration)]);
    
    cell_mean_x_positions = cellfun(@(x)mean(vertices.position(x,1)),cells.vertices);
 
@@ -20,9 +23,10 @@ for i = 1:length(saved_iterations)
 %    axis([-0.5 0.5 0 1e-3])
    
    figure;
-   plot(normalised_cell_mean_x_positions(cells_logical),cells.internal_chemical_quantity(cells_logical),'o')
-   
-   axis([-0.5 0.5 0 0.35])
+   plot_style = 'o';
+   eval(['plot(normalised_cell_mean_x_positions(cells_logical),cells.',quantity_to_plot,'(cells_logical),plot_style)'])
+   xlim([-0.5 0.5])
+   ylim([0 0.25])
    
 end
 %    a = polyfit(cell_centre_positions_x,cells.volume,1);

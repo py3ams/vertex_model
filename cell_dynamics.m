@@ -2,16 +2,16 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 20;
+total_time = 100;
 
-max_iterations = 5000;
+max_iterations = 10000;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'drosophila_epidermis';
+simulation_name = 'drosophila_epidermis_unlimited_spi';
 
 grid_size = [10,10];
 max_no_cells = 100;
@@ -132,7 +132,7 @@ cell_volume_distribution_type = 1;
 % cell, i.e. cells.internal_chemical*cells.area. need to make sure the
 % orders of magnitude are right
 % lambda = 5000;
-lambda = 10;
+lambda = 5;
 
 % average_cell_growth_speeds = [5e-7 1e-6];
 % medial_lateral_threshold_factor = 0.5;
@@ -172,7 +172,7 @@ target_volume_factor = 1.0;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cell death parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-cell_death_logical = true;
+cell_death_logical = false;
 cell_death_start = 0;
 
 % sets the area threshold below which cells can die, as a fraction of the mean area.
@@ -221,9 +221,9 @@ initial_concentration_magnitude = [0.0 0.1];
 % determines the source type and the degradation type. % 1 - basis function-based, 2 - cell-based
 source_type = 2;
 % 1- linear 2 - logistic
-internal_chemical_uptake_type = 1;
+internal_chemical_uptake_type = 2;
 % only applies if internal_chemical_uptake_type = 2
-maximum_internal_chemical_quantity = 0.2;
+maximum_internal_chemical_quantity = 0.1;
 % same for all cells (edit set_source_and_ingestion_functions for more complex examples)
 ingestion_rate = 1;
 
@@ -241,12 +241,12 @@ source_width = [0.2 0.1];
 degradation_rate = [0.00000 0.00002];
 % degradation_rate(1) = 1;
 
-maximum_source_to_release = [5 0.1];
-% maximum_source_to_release(1) = 1000;
+maximum_source_to_release = [20 0.1];
+maximum_source_to_release(1) = 1000;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 1;
+movie_logical = 0;
 
 axis_values = 1.5*[-1 1 -1 1];
 % axis_values = [0 0.05 -0.33 -0.32];
@@ -284,7 +284,7 @@ end
 fig_saves_logical = false;
 fig_saves_name = simulation_name;
 
-full_saves_logical = false;
+full_saves_logical = true;
 full_saves_name = simulation_name;
 full_saves_period = max(floor(max_iterations/1000),1);
 % full_saves_period = 1;
@@ -594,7 +594,7 @@ while true
 	
 %     cells.target_area =...
 %         mean_cell_area*(1+2*cells.internal_chemical_quantity/max(cells.internal_chemical_quantity));
-    cells.target_area = 100*cells.internal_chemical_quantity;
+%     cells.target_area = 100*cells.internal_chemical_quantity;
 
 	if stats.this_iteration_logical
 		
