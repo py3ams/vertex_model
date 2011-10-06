@@ -2,8 +2,8 @@ function thesis_graph_fig()
 
 disp('busy');close all;
 
-folder_name = 'cellular_production_and_ingestion';
-plot_name = 'internal_chemical';
+folder_name = 'cellular_production_and_ingestion_with_regular_proliferation_and_death';
+plot_name = 'total_concentration';
 save_plot_logical = 1;
 
 linewidth = 2;
@@ -91,31 +91,41 @@ net_chemical = initial_concentration_in_system + total_chemical_released -...
 plot(time_range,total_chemical_released)
 hold all
 plot(time_range,total_internal_chemical)
-% plot(time_range,total_dead_chemical)
+plot(time_range,total_dead_chemical)
 plot(time_range,net_chemical)
 set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Time')
 ylabel('Quantity of chemical')
 % legend('Source','Internal','Dead','Net','Location','Northwest')
-legend('Source','Internal','Net','Location','Northwest')
+legend('Source','Internal','Degraded','Net','Location','Northwest')
 legend boxoff
-axis([0 1 0 1.201])
+axis([0 100 0 80])
 
-set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
-set(gca,'YTickLabel',sprintf('%0.1f|',str2num(get(gca,'YTickLabel'))))
+% set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
+% set(gca,'YTickLabel',sprintf('%0.1f|',str2num(get(gca,'YTickLabel'))))
 
 end
 
 function total_concentration_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
 
 total_concentration = stats.total_concentration(1:statistics_counter,:);
+total_chemical_released = stats.chemical_source(1:statistics_counter,1);
+total_internal_chemical = stats.internal_chemical_quantity(1:statistics_counter,5);
+total_dead_chemical = stats.dead_chemical(1:statistics_counter);
+
+net_chemical = total_chemical_released - total_internal_chemical - total_dead_chemical;
+
+plot(time_range,net_chemical)
+hold all
 plot(time_range,total_concentration)
 set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Time')
 ylabel('Quantity of chemical')
-axis([0 1 0 1.201])
+legend('Net','Diffusing','Location','Northeast')
+legend boxoff
+% xlim([0 100])
 
-set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
+% set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 set(gca,'YTickLabel',sprintf('%0.1f|',str2num(get(gca,'YTickLabel'))))
 
 end

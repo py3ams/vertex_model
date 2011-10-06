@@ -2,19 +2,19 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 100;
+total_time = 20;
 
-max_iterations = 10000;
+max_iterations = 5000;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'cellular_production_and_ingestion_with_regular_proliferation_and_death';
+simulation_name = 'drosophila_epidermis';
 
 grid_size = [10,10];
-max_no_cells = 2000;
+max_no_cells = 100;
 
 delta_t = total_time/max_iterations;
 viscosity = 1;
@@ -101,7 +101,7 @@ protection_time = 0;
 
 cell_growth_logical = true;
 mitosis_logical = true;
-cell_growth_concentration_dependent = false;
+cell_growth_concentration_dependent = true;
 % 1 - concentration at centre of cell. 2 - internal quantity.
 concentration_dependence_type = 2;
 
@@ -145,7 +145,7 @@ mitosis_angles_type = 'uniform';
 % mitosis_angles_type = [0 0];
 
 % mitosis_dependence can currently be either 'volume', 'area', or 'none'
-mitosis_dependence = 'none';
+mitosis_dependence = 'volume';
 % this is only used if mitosos_dependence is set to 'none';
 mitosis_period = 0.1;
 % this is very different from mitosis period. it is the time, on average,
@@ -180,10 +180,10 @@ cell_death_start = 0;
 % this threshold anyway.
 cell_death_area_threshold_factor = 0.2;
 % set to half maximum_internal_chemical? (below)
-apoptosis_concentration_threshold = 0.1;
+apoptosis_concentration_threshold = 0.01;
 % apoptosis_concentration_threshold = 1e6;
 % apoptosis_no_put_pc = apoptosis no per unit time per cell 
-apoptosis_no_put_pc_below_threshold = 0.05;
+apoptosis_no_put_pc_below_threshold = 0.1;
 apoptosis_no_put_pc_above_threshold = 1e-3;
 % apoptosis_baseline_prob_per_unit_time is for each cell, so the number of
 % apoptotic cells will be this number multiplied by the number of cells.
@@ -191,7 +191,7 @@ apoptosis_no_put_pc_above_threshold = 1e-3;
 % even if FEM_solve_logical is false
 apoptosis_baseline_prob_per_unit_time = 0.025;
 
-apoptosis_concentration_dependent = 0;
+apoptosis_concentration_dependent = 1;
 % only if apoptosis_concentration_dependent = 0
 apoptosis_type = 'regular';
 apoptosis_period = 0.2;
@@ -221,7 +221,7 @@ initial_concentration_magnitude = [0.0 0.1];
 % determines the source type and the degradation type. % 1 - basis function-based, 2 - cell-based
 source_type = 2;
 % 1- linear 2 - logistic
-internal_chemical_uptake_type = 2;
+internal_chemical_uptake_type = 1;
 % only applies if internal_chemical_uptake_type = 2
 maximum_internal_chemical_quantity = 0.2;
 % same for all cells (edit set_source_and_ingestion_functions for more complex examples)
@@ -241,18 +241,18 @@ source_width = [0.2 0.1];
 degradation_rate = [0.00000 0.00002];
 % degradation_rate(1) = 1;
 
-maximum_source_to_release = [1 0.1];
-maximum_source_to_release(1) = 1000;
+maximum_source_to_release = [5 0.1];
+% maximum_source_to_release(1) = 1000;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-movie_logical = 0;
+movie_logical = 1;
 
 axis_values = 1.5*[-1 1 -1 1];
 % axis_values = [0 0.05 -0.33 -0.32];
 % axis_values = 'equal';
 % axis_values_FEM = [-1 1 -1 1 -0.5 1.5];
-axis_values_FEM = [axis_values -0.01 5];
+axis_values_FEM = [axis_values -0.01 10];
 % axis_values_FEM = 'equal';
 extra_pause = 0.0;
 % extra_pause = 0.1;
@@ -262,7 +262,7 @@ linewidth_elements = 1;
 movie_name = simulation_name;
 movie_start = 0;
 no_frames_for_statistical_plots = 100;
-update_period = max(floor(max_iterations/1000),1);
+update_period = max(floor(max_iterations/100),1);
 % update_period = 1;
 view_FEM_mesh = 1;
 view_FEM_concentration = 1;
@@ -594,7 +594,7 @@ while true
 	
 %     cells.target_area =...
 %         mean_cell_area*(1+2*cells.internal_chemical_quantity/max(cells.internal_chemical_quantity));
-%     cells.target_area = 100*cells.internal_chemical_quantity;
+    cells.target_area = 100*cells.internal_chemical_quantity;
 
 	if stats.this_iteration_logical
 		
