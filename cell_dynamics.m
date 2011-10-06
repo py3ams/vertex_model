@@ -2,19 +2,19 @@ disp('busy');close all;clear all;tic;%profile on
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simulation parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-total_time = 100;
+total_time = 50;
 
-max_iterations = 10000;
+max_iterations = 5000;
 no_refinements = 0;
 
 % simulation_name = 'refinement_comparison/true_solution';
 % simulation_name = ['refinement_comparison/iterations_',num2str(max_iterations),...
 %    '_refinements_',num2str(no_refinements)];
 
-simulation_name = 'drosophila_epidermis_unlimited_spi';
+simulation_name = 'drosophila_epidermis_limited_spi';
 
 grid_size = [10,10];
-max_no_cells = 100;
+max_no_cells = 1000;
 
 delta_t = total_time/max_iterations;
 viscosity = 1;
@@ -242,7 +242,7 @@ degradation_rate = [0.00000 0.00002];
 % degradation_rate(1) = 1;
 
 maximum_source_to_release = [20 0.1];
-maximum_source_to_release(1) = 1000;
+% maximum_source_to_release(1) = 1000;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Movie parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -286,7 +286,7 @@ fig_saves_name = simulation_name;
 
 full_saves_logical = true;
 full_saves_name = simulation_name;
-full_saves_period = max(floor(max_iterations/1000),1);
+full_saves_period = max(floor(max_iterations/5),1);
 % full_saves_period = 1;
 
 regular_tests_logical = false;

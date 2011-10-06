@@ -12,7 +12,6 @@ load(['Saves/',folder_name,'/final_save.mat'])
 
 figure('position',[100 100 325 300],'PaperPositionMode','auto','color','white')
 set(gcf,'DefaultLineLineWidth',linewidth)
-
 axes('position',[0.23 0.15 0.72 0.8])
 
 statistics_counter = stats.counter;

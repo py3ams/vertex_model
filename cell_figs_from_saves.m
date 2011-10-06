@@ -5,17 +5,24 @@ disp('busy');close all;
 cell_figs_logical = 1;
 FEM_figs_logical = 1;
 
+% 1- iteration number 2-letters
+fig_labels = 2;
+
 multiple_refinement_levels_logical = false;
 refinement_level = 0;
 
-save_figs_logical = 0;
+save_figs_logical = 1;
 initial_fig_logical = 1;
 
-folder_name = 'radial_gradient';
-saved_iterations = [10000 100000];
+folder_name = 'drosophila_epidermis_limited_spi';
+saved_iterations = [1000:1000:5000];
+
+alphabet = 'abcdefghijklmnopqrstuvwxyz';
+cell_alphabet_index = 1;
+FEM_alphabet_index = 1;
 
 % we set these outside function so both cell_fig and fem_fig have access to them
-temp_axis_values = 1.5*[-1 1 -1 1];
+temp_axis_values = 1.0*[-1 1 -1 1];
 % temp_axis_values = [-0.1 0.1 -0.07 0.13];
 % apoptosis_figs
 % temp_axis_values = [0.115 0.215 0.195 0.295];
@@ -44,8 +51,14 @@ if initial_fig_logical
     
     if cell_figs_logical
         
-        fig_name = ['cells_0'];
-        cell_fig(cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values,cell_state)
+       if fig_labels == 1
+          fig_name = [folder_name,'_cells_0'];
+       else
+          fig_name = [folder_name,'_cells_',alphabet(cell_alphabet_index)];
+          cell_alphabet_index = cell_alphabet_index+1;
+       end
+       
+       cell_fig(cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values,cell_state)
         
     end
     
@@ -67,7 +80,13 @@ if initial_fig_logical
           
        end
        
-       fig_name = ['FEM_0'];
+       if fig_labels == 1
+          fig_name = [folder_name,'_FEM_0'];
+       else
+          fig_name = [folder_name,'_FEM_',alphabet(FEM_alphabet_index)];
+          FEM_alphabet_index = FEM_alphabet_index+1;
+       end
+       
        fem_fig(FEM_element_nodes,FEM_node_positions,FEM_node_concentrations,...
           cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values)
        
@@ -91,8 +110,13 @@ for unused_variable = 1:length(saved_iterations)
     
     if cell_figs_logical
     
-      
-        fig_name = ['cells_',num2str(saved_iterations(unused_variable))];
+       if fig_labels == 1
+          fig_name = [folder_name,'_cells_',num2str(saved_iterations(unused_variable))];
+       else
+          fig_name = [folder_name,'_cells_',alphabet(cell_alphabet_index)];
+          cell_alphabet_index = cell_alphabet_index+1;
+       end
+   
         cell_fig(cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values,cell_state);
     
     end
@@ -113,7 +137,12 @@ for unused_variable = 1:length(saved_iterations)
           
        end
        
-       fig_name = ['FEM_',num2str(saved_iterations(unused_variable))];
+       if fig_labels == 1
+          fig_name = [folder_name,'_FEM_',num2str(saved_iterations(unused_variable))];
+       else
+          fig_name = [folder_name,'_FEM_',alphabet(FEM_alphabet_index)];
+          FEM_alphabet_index = FEM_alphabet_index+1;
+       end
        fem_fig(FEM_element_nodes,FEM_node_positions,FEM_node_concentrations,...
           cell_vertices,vertex_positions,fig_name,folder_name,save_figs_logical,temp_axis_values)
        
@@ -144,9 +173,13 @@ end
 
 axis(temp_axis_values)
 
-xmin = 0.95;
-xmax = 1.45;
-ypos = -1.4;
+% xmin = 0.95;
+% xmax = 1.45;
+% ypos = -1.4;
+
+xmin = 0.45;
+xmax = 0.95;
+ypos = -0.9;
 
 plot([xmin xmax],[ypos ypos],'k','linewidth',4)
 plot([xmin xmin],[ypos-0.05 ypos+0.05],'k','linewidth',4)
@@ -182,8 +215,8 @@ else
 end
 linewidth_cells = 5;
 linewidth_elements = 1;
-temp_axis_values_FEM = [temp_axis_values 0 0.05];
-caxis_vals = [0 0.1];
+temp_axis_values_FEM = [temp_axis_values 0 30];
+caxis_vals = [0 20];
 green1 = [50,180,50]/255;
 white1 = [255,255,0]/255;
 colormap_val = [linspace(green1(1),white1(1),300)' ...
