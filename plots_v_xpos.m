@@ -31,8 +31,10 @@ if initial_plot_logical
    plot_style = 'o';
    eval(['plot(normalised_cell_mean_x_positions(cells_logical),cells.',plot_name,'(cells_logical),plot_style)'])
    xlim([-0.5 0.5])
-   ylim([0 0.25])
+   ylim([0 0.151])
    set(gca,'FontName','arial','fontweight','bold','fontsize',13);
+   xlabel('x-position')
+   ylabel('Internal chemical')
    
    set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
    set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
@@ -68,7 +70,7 @@ for i = 1:length(saved_iterations)
    plot_style = 'o';
    eval(['plot(normalised_cell_mean_x_positions(cells_logical),cells.',plot_name,'(cells_logical),plot_style)'])
    xlim([-0.5 0.5])
-   ylim([0 0.25])
+   ylim([0 0.151])
    set(gca,'FontName','arial','fontweight','bold','fontsize',13);
    
    xlabel('x-position')
