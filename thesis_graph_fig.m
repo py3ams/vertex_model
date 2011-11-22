@@ -2,9 +2,9 @@ function thesis_graph_fig()
 
 disp('busy');close all;
 
-folder_name = 'cellular_production_and_ingestion_with_regular_proliferation_and_death';
-plot_name = 'total_concentration';
-save_plot_logical = 1;
+folder_name = 'radial_gradient';
+plot_name = 'mitosis_locations';
+save_plot_logical = 0;
 
 linewidth = 2;
 
@@ -141,7 +141,7 @@ if length(mitosis_radii)>1
     bar(bin_centres,hist_data);
     axis([0 1.5 0 20])
 end
-xlabel('Mitosis radius')
+xlabel('Radius')
 ylabel('Frequency (%)')
 
 end
@@ -162,7 +162,7 @@ if length(mitosis_within_original_radius)>1
     bar(bin_centres,hist_data);
     axis([0 0.5 0 20])
 end
-xlabel('Mitosis radius')
+xlabel('Radius')
 ylabel('Corrected frequency (%)')
 
 end

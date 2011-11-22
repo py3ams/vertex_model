@@ -5,7 +5,7 @@ initial_plot_logical = true;
 
 saved_iterations = [1000:1000:5000];
 
-folder_name = 'drosophila_epidermis_limited_spi';
+folder_name = 'drosophila_epidermis_unlimited_spi';
 plot_name = 'internal_chemical_quantity';
 
 alphabet = 'abcdefghijklmnopqrstuvwxyz';

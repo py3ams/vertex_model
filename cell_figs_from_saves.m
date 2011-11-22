@@ -2,7 +2,7 @@ function cell_figs_from_saves()
 
 disp('busy');close all;
 
-cell_figs_logical = 1;
+cell_figs_logical = 0;
 FEM_figs_logical = 1;
 
 % 1- iteration number 2-letters
@@ -14,7 +14,7 @@ refinement_level = 0;
 save_figs_logical = 1;
 initial_fig_logical = 1;
 
-folder_name = 'drosophila_epidermis_limited_spi';
+folder_name = 'drosophila_epidermis_unlimited_spi';
 saved_iterations = [1000:1000:5000];
 
 alphabet = 'abcdefghijklmnopqrstuvwxyz';
@@ -215,7 +215,7 @@ else
 end
 linewidth_cells = 5;
 linewidth_elements = 1;
-temp_axis_values_FEM = [temp_axis_values 0 30];
+temp_axis_values_FEM = [temp_axis_values 0 50];
 caxis_vals = [0 20];
 green1 = [50,180,50]/255;
 white1 = [255,255,0]/255;
