@@ -3,8 +3,8 @@ function thesis_graph_fig()
 disp('busy');close all;
 
 folder_name = 'radial_gradient';
-plot_name = 'mitosis_locations';
-save_plot_logical = 0;
+plot_name = 'mitosis_locations_corrected';
+save_plot_logical = 1;
 
 linewidth = 2;
 
@@ -141,8 +141,11 @@ if length(mitosis_radii)>1
     bar(bin_centres,hist_data);
     axis([0 1.5 0 20])
 end
+set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Radius')
 ylabel('Frequency (%)')
+
+set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 
 end
 
@@ -162,8 +165,12 @@ if length(mitosis_within_original_radius)>1
     bar(bin_centres,hist_data);
     axis([0 0.5 0 20])
 end
+set(gca,'xtick',[0:0.1:0.5])
+set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 xlabel('Radius')
-ylabel('Corrected frequency (%)')
+ylabel('Frequency (%)')
+
+set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 
 end
 
