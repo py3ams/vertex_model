@@ -2,9 +2,9 @@ function thesis_graph_fig()
 
 disp('busy');close all;
 
-folder_name = 'radial_gradient';
-plot_name = 'mitosis_locations_corrected';
-save_plot_logical = 1;
+folder_name = 'cellular_production_and_ingestion';
+plot_name = 'net_chemical';
+save_plot_logical = 0;
 
 linewidth = 2;
 
@@ -98,7 +98,7 @@ ylabel('Quantity of chemical')
 % legend('Source','Internal','Dead','Net','Location','Northwest')
 legend('Source','Internal','Degraded','Net','Location','Northwest')
 legend boxoff
-axis([0 100 0 80])
+axis([0 1 0 1.2])
 
 % set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 % set(gca,'YTickLabel',sprintf('%0.1f|',str2num(get(gca,'YTickLabel'))))
