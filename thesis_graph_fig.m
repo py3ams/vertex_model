@@ -105,7 +105,7 @@ ylabel('Quantity of chemical')
 % legend('Source','Internal','Dead','Net','Location','Northwest')
 legend('Source','Internal','Degraded','Net','Location','Northwest')
 legend boxoff
-axis([0 100 0 80])
+axis([0 1 0 1.2])
 
 % set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
 % set(gca,'YTickLabel',sprintf('%0.1f|',str2num(get(gca,'YTickLabel'))))
