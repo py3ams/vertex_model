@@ -1,23 +1,30 @@
 function thesis_graph_fig()
 
-disp('busy');close all;
+disp('busy');%close all;
 
-folder_name = 'radial_gradient';
-plot_name = 'mitosis_locations_corrected';
-save_plot_logical = 1;
+% folder_name = 'area_force_only';
+folder_name = 'deformation_force_only';
+% folder_name = 'simulation_of_all_forces';
+plot_name = 'cell_perimeter';
+save_plot_logical = 0;
+new_plot_logical = 0;
 
 linewidth = 2;
 
 load(['Saves/',folder_name,'/final_save.mat'])
 
-figure('position',[100 100 325 300],'PaperPositionMode','auto','color','white')
-set(gcf,'DefaultLineLineWidth',linewidth)
-axes('position',[0.23 0.15 0.72 0.8])
+if new_plot_logical
 
+   figure('position',[100 100 325 300],'PaperPositionMode','auto','color','white')
+   set(gcf,'DefaultLineLineWidth',linewidth)
+   axes('position',[0.23 0.15 0.72 0.8])
+
+end
+   
 statistics_counter = stats.counter;
 time_range = linspace(0,total_time,stats.counter);
 
-eval([plot_name,'_plot(linewidth,stats,statistics_counter,time_range,cells,vertices);'])
+eval([plot_name,'_plot(linewidth,stats,statistics_counter,time_range,cells,vertices,new_plot_logical);'])
 
 % cell_area_plot(linewidth,stats,statistics_counter,time_range);
 
@@ -229,18 +236,28 @@ axis([0 100 0 40])
 
 end
 
-function angle_deviations_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
+function angle_deviations_plot(linewidth,stats,statistics_counter,time_range,cells,vertices,new_plot_logical)
 
 angle_deviation = stats.angle_deviation(1:statistics_counter,:);
-plot(time_range,angle_deviation(:,1))
-set(gca,'FontName','arial','fontweight','bold','fontsize',13);
-xlabel('Time')
-ylabel('Angle deviation')
 
-axis([0 1 0 0.4])
+if new_plot_logical
 
-set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
-% set(gca,'YTickLabel',sprintf('%0.1f|',str2num(get(gca,'YTickLabel'))))
+   plot(time_range,angle_deviation(:,1))
+   set(gca,'FontName','arial','fontweight','bold','fontsize',13);
+   xlabel('Time')
+   ylabel('Angle deviation')
+   
+   axis([0 1 0 0.4])
+   
+   set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
+   % set(gca,'YTickLabel',sprintf('%0.1f|',str2num(get(gca,'YTickLabel'))))
+
+else
+   
+   hold on
+   plot(time_range,angle_deviation(:,1),'c--')
+   
+end
 
 end
 
@@ -266,22 +283,32 @@ set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
 
 end
 
-function cell_perimeter_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
+function cell_perimeter_plot(linewidth,stats,statistics_counter,time_range,cells,vertices,new_plot_logical)
 
 cell_perimeter = stats.cell_perimeter(1:statistics_counter,:);
-plot(time_range,cell_perimeter(:,1))
-hold on
-plot(time_range,cell_perimeter(:,1)+2*cell_perimeter(:,4),'r')
-plot(time_range,cell_perimeter(:,1)-2*cell_perimeter(:,4),'r')
-set(gca,'FontName','arial','fontweight','bold','fontsize',13);
-xlabel('Time')
-ylabel('Cell perimeter')
 
-axis([0 1 0.3 0.451])
+if new_plot_logical
 
-set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
-set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
+   plot(time_range,cell_perimeter(:,1))
+   hold on
+   plot(time_range,cell_perimeter(:,1)+2*cell_perimeter(:,4),'r')
+   plot(time_range,cell_perimeter(:,1)-2*cell_perimeter(:,4),'r')
+   set(gca,'FontName','arial','fontweight','bold','fontsize',13);
+   xlabel('Time')
+   ylabel('Cell perimeter')
+   
+   axis([0 1 0.3 0.451])
+   
+   set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
+   set(gca,'YTickLabel',sprintf('%0.2f|',str2num(get(gca,'YTickLabel'))))
 
+else
+   
+   plot(time_range,cell_perimeter(:,1)+2*cell_perimeter(:,4),'c--')
+   plot(time_range,cell_perimeter(:,1)-2*cell_perimeter(:,4),'c--')
+
+end
+   
 end
 
 function boundary_forces_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
@@ -339,22 +366,31 @@ set(gca,'FontName','arial','fontweight','bold','fontsize',13);
 
 end
 
-function cell_areas_plot(linewidth,stats,statistics_counter,time_range,cells,vertices)
+function cell_areas_plot(linewidth,stats,statistics_counter,time_range,cells,vertices,new_plot_logical)
 
 cell_area = stats.cell_area(1:statistics_counter,:);
 
-plot(time_range,cell_area(:,1),'linewidth',linewidth)
-hold on
-plot(time_range,cell_area(:,1)+2*cell_area(:,4),'r','linewidth',linewidth)
-plot(time_range,cell_area(:,1)-2*cell_area(:,4),'r','linewidth',linewidth)
-set(gca,'FontName','arial','fontweight','bold','fontsize',13);
-xlabel('Time')
-ylabel('Cell area')
+if new_plot_logical
 
-axis([0 100 0.002 0.016])
+   plot(time_range,cell_area(:,1),'linewidth',linewidth)
+   hold on
+   plot(time_range,cell_area(:,1)+2*cell_area(:,4),'r','linewidth',linewidth)
+   plot(time_range,cell_area(:,1)-2*cell_area(:,4),'r','linewidth',linewidth)
+   set(gca,'FontName','arial','fontweight','bold','fontsize',13);
+   xlabel('Time')
+   ylabel('Cell area')
+   
+   axis([0 1 0.002 0.016])
+   
+   set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
+   set(gca,'YTickLabel',sprintf('%0.3f|',str2num(get(gca,'YTickLabel'))*0.001))
 
-% set(gca,'XTickLabel',sprintf('%0.1f|',str2num(get(gca,'XTickLabel'))))
-set(gca,'YTickLabel',sprintf('%0.3f|',str2num(get(gca,'YTickLabel'))*0.001))
+else
+   
+   plot(time_range,cell_area(:,1)+2*cell_area(:,4),'c--','linewidth',linewidth)
+   plot(time_range,cell_area(:,1)-2*cell_area(:,4),'c--','linewidth',linewidth)
+   
+end
 
 end
 
